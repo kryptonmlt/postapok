@@ -10,6 +10,8 @@ public class GridManager: MonoBehaviour
 	//This time instead of specifying the number of hexes you should just drop your ground game object on this public variable
 	public GameObject Ground;
 
+	public GameObject player1;
+
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
 	//TB of the tile which is the start of the path
@@ -66,7 +68,7 @@ public class GridManager: MonoBehaviour
 		return initPos;
 	}
 
-	Vector3 calcWorldCoord(Vector2 gridPos)
+	public Vector3 calcWorldCoord(Vector2 gridPos)
 	{
 		Vector3 initPos = calcInitPos();
 		float offset = 0;
@@ -115,6 +117,18 @@ public class GridManager: MonoBehaviour
 				//y / 2 is subtracted from x because we are using straight axis coordinate system
 				tb.tile = new Tile((int)x - (int)(y / 2), (int)y);
 				board.Add(tb.tile.Location, tb.tile);
+				//Mark originTile as the tile with (0,0) coordinates
+				if (x == 0 && y == 0)
+				{
+					tb.GetComponent<Renderer>().material = tb.OpaqueMaterial;
+					Color red = Color.red;
+					red.a = 158f / 255f;
+					tb.GetComponent<Renderer>().material.color = red;
+					originTileTB = tb;
+					GameObject player = Instantiate (player1);
+					player.transform.position = tb.transform.position;
+
+				}
 			}
 		}
 		//variable to indicate if all rows have the same number of hexes in them
@@ -170,11 +184,9 @@ public class GridManager: MonoBehaviour
 			DrawPath(new List<Tile>());
 			return;
 		}
-		//We assume that the distance between any two adjacent tiles is 1
-		//If you want to have some mountains, rivers, dirt roads or something else which might slow down the player you should replace the function with something that suits better your needs
-		Func<Tile, Tile, double> distance = (node1, node2) => 1;
 
 		var path = PathFinder.FindPath(originTileTB.tile, destTileTB.tile);
 		DrawPath(path);
+		CharacterMovement.instance.StartMoving(path.ToList());
 	}
 }
