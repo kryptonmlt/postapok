@@ -39,6 +39,30 @@ public class GridManager: MonoBehaviour
 		groundHeight = Ground.GetComponent<Renderer>().bounds.size.z;
 	}
 
+	void Update(){
+
+		if (Input.GetMouseButtonDown(0))
+		{
+			Debug.Log("Mouse is down");
+
+			RaycastHit hitInfo = new RaycastHit();
+			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
+			if (hit) 
+			{
+				Debug.Log("Hit " + hitInfo.transform.gameObject.name);
+				if (hitInfo.transform.gameObject.tag == "Unit")
+				{
+					Debug.Log ("It's working!");
+				} else {
+					Debug.Log ("nopz");
+				}
+			} else {
+				Debug.Log("No hit");
+			}
+			Debug.Log("Mouse is down");
+		} 
+	}
+
 	//The method used to calculate the number hexagons in a row and number of rows
 	//Vector2.x is gridWidthInHexes and Vector2.y is gridHeightInHexes
 	Vector2 calcGridSize()
