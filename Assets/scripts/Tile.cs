@@ -6,11 +6,13 @@ using UnityEngine;
 public class Tile: GridObject, IHasNeighbours<Tile>
 {
 	public bool Passable;
+	public Color tilecolor;
 
-	public Tile(int x, int y)
+	public Tile(int x, int y, Color z)
 		: base(x, y)
 	{
 		Passable = true;
+		tilecolor = z;
 	}
 
 	public IEnumerable<Tile> AllNeighbours { get; set; }

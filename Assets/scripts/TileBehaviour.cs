@@ -10,8 +10,9 @@ public class TileBehaviour: MonoBehaviour
 	public Material defaultMaterial;
 	//Slightly transparent orange
 	Color orange = new Color(255f / 255f, 127f / 255f, 0, 127f/255f);
+	Color temptilecolour;
 
-	void changeColor(Color color)
+	public void changeColor(Color color)
 	{
 		//If transparency is not set already, set it to default value
 		if (color.a == 1)
@@ -24,6 +25,7 @@ public class TileBehaviour: MonoBehaviour
 	void OnMouseEnter()
 	{
 		GridManager.instance.selectedTile = tile;
+		temptilecolour = tile.tilecolor;
 		//when mouse is over some tile, the tile is passable and the current tile is neither destination nor origin tile, change color to orange
 		if (tile.Passable && this != GridManager.instance.destTileTB
 			&& this != GridManager.instance.originTileTB)
@@ -39,8 +41,7 @@ public class TileBehaviour: MonoBehaviour
 		if (tile.Passable && this != GridManager.instance.destTileTB
 			&& this != GridManager.instance.originTileTB)
 		{
-			this.GetComponent<Renderer>().material = defaultMaterial;
-			this.GetComponent<Renderer>().material.color = Color.white;
+			changeColor (temptilecolour);
 		}
 	}
 	//called every frame when mouse cursor is on this tile

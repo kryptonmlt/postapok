@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Random=UnityEngine.Random;
 
 public class GridManager: MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class GridManager: MonoBehaviour
 	public TileBehaviour originTileTB = null;
 	//TB of the tile which is the end of the path
 	public TileBehaviour destTileTB = null;
+	public TileBehaviour tb =null;
 
 	public static GridManager instance = null;
 
@@ -30,6 +32,13 @@ public class GridManager: MonoBehaviour
 	private float hexHeight;
 	private float groundWidth;
 	private float groundHeight;
+
+	Dictionary<int, Color> TerrainType = new Dictionary<int, Color>()
+	{
+		{1,Color.yellow},
+		{2,Color.blue},
+		{3,Color.red}
+	};
 
 	void setSizes()
 	{
@@ -112,7 +121,6 @@ public class GridManager: MonoBehaviour
 		generateAndShowPath();
 	}
 
-
 	void Awake()
 	{
 		instance = this;
@@ -139,7 +147,9 @@ public class GridManager: MonoBehaviour
 				hex.transform.parent = hexGridGO.transform;
 				var tb = (TileBehaviour)hex.GetComponent("TileBehaviour");
 				//y / 2 is subtracted from x because we are using straight axis coordinate system
-				tb.tile = new Tile((int)x - (int)(y / 2), (int)y);
+				int terraintype = UnityEngine.Random.Range(1,4);
+				tb.changeColor(TerrainType[terraintype]);
+				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[terraintype]);
 				board.Add(tb.tile.Location, tb.tile);
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)
