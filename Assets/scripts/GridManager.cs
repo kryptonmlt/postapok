@@ -11,7 +11,7 @@ public class GridManager: MonoBehaviour
 	//This time instead of specifying the number of hexes you should just drop your ground game object on this public variable
 	public GameObject Ground;
 
-	public GameObject player1;
+	public GameObject player;
 
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
@@ -170,9 +170,18 @@ public class GridManager: MonoBehaviour
 					red.a = 158f / 255f;
 					tb.GetComponent<Renderer>().material.color = red;
 					originTileTB = tb;
-					GameObject player = Instantiate (player1);
-					player.transform.position = tb.transform.position;
-
+					GameObject player1 = Instantiate (player);
+					player1.transform.position = tb.transform.position;
+				}
+				if (x == 2 && y == 3)
+				{
+					tb.GetComponent<Renderer>().material = tb.OpaqueMaterial;
+					Color red = Color.red;
+					red.a = 158f / 255f;
+					tb.GetComponent<Renderer>().material.color = red;
+					originTileTB = tb;
+					GameObject player2 = Instantiate (player);
+					player2.transform.position = tb.transform.position;
 				}
 			}
 		}
