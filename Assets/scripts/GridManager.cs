@@ -33,11 +33,12 @@ public class GridManager: MonoBehaviour
 	private float groundWidth;
 	private float groundHeight;
 
-	Dictionary<int, Color> TerrainType = new Dictionary<int, Color>()
+	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
-		{1,Color.yellow},
-		{2,Color.blue},
-		{3,Color.red}
+		{1,LandType.Oasis},
+		{2,LandType.Junkyard},
+		{3,LandType.OilField},
+		{4,LandType.Desert}
 	};
 
 	void setSizes()
@@ -147,9 +148,11 @@ public class GridManager: MonoBehaviour
 				hex.transform.parent = hexGridGO.transform;
 				var tb = (TileBehaviour)hex.GetComponent("TileBehaviour");
 				//y / 2 is subtracted from x because we are using straight axis coordinate system
-				int terraintype = UnityEngine.Random.Range(1,4);
-				tb.changeColor(TerrainType[terraintype]);
-				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[terraintype]);
+				int tTypeId = UnityEngine.Random.Range(1,15);
+				if (tTypeId > 3)
+					tTypeId = 4;
+				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[tTypeId]);
+				tb.changeColor(tb.tile.tilecolor);
 				board.Add(tb.tile.Location, tb.tile);
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)

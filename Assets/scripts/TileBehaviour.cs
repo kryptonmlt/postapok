@@ -89,7 +89,7 @@ public class TileBehaviour: MonoBehaviour
 		}
 		//if origin tile is not specified already mark this tile as origin
 		GridManager.instance.originTileTB = this;
-		changeColor(Color.red);
+		changeColor(Color.green);
 	}
 
 	void destTileChanged()
@@ -106,6 +106,6 @@ public class TileBehaviour: MonoBehaviour
 		if (destTile != null)
 			destTile.GetComponent<Renderer>().material = defaultMaterial;
 		GridManager.instance.destTileTB = this;
-		changeColor(Color.blue);
+		changeColor(Color.green);
 	}
 }

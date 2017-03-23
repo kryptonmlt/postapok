@@ -3,16 +3,32 @@ using System;
 using System.Linq;
 using UnityEngine;
 
+public enum LandType
+{
+	Oasis,
+	Junkyard,
+	OilField,
+	Desert
+};
+	
 public class Tile: GridObject, IHasNeighbours<Tile>
 {
 	public bool Passable;
 	public Color tilecolor;
 
-	public Tile(int x, int y, Color z)
+	Dictionary<LandType, Color> TerrainColor = new Dictionary<LandType, Color>()
+	{
+		{LandType.Oasis,Color.blue},
+		{LandType.Junkyard,Color.red},
+		{LandType.OilField,Color.black},
+		{LandType.Desert,Color.yellow}
+	};
+
+	public Tile(int x, int y, LandType z)
 		: base(x, y)
 	{
 		Passable = true;
-		tilecolor = z;
+		tilecolor = TerrainColor[z];
 	}
 
 	public IEnumerable<Tile> AllNeighbours { get; set; }
