@@ -17,7 +17,7 @@ public class CharacterMovement: MonoBehaviour
 	Vector3 curTilePos;
 	Tile curTile;
 	List<Tile> path;
-	public bool IsMoving { get; private set; }
+	public static bool IsMoving { get; private set; }
 	Transform myTransform;
 
 	void Awake()

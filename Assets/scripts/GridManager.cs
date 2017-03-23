@@ -33,6 +33,8 @@ public class GridManager: MonoBehaviour
 	private float groundWidth;
 	private float groundHeight;
 
+	public static bool UnitSelected = false;
+
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
 		{1,LandType.Oasis},
@@ -61,8 +63,14 @@ public class GridManager: MonoBehaviour
 			{
 				Debug.Log("Hit " + hitInfo.transform.gameObject.name);
 				if (hitInfo.transform.gameObject.tag == "Unit")
-				{
-					Debug.Log ("It's working!");
+				{	
+					if (GridManager.UnitSelected == false) {
+						UnitSelected = true;
+						Debug.Log ("It's working!");
+					} else if (GridManager.UnitSelected == true) {
+						UnitSelected = false;
+					}
+						
 				} else {
 					Debug.Log ("nopz");
 				}
