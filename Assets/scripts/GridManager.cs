@@ -11,7 +11,8 @@ public class GridManager: MonoBehaviour
 	//This time instead of specifying the number of hexes you should just drop your ground game object on this public variable
 	public GameObject Ground;
 
-	public GameObject player;
+	public GameObject fanatic;
+	public GameObject truck;
 
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
@@ -21,8 +22,6 @@ public class GridManager: MonoBehaviour
 	public Dictionary<String, TileBehaviour> getOriginTileTB(){
 		return originTileTB;
 	}
-
-	//public TileBehaviour originTileTB = null;
 	//TB of the tile which is the end of the path
 	public TileBehaviour destTileTB = null;
 	public TileBehaviour tb =null;
@@ -176,7 +175,7 @@ public class GridManager: MonoBehaviour
 					Color red = Color.red;
 					red.a = 158f / 255f;
 					tb.GetComponent<Renderer>().material.color = red;
-					GameObject player1 = Instantiate (player);
+					GameObject player1 = Instantiate (fanatic);
 					player1.name = "player1";
 					originTileTB.Add(player1.name,tb);
 					player1.transform.position = tb.transform.position;
@@ -187,11 +186,21 @@ public class GridManager: MonoBehaviour
 					Color red = Color.red;
 					red.a = 158f / 255f;
 					tb.GetComponent<Renderer>().material.color = red;
-					//originTileTB = tb;
-					GameObject player2 = Instantiate (player);
+					GameObject player2 = Instantiate (fanatic);
 					player2.name = "player2";
 					originTileTB.Add(player2.name,tb);
 					player2.transform.position = tb.transform.position;
+				}
+				if (x == 6 && y == 7)
+				{
+					tb.GetComponent<Renderer>().material = tb.OpaqueMaterial;
+					Color red = Color.red;
+					red.a = 158f / 255f;
+					tb.GetComponent<Renderer>().material.color = red;
+					GameObject player3 = Instantiate (truck);
+					player3.name = "player3";
+					originTileTB.Add(player3.name,tb);
+					player3.transform.position = tb.transform.position;
 				}
 			}
 		}

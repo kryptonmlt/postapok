@@ -11,7 +11,7 @@ public class CharacterMovement: MonoBehaviour
 	//distance between character and tile position when we assume we reached it and start looking for the next. Explained in detail later on
 	public static float MinNextTileDist = 0.07f;
 
-	private ThirdPersonCharacter m_character;
+	private MovingObject m_character;
 	//position of the tile we are heading to
 	Vector3 curTilePos;
 	Tile curTile;
@@ -26,7 +26,7 @@ public class CharacterMovement: MonoBehaviour
 
 	void Start()
 	{
-		m_character = this.GetComponent<ThirdPersonCharacter>();
+		m_character = this.GetComponent<MovingObject>();
 		//caching the transform for better performance
 		myTransform = transform;
 		//all the animations by default should loop
@@ -60,10 +60,10 @@ public class CharacterMovement: MonoBehaviour
 	void switchOriginAndDestinationTiles()
 	{
 		GridManager GM = GridManager.instance;
-		Material originMaterial = GM.getOriginTileTB()[m_character.name].GetComponent<Renderer>().material;
-		GM.getOriginTileTB()[m_character.name].GetComponent<Renderer>().material = GM.destTileTB.defaultMaterial;
-		GM.getOriginTileTB()[m_character.name] = GM.destTileTB;
-		GM.getOriginTileTB()[m_character.name].GetComponent<Renderer>().material = originMaterial;
+		Material originMaterial = GM.getOriginTileTB()[m_character.getName()].GetComponent<Renderer>().material;
+		GM.getOriginTileTB()[m_character.getName()].GetComponent<Renderer>().material = GM.destTileTB.defaultMaterial;
+		GM.getOriginTileTB()[m_character.getName()] = GM.destTileTB;
+		GM.getOriginTileTB()[m_character.getName()].GetComponent<Renderer>().material = originMaterial;
 		GM.destTileTB = null;
 		GM.generateAndShowPath();
 	}
