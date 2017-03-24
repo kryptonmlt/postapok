@@ -12,18 +12,15 @@ public class CharacterMovement: MonoBehaviour
 	public static float MinNextTileDist = 0.07f;
 
 	private ThirdPersonCharacter m_character;
-	public static CharacterMovement instance = null;
 	//position of the tile we are heading to
 	Vector3 curTilePos;
 	Tile curTile;
 	List<Tile> path;
-	public static bool IsMoving { get; private set; }
+	public bool IsMoving { get; private set; }
 	Transform myTransform;
 
 	void Awake()
 	{
-		//singleton pattern here is used just for the sake of simplicity. Messenger (http://goo.gl/3Okkh) should be used in cases when this script is attached to more than one character
-		instance = this;
 		IsMoving = false;
 	}
 
@@ -63,10 +60,10 @@ public class CharacterMovement: MonoBehaviour
 	void switchOriginAndDestinationTiles()
 	{
 		GridManager GM = GridManager.instance;
-		Material originMaterial = GM.originTileTB.GetComponent<Renderer>().material;
-		GM.originTileTB.GetComponent<Renderer>().material = GM.destTileTB.defaultMaterial;
-		GM.originTileTB = GM.destTileTB;
-		GM.originTileTB.GetComponent<Renderer>().material = originMaterial;
+		Material originMaterial = GM.getOriginTileTB()[m_character.name].GetComponent<Renderer>().material;
+		GM.getOriginTileTB()[m_character.name].GetComponent<Renderer>().material = GM.destTileTB.defaultMaterial;
+		GM.getOriginTileTB()[m_character.name] = GM.destTileTB;
+		GM.getOriginTileTB()[m_character.name].GetComponent<Renderer>().material = originMaterial;
 		GM.destTileTB = null;
 		GM.generateAndShowPath();
 	}

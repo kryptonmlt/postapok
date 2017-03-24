@@ -16,7 +16,13 @@ public class GridManager: MonoBehaviour
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
 	//TB of the tile which is the start of the path
-	public TileBehaviour originTileTB = null;
+	public Dictionary<String, TileBehaviour> originTileTB = new Dictionary<String, TileBehaviour>();
+
+	public Dictionary<String, TileBehaviour> getOriginTileTB(){
+		return originTileTB;
+	}
+
+	//public TileBehaviour originTileTB = null;
 	//TB of the tile which is the end of the path
 	public TileBehaviour destTileTB = null;
 	public TileBehaviour tb =null;
@@ -33,7 +39,7 @@ public class GridManager: MonoBehaviour
 	private float groundWidth;
 	private float groundHeight;
 
-	public static bool UnitSelected = false;
+	public static GameObject unitSelected=null;
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
@@ -64,15 +70,16 @@ public class GridManager: MonoBehaviour
 				Debug.Log("Hit " + hitInfo.transform.gameObject.name);
 				if (hitInfo.transform.gameObject.tag == "Unit")
 				{	
-					if (GridManager.UnitSelected == false) {
-						UnitSelected = true;
-						Debug.Log ("It's working!");
-					} else if (GridManager.UnitSelected == true) {
-						UnitSelected = false;
+					if (GridManager.unitSelected == null) {
+						GridManager.unitSelected = hitInfo.transform.gameObject;
+						Debug.Log ("Unit Selected");
+					} else if (GridManager.unitSelected == hitInfo.transform.gameObject) {
+						GridManager.unitSelected = null;
+						Debug.Log ("Unit Deselected");
 					}
 						
 				} else {
-					Debug.Log ("nopz");
+					Debug.Log ("Not a Unit");
 				}
 			} else {
 				Debug.Log("No hit");
@@ -169,8 +176,9 @@ public class GridManager: MonoBehaviour
 					Color red = Color.red;
 					red.a = 158f / 255f;
 					tb.GetComponent<Renderer>().material.color = red;
-					originTileTB = tb;
 					GameObject player1 = Instantiate (player);
+					player1.name = "player1";
+					originTileTB.Add(player1.name,tb);
 					player1.transform.position = tb.transform.position;
 				}
 				if (x == 2 && y == 3)
@@ -179,8 +187,10 @@ public class GridManager: MonoBehaviour
 					Color red = Color.red;
 					red.a = 158f / 255f;
 					tb.GetComponent<Renderer>().material.color = red;
-					originTileTB = tb;
+					//originTileTB = tb;
 					GameObject player2 = Instantiate (player);
+					player2.name = "player2";
+					originTileTB.Add(player2.name,tb);
 					player2.transform.position = tb.transform.position;
 				}
 			}
@@ -232,15 +242,17 @@ public class GridManager: MonoBehaviour
 
 	public void generateAndShowPath()
 	{
-		//Don't do anything if origin or destination is not defined yet
-		if (originTileTB == null || destTileTB == null)
-		{
-			DrawPath(new List<Tile>());
-			return;
-		}
+		if (GridManager.unitSelected != null) {
+			//Don't do anything if origin or destination is not defined yet
+			if (originTileTB [GridManager.unitSelected.name] == null || destTileTB == null) {
+				DrawPath (new List<Tile> ());
+				return;
+			}
 
-		var path = PathFinder.FindPath(originTileTB.tile, destTileTB.tile);
-		DrawPath(path);
-		CharacterMovement.instance.StartMoving(path.ToList());
+			var path = PathFinder.FindPath (originTileTB [GridManager.unitSelected.name].tile, destTileTB.tile);
+			DrawPath (path);
+			CharacterMovement characterAction = (CharacterMovement)GridManager.unitSelected.GetComponent (typeof(CharacterMovement));
+			characterAction.StartMoving (path.ToList ());
+		}
 	}
 }
