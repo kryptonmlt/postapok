@@ -68,7 +68,7 @@ public class TileBehaviour: MonoBehaviour
 			//if user left-clicks the tile
 			bool moving = false;
 			if (GridManager.unitSelected != null) {
-				CharacterMovement characterAction = (CharacterMovement)GridManager.unitSelected.GetComponent (typeof(CharacterMovement));
+				CharacterMovement characterAction = (CharacterMovement) GridManager.unitSelected.GetComponent (typeof(CharacterMovement));
 				moving = characterAction.IsMoving;
 			}
 			if (Input.GetMouseButtonUp (0) & GridManager.unitSelected != null & moving == false) {
