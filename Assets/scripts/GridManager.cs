@@ -42,6 +42,7 @@ public class GridManager: MonoBehaviour
 	static bool draw=false;
 
 	private Texture2D rectangleTexture;
+	public float fAlpha=0.25f;
 
 	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
@@ -63,7 +64,10 @@ public class GridManager: MonoBehaviour
 
 	void OnGUI() {
 		if (GridManager.draw == true) {
+			Color colPreviousGUIColor = GUI.color;
+			GUI.color = new Color(colPreviousGUIColor.r, colPreviousGUIColor.g, colPreviousGUIColor.b, fAlpha);
 			GUI.DrawTexture (new Rect (downmouseposition.x, Screen.height-downmouseposition.y, Input.mousePosition.x - downmouseposition.x, downmouseposition.y-Input.mousePosition.y), rectangleTexture);
+			GUI.color = colPreviousGUIColor;
 		}
 	}
 
@@ -169,7 +173,7 @@ public class GridManager: MonoBehaviour
 	void Start()
 	{
 		rectangleTexture= new Texture2D (1, 1);
-		rectangleTexture.SetPixel (0, 0, Color.white);
+		rectangleTexture.SetPixel (0, 0, Color.black);
 		rectangleTexture.Apply();
 
 		setSizes();
