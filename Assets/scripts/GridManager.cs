@@ -106,36 +106,6 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-
-
-
-//		if (Input.GetMouseButtonDown(0))
-//		{
-//			Debug.Log("Mouse is down");
-//
-//			RaycastHit hitInfo = new RaycastHit();
-//			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
-//			if (hit) 
-//			{
-//				Debug.Log("Hit " + hitInfo.transform.gameObject.name);
-//				if (hitInfo.transform.gameObject.tag == "Unit")
-//				{	
-//					if (GridManager.unitSelected == null) {
-//						GridManager.unitSelected = hitInfo.transform.gameObject;
-//						Debug.Log ("Unit Selected");
-//					} else if (GridManager.unitSelected == hitInfo.transform.gameObject) {
-//						GridManager.unitSelected = null;
-//						Debug.Log ("Unit Deselected");
-//					}
-//						
-//				} else {
-//					Debug.Log ("Not a Unit");
-//				}
-//			} else {
-//				Debug.Log("No hit");
-//			}
-//			Debug.Log("Mouse is down");
-//		} 
 	}
 
 	//The method used to calculate the number hexagons in a row and number of rows
@@ -274,7 +244,7 @@ public class GridManager: MonoBehaviour
 		if (this.path == null)
 			this.path = new List<GameObject>();
 		
-		DestroyPath();
+		//DestroyPath();
 		//Lines game object is used to hold all the "Line" game objects indicating the path
 		GameObject lines = GameObject.Find("Lines");
 		if (lines == null)
@@ -296,6 +266,12 @@ public class GridManager: MonoBehaviour
 		this.path.ForEach(Destroy);
 		this.path.Clear();
 	
+	}
+
+	public bool isEmptyPath(){
+		if (this.path != null)
+			return true;
+		else return false;
 	}
 
 	public void generateAndShowPath()

@@ -60,7 +60,9 @@ public class CharacterMovement: MonoBehaviour
 	void switchOriginAndDestinationTiles()
 	{
 		GridManager GM = GridManager.instance;
-		GM.DestroyPath();
+		if (GM.isEmptyPath()==false) {
+			GM.DestroyPath ();
+		}
 		GM.getOriginTileTB()[m_character.getName()] = GM.destTileTB;
 		GM.destTileTB = null;
 	}
@@ -85,8 +87,12 @@ public class CharacterMovement: MonoBehaviour
 			curTile = path[path.IndexOf(curTile) - 1];
 			curTilePos = calcTilePos(curTile);
 		}
-
 		MoveTowards(curTilePos);
+	}
+
+	void OnCollisionEnter(Collision collision)
+	{
+		Debug.Log ("Error");
 	}
 
 	void MoveTowards(Vector3 position)
