@@ -37,6 +37,7 @@ public class GridManager: MonoBehaviour
 	private float hexHeight;
 	private float groundWidth;
 	private float groundHeight;
+	private float groundOffset;
 
 	static Vector3 downmouseposition;
 	static bool draw=false;
@@ -59,6 +60,7 @@ public class GridManager: MonoBehaviour
 		hexWidth = Hex.GetComponent<Renderer>().bounds.size.x;
 		hexHeight = Hex.GetComponent<Renderer>().bounds.size.z;
 		groundWidth = Ground.GetComponent<Renderer>().bounds.size.x;
+		groundOffset = Ground.GetComponent<Renderer> ().transform.position.y;
 		groundHeight = Ground.GetComponent<Renderer>().bounds.size.z;
 	}
 
@@ -167,7 +169,7 @@ public class GridManager: MonoBehaviour
 		float x =  initPos.x + offset + gridPos.x * hexWidth;
 		float z = initPos.z - gridPos.y * hexHeight * 0.75f;
 		//If your ground is not a plane but a cube you might set the y coordinate to sth like groundDepth/2 + hexDepth/2
-		return new Vector3(x, 0, z);
+		return new Vector3(x, groundOffset, z);
 	}
 
 	void Start()
