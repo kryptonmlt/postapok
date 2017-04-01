@@ -97,6 +97,8 @@ public class CharacterMovement: MonoBehaviour
 				Destroy(collision.gameObject);
 				GridManager GM = GridManager.instance;
 				GM.DestroyPath ();
+				IsMoving = false;
+				switchOriginAndDestinationTiles();
 			}
 		}
 	}

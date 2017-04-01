@@ -77,35 +77,45 @@ public class GridManager: MonoBehaviour
 	}
 
 	void Update(){
-
-		if (Input.GetMouseButtonDown (0)) {
-			GridManager.downmouseposition = Input.mousePosition;
-			Debug.Log ("starting rectangle");
-			GridManager.draw = true;
-		} else if (Input.GetMouseButtonUp (0)) {
-			GridManager.draw = false;
-			Debug.Log ("stopping rectangle");
-			RaycastHit hit1;
-			Physics.Raycast(Camera.main.ScreenPointToRay(downmouseposition), out hit1);
-			Vector3 v1 = hit1.point;
-			RaycastHit hit2;
-			Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit2);
-			Vector3 v2 = hit2.point;
-			GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
-			foreach (GameObject unit in allUnits) {
-				Vector3 pos = unit.transform.position;
-				//is inside the box
-
-				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
-				    && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-					unitSelected.AddLast (unit);
-					Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
-					foreach (Renderer renderer in renderers) {
-						renderer.material.shader = selfIllumShader;
-					}
+		bool moving = false;
+		foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
+			if (active != null) {
+				CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
+				if (characterAction.IsMoving == true) {
+					moving = characterAction.IsMoving;
 				}
 			}
 		}
+			if (Input.GetMouseButtonDown (0)) {
+				GridManager.downmouseposition = Input.mousePosition;
+				Debug.Log ("starting rectangle");
+				GridManager.draw = true;
+			} else if (Input.GetMouseButtonUp (0)) {
+				GridManager.draw = false;
+				Debug.Log ("stopping rectangle");
+				RaycastHit hit1;
+				Physics.Raycast (Camera.main.ScreenPointToRay (downmouseposition), out hit1);
+				Vector3 v1 = hit1.point;
+				RaycastHit hit2;
+				Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit2);
+				Vector3 v2 = hit2.point;
+				GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
+				foreach (GameObject unit in allUnits) {
+					Vector3 pos = unit.transform.position;
+					//is inside the box
+
+					if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
+					   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
+					if (moving == false) {
+						unitSelected.AddLast (unit);
+						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+						foreach (Renderer renderer in renderers) {
+							renderer.material.shader = selfIllumShader;
+						}
+					}	
+					}
+				}
+			}
 	}
 
 	//The method used to calculate the number hexagons in a row and number of rows
