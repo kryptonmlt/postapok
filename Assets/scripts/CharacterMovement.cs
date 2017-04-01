@@ -93,11 +93,13 @@ public class CharacterMovement: MonoBehaviour
 		if (collision.collider.CompareTag("Unit")) {
 			if (gameObject.activeSelf) {
 				// Disable the other gameObject we've collided with, then flag to destroy it
-				//collision.gameObject.SetActive(false);
+				collision.gameObject.SetActive(false);
+				CharacterMovement characterAction = (CharacterMovement)collision.gameObject.GetComponent (typeof(CharacterMovement));
+				characterAction.IsMoving = false;
+				IsMoving = false;
 				Destroy(collision.gameObject);
 				GridManager GM = GridManager.instance;
 				GM.DestroyPath ();
-				IsMoving = false;
 				switchOriginAndDestinationTiles();
 			}
 		}
