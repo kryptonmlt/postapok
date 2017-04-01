@@ -6,10 +6,6 @@ public class MouseLook : MonoBehaviour {
 	float ScrollSpeed = 15f;
 	float ScrollEdge = 0.01f;
 
-	private int HorizontalScroll = 1;
-	private int VerticalScroll = 1;
-	private int DiagonalScroll = 1;
-
 	float PanSpeed = 10f;
 
 	Vector2 ZoomRange = new Vector2(-10,10);

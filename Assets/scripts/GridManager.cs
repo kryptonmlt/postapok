@@ -38,7 +38,13 @@ public class GridManager: MonoBehaviour
 	private float groundWidth;
 	private float groundHeight;
 
-	public static GameObject unitSelected=null;
+	static Vector3 downmouseposition;
+	static bool draw=false;
+
+	private Texture2D rectangleTexture;
+	public float fAlpha=0.25f;
+
+	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
@@ -56,41 +62,76 @@ public class GridManager: MonoBehaviour
 		groundHeight = Ground.GetComponent<Renderer>().bounds.size.z;
 	}
 
+	void OnGUI() {
+		if (GridManager.draw == true) {
+			Color colPreviousGUIColor = GUI.color;
+			GUI.color = new Color(colPreviousGUIColor.r, colPreviousGUIColor.g, colPreviousGUIColor.b, fAlpha);
+			GUI.DrawTexture (new Rect (downmouseposition.x, Screen.height-downmouseposition.y, Input.mousePosition.x - downmouseposition.x, downmouseposition.y-Input.mousePosition.y), rectangleTexture);
+			GUI.color = colPreviousGUIColor;
+		}
+	}
+
 	void Update(){
 
-		if (Input.GetMouseButtonDown(0))
-		{
-			Debug.Log("Mouse is down");
+		if (Input.GetMouseButtonDown (0)) {
+			GridManager.downmouseposition = Input.mousePosition;
+			Debug.Log ("starting rectangle");
+			GridManager.draw = true;
+		} else if (Input.GetMouseButtonUp (0)) {
+			GridManager.draw = false;
+			Debug.Log ("stopping rectangle");
+			RaycastHit hit1;
+			Physics.Raycast(Camera.main.ScreenPointToRay(downmouseposition), out hit1);
+			Vector3 v1 = hit1.point;
+			RaycastHit hit2;
+			Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit2);
+			Vector3 v2 = hit2.point;
+			GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
+			foreach (GameObject unit in allUnits) {
+				Vector3 pos = unit.transform.position;
+				//is inside the box
 
-			RaycastHit hitInfo = new RaycastHit();
-			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
-			if (hit) 
-			{
-				Debug.Log("Hit " + hitInfo.transform.gameObject.name);
-				if (hitInfo.transform.gameObject.tag == "Unit")
-				{	
-					if (GridManager.unitSelected == null) {
-						GridManager.unitSelected = hitInfo.transform.gameObject;
-						Debug.Log ("Unit Selected");
-					} else if (GridManager.unitSelected == hitInfo.transform.gameObject) {
-						GridManager.unitSelected = null;
-						Debug.Log ("Unit Deselected");
-					}
-						
-				} else {
-					Debug.Log ("Not a Unit");
+				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
+				    && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
+					unitSelected.AddLast (unit);
 				}
-			} else {
-				Debug.Log("No hit");
 			}
-			Debug.Log("Mouse is down");
-		} 
+		}
+
+
+
+//		if (Input.GetMouseButtonDown(0))
+//		{
+//			Debug.Log("Mouse is down");
+//
+//			RaycastHit hitInfo = new RaycastHit();
+//			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
+//			if (hit) 
+//			{
+//				Debug.Log("Hit " + hitInfo.transform.gameObject.name);
+//				if (hitInfo.transform.gameObject.tag == "Unit")
+//				{	
+//					if (GridManager.unitSelected == null) {
+//						GridManager.unitSelected = hitInfo.transform.gameObject;
+//						Debug.Log ("Unit Selected");
+//					} else if (GridManager.unitSelected == hitInfo.transform.gameObject) {
+//						GridManager.unitSelected = null;
+//						Debug.Log ("Unit Deselected");
+//					}
+//						
+//				} else {
+//					Debug.Log ("Not a Unit");
+//				}
+//			} else {
+//				Debug.Log("No hit");
+//			}
+//			Debug.Log("Mouse is down");
+//		} 
 	}
 
 	//The method used to calculate the number hexagons in a row and number of rows
 	//Vector2.x is gridWidthInHexes and Vector2.y is gridHeightInHexes
-	Vector2 calcGridSize()
-	{
+	Vector2 calcGridSize(){
 		//According to the math textbook hexagon's side length is half of the height
 		float sideLength = hexHeight / 2;
 		//the number of whole hex sides that fit inside inside ground height
@@ -131,6 +172,10 @@ public class GridManager: MonoBehaviour
 
 	void Start()
 	{
+		rectangleTexture= new Texture2D (1, 1);
+		rectangleTexture.SetPixel (0, 0, Color.black);
+		rectangleTexture.Apply();
+
 		setSizes();
 		createGrid();
 		generateAndShowPath();
@@ -250,18 +295,21 @@ public class GridManager: MonoBehaviour
 	}
 
 	public void generateAndShowPath()
-	{
-		if (GridManager.unitSelected != null) {
+	{	
+		foreach(GameObject unit in GridManager.unitSelected) {
+			if (unit!=null) {
 			//Don't do anything if origin or destination is not defined yet
-			if (originTileTB [GridManager.unitSelected.name] == null || destTileTB == null) {
+			if (originTileTB [unit.name] == null || destTileTB == null) {
 				DrawPath (new List<Tile> ());
 				return;
 			}
 
-			var path = PathFinder.FindPath (originTileTB [GridManager.unitSelected.name].tile, destTileTB.tile);
+			var path = PathFinder.FindPath (originTileTB [unit.name].tile, destTileTB.tile);
 			DrawPath (path);
-			CharacterMovement characterAction = (CharacterMovement)GridManager.unitSelected.GetComponent (typeof(CharacterMovement));
+			CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 			characterAction.StartMoving (path.ToList ());
+			}
 		}
+		GridManager.unitSelected = new LinkedList<GameObject> ();
 	}
 }
