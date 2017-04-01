@@ -64,9 +64,13 @@ public class TileBehaviour: MonoBehaviour
 				//		}
 				//if user left-clicks the tile
 				bool moving = false;
-				if (unit != null) {
-					CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-					moving = characterAction.IsMoving;
+				foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
+					if (active != null) {
+						CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
+						if (characterAction.IsMoving == true) {
+							moving = characterAction.IsMoving;
+						}
+					}
 				}
 				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
 					tile.Passable = true;

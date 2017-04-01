@@ -77,15 +77,7 @@ public class GridManager: MonoBehaviour
 	}
 
 	void Update(){
-		bool moving = false;
-		foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
-			if (active != null) {
-				CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
-				if (characterAction.IsMoving == true) {
-					moving = characterAction.IsMoving;
-				}
-			}
-		}
+		
 			if (Input.GetMouseButtonDown (0)) {
 				GridManager.downmouseposition = Input.mousePosition;
 				Debug.Log ("starting rectangle");
@@ -103,16 +95,13 @@ public class GridManager: MonoBehaviour
 				foreach (GameObject unit in allUnits) {
 					Vector3 pos = unit.transform.position;
 					//is inside the box
-
 					if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 					   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-					if (moving == false) {
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
 							renderer.material.shader = selfIllumShader;
 						}
-					}	
 					}
 				}
 			}
