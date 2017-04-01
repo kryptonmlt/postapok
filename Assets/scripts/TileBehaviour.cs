@@ -81,7 +81,7 @@ public class TileBehaviour: MonoBehaviour
 				}
 				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
 					tile.Passable = true;
-
+					changeColor (temptilecolour);
 					TileBehaviour originTileTB = GridManager.instance.getOriginTileTB () [unit.name];
 					//if user clicks on origin tile or origin tile is not assigned yet
 					if (this == originTileTB || originTileTB == null)
@@ -99,18 +99,18 @@ public class TileBehaviour: MonoBehaviour
 	{	
 		foreach (GameObject unit in GridManager.unitSelected) {
 			
-			if (unit != null) {
-				var originTileTB = GridManager.instance.getOriginTileTB () [unit.name];
-				//deselect origin tile if user clicks on current origin tile
-				if (this == originTileTB) {	
-					GridManager.instance.getOriginTileTB () [unit.name] = null;
-					GetComponent<Renderer> ().material = defaultMaterial;
-					return;
-				}
-				//if origin tile is not specified already mark this tile as origin
-				GridManager.instance.getOriginTileTB () [unit.name] = this;
-				changeColor (Color.green);
-			}
+//			if (unit != null) {
+//				var originTileTB = GridManager.instance.getOriginTileTB () [unit.name];
+//				//deselect origin tile if user clicks on current origin tile
+//				if (this == originTileTB) {	
+//					GridManager.instance.getOriginTileTB () [unit.name] = null;
+//					GetComponent<Renderer> ().material = defaultMaterial;
+//					return;
+//				}
+//				//if origin tile is not specified already mark this tile as origin
+//				GridManager.instance.getOriginTileTB () [unit.name] = this;
+//				changeColor (Color.green);
+//			}
 		}
 	}
 
@@ -118,16 +118,16 @@ public class TileBehaviour: MonoBehaviour
 	{
 		var destTile = GridManager.instance.destTileTB;
 		//deselect destination tile if user clicks on current destination tile
-		if (this == destTile)
-		{
-			GridManager.instance.destTileTB = null;
-			GetComponent<Renderer>().material.color = orange;
-			return;
-		}
+		//if (this == destTile)
+		//{
+			//GridManager.instance.destTileTB = null;
+			//GetComponent<Renderer>().material.color = temptilecolour;
+			//return;
+		//}
 		//if there was other tile marked as destination, change its material to default (fully transparent) one
 		if (destTile != null)
 			destTile.GetComponent<Renderer>().material = defaultMaterial;
 		GridManager.instance.destTileTB = this;
-		changeColor(Color.green);
+		//changeColor(Color.green);
 	}
 }
