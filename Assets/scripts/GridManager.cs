@@ -39,6 +39,9 @@ public class GridManager: MonoBehaviour
 	private float groundHeight;
 	private float groundOffset;
 
+	private Shader selfIllumShader;
+	private Shader standardShader;
+
 	static Vector3 downmouseposition;
 	static bool draw=false;
 
@@ -96,6 +99,10 @@ public class GridManager: MonoBehaviour
 				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 				    && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
 					unitSelected.AddLast (unit);
+					Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+					foreach (Renderer renderer in renderers) {
+						renderer.material.shader = selfIllumShader;
+					}
 				}
 			}
 		}
@@ -177,7 +184,8 @@ public class GridManager: MonoBehaviour
 		rectangleTexture= new Texture2D (1, 1);
 		rectangleTexture.SetPixel (0, 0, Color.black);
 		rectangleTexture.Apply();
-
+		selfIllumShader = Shader.Find("Outlined/Silhouetted Bumped Diffuse");
+		standardShader = Shader.Find("Standard");
 		setSizes();
 		createGrid();
 		generateAndShowPath();
@@ -288,16 +296,22 @@ public class GridManager: MonoBehaviour
 	{	
 		foreach(GameObject unit in GridManager.unitSelected) {
 			if (unit!=null) {
-			//Don't do anything if origin or destination is not defined yet
-			if (originTileTB [unit.name] == null || destTileTB == null) {
-				DrawPath (new List<Tile> ());
-				return;
-			}
+				//Don't do anything if origin or destination is not defined yet
+				if (originTileTB [unit.name] == null || destTileTB == null) {
+					DrawPath (new List<Tile> ());
+					return;
+				}
 
-			var path = PathFinder.FindPath (originTileTB [unit.name].tile, destTileTB.tile);
-			DrawPath (path);
-			CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-			characterAction.StartMoving (path.ToList ());
+				var path = PathFinder.FindPath (originTileTB [unit.name].tile, destTileTB.tile);
+				DrawPath (path);
+				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
+				characterAction.StartMoving (path.ToList ());
+
+				//remove highlight
+				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+				foreach (Renderer renderer in renderers) {
+					renderer.material.shader = standardShader;
+				}
 			}
 		}
 		GridManager.unitSelected = new LinkedList<GameObject> ();
