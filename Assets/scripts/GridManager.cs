@@ -211,15 +211,11 @@ public class GridManager: MonoBehaviour
 				if (tTypeId > 3)
 					tTypeId = 4;
 				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[tTypeId]);
-				tb.changeColor(tb.tile.tilecolor);
+				tb.setTileMaterial(tb.tile.landType);
 				board.Add(tb.tile.Location, tb.tile);
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)
 				{
-					tb.GetComponent<Renderer>().material = tb.OpaqueMaterial;
-					Color red = Color.red;
-					red.a = 158f / 255f;
-					tb.GetComponent<Renderer>().material.color = red;
 					GameObject player1 = Instantiate (fanatic);
 					player1.name = "player1";
 					originTileTB.Add(player1.name,tb);
@@ -227,10 +223,6 @@ public class GridManager: MonoBehaviour
 				}
 				if (x == 2 && y == 3)
 				{
-					tb.GetComponent<Renderer>().material = tb.OpaqueMaterial;
-					Color red = Color.red;
-					red.a = 158f / 255f;
-					tb.GetComponent<Renderer>().material.color = red;
 					GameObject player2 = Instantiate (fanatic);
 					player2.name = "player2";
 					originTileTB.Add(player2.name,tb);
@@ -238,10 +230,6 @@ public class GridManager: MonoBehaviour
 				}
 				if (x == 6 && y == 7)
 				{
-					tb.GetComponent<Renderer>().material = tb.OpaqueMaterial;
-					Color red = Color.red;
-					red.a = 158f / 255f;
-					tb.GetComponent<Renderer>().material.color = red;
 					GameObject player3 = Instantiate (truck);
 					player3.name = "player3";
 					originTileTB.Add(player3.name,tb);

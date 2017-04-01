@@ -14,21 +14,13 @@ public enum LandType
 public class Tile: GridObject, IHasNeighbours<Tile>
 {
 	public bool Passable;
-	public Color tilecolor;
+	public LandType landType;
 
-	Dictionary<LandType, Color> TerrainColor = new Dictionary<LandType, Color>()
-	{
-		{LandType.Oasis,Color.blue},
-		{LandType.Junkyard,Color.red},
-		{LandType.OilField,Color.black},
-		{LandType.Desert,Color.yellow}
-	};
-
-	public Tile(int x, int y, LandType z)
+	public Tile(int x, int y, LandType landType)
 		: base(x, y)
 	{
 		Passable = true;
-		tilecolor = TerrainColor[z];
+		this.landType = landType;
 	}
 
 	public IEnumerable<Tile> AllNeighbours { get; set; }

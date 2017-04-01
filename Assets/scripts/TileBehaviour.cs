@@ -10,15 +10,15 @@ public class TileBehaviour: MonoBehaviour
 	public Material defaultMaterial;
 	//Slightly transparent orange
 	Color orange = new Color(255f / 255f, 127f / 255f, 0, 127f/255f);
-	Color temptilecolour;
 
 	public void changeColor(Color color)
 	{
-		//If transparency is not set already, set it to default value
-		if (color.a == 1)
-			color.a = 130f / 255f;
-		GetComponent<Renderer>().material = OpaqueMaterial;
-		GetComponent<Renderer>().material.color = color;
+		GetComponent<Renderer> ().material.color = color;
+	}
+
+	public void setTileMaterial(LandType type)
+	{
+		GetComponent<Renderer> ().material = type.getMaterial();
 	}
 
 	//IMPORTANT: for methods like OnMouseEnter, OnMouseExit and so on to work, collider (Component -> Physics -> Mesh Collider) should be attached to the prefab
@@ -28,7 +28,6 @@ public class TileBehaviour: MonoBehaviour
 			
 			if (unit != null) {
 				GridManager.instance.selectedTile = tile;
-				temptilecolour = tile.tilecolor;
 				//when mouse is over some tile, the tile is passable and the current tile is neither destination nor origin tile, change color to orange
 				if (tile.Passable && this != GridManager.instance.destTileTB
 				   && this != GridManager.instance.getOriginTileTB () [unit.name]) {
@@ -47,7 +46,7 @@ public class TileBehaviour: MonoBehaviour
 				GridManager.instance.selectedTile = null;
 				if (tile.Passable && this != GridManager.instance.destTileTB
 				   && this != GridManager.instance.getOriginTileTB () [unit.name]) {
-					changeColor (temptilecolour);
+					changeColor (Color.white);
 				}
 			}
 		}
@@ -81,7 +80,7 @@ public class TileBehaviour: MonoBehaviour
 				}
 				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
 					tile.Passable = true;
-					changeColor (temptilecolour);
+					changeColor (Color.white);
 					TileBehaviour originTileTB = GridManager.instance.getOriginTileTB () [unit.name];
 					//if user clicks on origin tile or origin tile is not assigned yet
 					if (this == originTileTB || originTileTB == null)
