@@ -60,12 +60,9 @@ public class CharacterMovement: MonoBehaviour
 	void switchOriginAndDestinationTiles()
 	{
 		GridManager GM = GridManager.instance;
-		//Material originMaterial = GM.getOriginTileTB()[m_character.getName()].GetComponent<Renderer>().material;
-		//GM.getOriginTileTB()[m_character.getName()].GetComponent<Renderer>().material = GM.destTileTB.defaultMaterial;
+		GM.DestroyPath();
 		GM.getOriginTileTB()[m_character.getName()] = GM.destTileTB;
-		//GM.getOriginTileTB()[m_character.getName()].GetComponent<Renderer>().material = originMaterial;
 		GM.destTileTB = null;
-		GM.generateAndShowPath();
 	}
 
 	void Update()

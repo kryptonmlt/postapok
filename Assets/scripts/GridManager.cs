@@ -273,10 +273,8 @@ public class GridManager: MonoBehaviour
 	{
 		if (this.path == null)
 			this.path = new List<GameObject>();
-		//Destroy game objects which used to indicate the path
-		this.path.ForEach(Destroy);
-		this.path.Clear();
-
+		
+		DestroyPath();
 		//Lines game object is used to hold all the "Line" game objects indicating the path
 		GameObject lines = GameObject.Find("Lines");
 		if (lines == null)
@@ -290,6 +288,14 @@ public class GridManager: MonoBehaviour
 			this.path.Add(line);
 			line.transform.parent = lines.transform;
 		}
+	}
+
+	public void DestroyPath(){
+	
+		//Destroy game objects which used to indicate the path
+		this.path.ForEach(Destroy);
+		this.path.Clear();
+	
 	}
 
 	public void generateAndShowPath()

@@ -60,17 +60,7 @@ public class TileBehaviour: MonoBehaviour
 				
 				//if player right-clicks on the tile, toggle passable variable and change the color accordingly
 				//		if (Input.GetMouseButtonUp(1))
-				//		{
-				//			if (this == GridManager.instance.destTileTB ||
-				//				this == GridManager.instance.originTileTB)
-				//				return;
-				//			tile.Passable = !tile.Passable;
-				//			if (!tile.Passable)
-				//				changeColor(Color.gray);
-				//			else
-				//				changeColor(orange);
-				//
-				//			GridManager.instance.generateAndShowPath();
+				//		{		
 				//		}
 				//if user left-clicks the tile
 				bool moving = false;
@@ -98,18 +88,7 @@ public class TileBehaviour: MonoBehaviour
 	{	
 		foreach (GameObject unit in GridManager.unitSelected) {
 			
-//			if (unit != null) {
-//				var originTileTB = GridManager.instance.getOriginTileTB () [unit.name];
-//				//deselect origin tile if user clicks on current origin tile
-//				if (this == originTileTB) {	
-//					GridManager.instance.getOriginTileTB () [unit.name] = null;
-//					GetComponent<Renderer> ().material = defaultMaterial;
-//					return;
-//				}
-//				//if origin tile is not specified already mark this tile as origin
-//				GridManager.instance.getOriginTileTB () [unit.name] = this;
-//				changeColor (Color.green);
-//			}
+
 		}
 	}
 
