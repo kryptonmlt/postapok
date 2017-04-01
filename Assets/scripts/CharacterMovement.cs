@@ -60,9 +60,7 @@ public class CharacterMovement: MonoBehaviour
 	void switchOriginAndDestinationTiles()
 	{
 		GridManager GM = GridManager.instance;
-		if (GM.isEmptyPath()==false) {
-			GM.DestroyPath ();
-		}
+		GM.DestroyPath ();
 		GM.getOriginTileTB()[m_character.getName()] = GM.destTileTB;
 		GM.destTileTB = null;
 	}
@@ -92,7 +90,15 @@ public class CharacterMovement: MonoBehaviour
 
 	void OnCollisionEnter(Collision collision)
 	{
-		Debug.Log ("Error");
+		if (collision.collider.CompareTag("Unit")) {
+			if (gameObject.activeSelf) {
+				// Disable the other gameObject we've collided with, then flag to destroy it
+				collision.gameObject.SetActive(false);
+				Destroy(collision.gameObject);
+				GridManager GM = GridManager.instance;
+				GM.DestroyPath ();
+			}
+		}
 	}
 
 	void MoveTowards(Vector3 position)

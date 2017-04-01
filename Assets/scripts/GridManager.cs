@@ -269,7 +269,7 @@ public class GridManager: MonoBehaviour
 	}
 
 	public bool isEmptyPath(){
-		if (this.path != null)
+		if (this.path == null)
 			return true;
 		else return false;
 	}
