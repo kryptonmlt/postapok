@@ -13,6 +13,8 @@ public class GridManager: MonoBehaviour
 
 	public GameObject fanatic;
 	public GameObject truck;
+	public GameObject car;
+	public GameObject bike;
 
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
@@ -195,24 +197,19 @@ public class GridManager: MonoBehaviour
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)
 				{
-					GameObject player1 = Instantiate (fanatic);
-					player1.name = "player1";
-					originTileTB.Add(player1.name,tb);
-					player1.transform.position = tb.transform.position;
+					createObject(tb,fanatic, "player1");
 				}
 				if (x == 2 && y == 3)
 				{
-					GameObject player2 = Instantiate (fanatic);
-					player2.name = "player2";
-					originTileTB.Add(player2.name,tb);
-					player2.transform.position = tb.transform.position;
+					createObject(tb,fanatic, "player2");
+				}
+				if (x == 4 && y == 5)
+				{
+					createObject (tb, car, "player3");
 				}
 				if (x == 6 && y == 7)
 				{
-					GameObject player3 = Instantiate (truck);
-					player3.name = "player3";
-					originTileTB.Add(player3.name,tb);
-					player3.transform.position = tb.transform.position;
+					createObject (tb, truck, "player4");
 				}
 			}
 		}
@@ -222,6 +219,13 @@ public class GridManager: MonoBehaviour
 		//Neighboring tile coordinates of all the tiles are calculated
 		foreach(Tile tile in board.Values)
 			tile.FindNeighbours(board, gridSize, equalLineLengths);
+	}
+
+	private void createObject(TileBehaviour tb,GameObject obj, string name){
+		GameObject go = Instantiate (obj);
+		go.name = name;
+		originTileTB.Add(go.name,tb);
+		go.transform.position = tb.transform.position;
 	}
 
 	//Distance between destination tile and some other tile in the grid
