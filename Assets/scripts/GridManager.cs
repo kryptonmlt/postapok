@@ -16,6 +16,8 @@ public class GridManager: MonoBehaviour
 	public GameObject car;
 	public GameObject bike;
 
+	Dictionary<String, GameObject> gameobjects = new Dictionary<String, GameObject> ();
+	public GameObject go1;
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
 	//TB of the tile which is the start of the path
@@ -76,6 +78,10 @@ public class GridManager: MonoBehaviour
 			GUI.DrawTexture (new Rect (downmouseposition.x, Screen.height-downmouseposition.y, Input.mousePosition.x - downmouseposition.x, downmouseposition.y-Input.mousePosition.y), rectangleTexture);
 			GUI.color = colPreviousGUIColor;
 		}
+		Vector2 targetPos;
+		targetPos = Camera.main.WorldToScreenPoint (gameobjects["player1"].transform.position);
+		GUI.Box(new Rect(targetPos.x, Screen.height- targetPos.y, 20, 20), "1");
+
 	}
 
 	void Update(){
@@ -197,7 +203,7 @@ public class GridManager: MonoBehaviour
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)
 				{
-					createObject(tb,fanatic, "player1");
+					gameobjects.Add("player1",createObject(tb,fanatic, "player1"));
 				}
 				if (x == 2 && y == 3)
 				{
@@ -221,11 +227,12 @@ public class GridManager: MonoBehaviour
 			tile.FindNeighbours(board, gridSize, equalLineLengths);
 	}
 
-	private void createObject(TileBehaviour tb,GameObject obj, string name){
+	private GameObject createObject(TileBehaviour tb,GameObject obj, string name){
 		GameObject go = Instantiate (obj);
 		go.name = name;
 		originTileTB.Add(go.name,tb);
 		go.transform.position = tb.transform.position;
+		return go;
 	}
 
 	//Distance between destination tile and some other tile in the grid
