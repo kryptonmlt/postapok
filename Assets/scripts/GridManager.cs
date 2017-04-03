@@ -82,7 +82,8 @@ public class GridManager: MonoBehaviour
 		foreach (GameObject go in gameobjects) {
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
-				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "1");
+				CharacterMovement characterAction = (CharacterMovement)go.GetComponent(typeof(CharacterMovement));
+				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), characterAction.quantity.ToString());
 			}
 		}
 

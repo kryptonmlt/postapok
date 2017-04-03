@@ -12,6 +12,7 @@ public class CharacterMovement: MonoBehaviour
 	public static float MinNextTileDist = 0.07f;
 
 	private MovingObject m_character;
+	public int quantity = 1;
 	//position of the tile we are heading to
 	Vector3 curTilePos;
 	Tile curTile;
@@ -100,6 +101,7 @@ public class CharacterMovement: MonoBehaviour
 				Destroy(collision.gameObject);
 				GridManager GM = GridManager.instance;
 				GM.DestroyPath ();
+				quantity += 1;
 				switchOriginAndDestinationTiles();
 			}
 		}
