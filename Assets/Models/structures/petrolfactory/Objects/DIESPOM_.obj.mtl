@@ -1,0 +1,226 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.187496374)
+
+newmtl escalones-torret
+Kd 0.631373 0.478431 0.431373
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 0.95
+Ns 80
+illum 2
+bump DIESIMEX.JPG
+map_bump DIESIMEX.JPG
+
+newmtl suelo
+Kd 0.580392 0.580392 0.580392
+Ka 0.101961 0.101961 0.101961
+Ks 0 0 0
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESSUVM.JPG
+map_d DIESFLOB.JPG
+
+newmtl uralita
+Kd 0.0392157 0.0392157 0.0392157
+Ka 0 0 0
+Ks 0 0 0
+Ke 0 0 0
+d 1
+illum 1
+map_Kd DIESURAT.JPG
+bump DIESURAT.JPG
+map_bump DIESURAT.JPG
+
+newmtl madera-caseta
+Kd 0.345098 0.333333 0.270588
+Ka 0 0 0
+Ks 1 1 1
+Ke 0.02 0.02 0.02
+d 1
+Ns 40
+illum 2
+map_Kd DIESTAVT.JPG
+bump DIESTABB.JPG
+map_bump DIESTABB.JPG
+
+newmtl barandilla
+Kd 0.701961 0.682353 0.623529
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 80
+illum 2
+
+newmtl escaleras-muro
+Kd 0.435294 0.262745 0.219608
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 80
+illum 2
+
+newmtl escaleras-mur1
+Kd 0.631373 0.478431 0.431373
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 80
+illum 2
+
+newmtl casetas-delan
+Kd 0.85098 0.843137 0.811765
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESTABT.JPG
+
+newmtl barandilla v
+Kd 0.764706 0.752941 0.698039
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 82
+illum 2
+
+newmtl tuberia
+Kd 0.745098 0.72549 0.658824
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 80
+illum 2
+
+newmtl mesa-silla
+Kd 0.811765 0.803922 0.729412
+Ka 0.101961 0.101961 0.101961
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 36
+illum 2
+map_Kd DIESWOOT.JPG
+
+newmtl deposito-horiz
+Kd 0.372549 0.356863 0.301961
+Ka 0.0627451 0.0627451 0.0627451
+Ks 0 0 0
+Ke 0 0 0
+d 1
+Ns 100
+illum 2
+map_Kd DIESSUVT.JPG
+
+newmtl deposito-vertica
+Kd 0.372549 0.360784 0.301961
+Ka 0.0627451 0.0627451 0.0627451
+Ks 0 0 0
+Ke 0 0 0
+d 1
+Ns 100
+illum 2
+map_Kd DIESSUVT.JPG
+
+newmtl ventanas-casetas
+Kd 0.74902 0.713726 0.639216
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 0
+Ns 100
+illum 2
+
+newmtl bisagra
+Kd 0.8 0.8 0.792157
+Ka 0.0980392 0.0980392 0.0980392
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+Ns 82
+illum 2
+bump DIESBISB.JPG
+map_bump DIESBISB.JPG
+
+newmtl Material #65
+Kd 0.701961 0.690196 0.603922
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESMDIT.JPG
+
+newmtl Material #66
+Kd 0.701961 0.690196 0.603922
+Ka 0.0980392 0.0980392 0.0980392
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESMCHT.JPG
+
+newmtl Material #62
+Kd 0.698039 0.698039 0.698039
+Ka 0.0980392 0.0980392 0.0980392
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESTAVT.JPG
+bump DIESTABB.JPG
+map_bump DIESTABB.JPG
+
+newmtl JoinedMaterial_#19
+Kd 0.698039 0.698039 0.698039
+Ka 0.0980392 0.0980392 0.0980392
+Ks 0.898039 0.898039 0.898039
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESTAVT.JPG
+
+newmtl muros
+Kd 0.541176 0.537255 0.52549
+Ka 0.0980392 0.0980392 0.0980392
+Ks 0 0 0
+Ke 0 0 0
+d 1
+Ns 40
+illum 2
+map_Kd DIESSUVM.JPG
+bump DIESWALB.JPG
+map_bump DIESWALB.JPG
+
+newmtl tejas
+Kd 0.627451 0.384314 0.317647
+Ka 0 0 0
+Ks 1 1 1
+Ke 0 0 0
+d 1
+Ns 100
+illum 2
+bump DIESTEJT.JPG
+map_bump DIESTEJT.JPG
+
+newmtl %%%DEFAULT
+Kd 0.3 0.3 0.3
+Ka 0 0 0
+Ks 0 0 0
+Ke 0 0 0
+d 1
+illum 1
+
