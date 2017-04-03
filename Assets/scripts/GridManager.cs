@@ -16,8 +16,8 @@ public class GridManager: MonoBehaviour
 	public GameObject car;
 	public GameObject bike;
 
-	Dictionary<String, GameObject> gameobjects = new Dictionary<String, GameObject> ();
-	public GameObject go1;
+	public LinkedList<GameObject> gameobjects = new LinkedList<GameObject> ();
+
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
 	//TB of the tile which is the start of the path
@@ -79,8 +79,10 @@ public class GridManager: MonoBehaviour
 			GUI.color = colPreviousGUIColor;
 		}
 		Vector2 targetPos;
-		targetPos = Camera.main.WorldToScreenPoint (gameobjects["player1"].transform.position);
-		GUI.Box(new Rect(targetPos.x, Screen.height- targetPos.y, 20, 20), "1");
+		foreach (GameObject go in gameobjects) {
+			targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
+			GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "1");
+		}
 
 	}
 
@@ -203,19 +205,19 @@ public class GridManager: MonoBehaviour
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)
 				{
-					gameobjects.Add("player1",createObject(tb,fanatic, "player1"));
+					gameobjects.AddLast(createObject(tb,fanatic, "player1"));
 				}
 				if (x == 2 && y == 3)
 				{
-					createObject(tb,fanatic, "player2");
+					gameobjects.AddLast(createObject(tb,fanatic, "player2"));
 				}
 				if (x == 4 && y == 5)
 				{
-					createObject (tb, car, "player3");
+					gameobjects.AddLast(createObject (tb, car, "player3"));
 				}
 				if (x == 6 && y == 7)
 				{
-					createObject (tb, truck, "player4");
+					gameobjects.AddLast(createObject (tb, truck, "player4"));
 				}
 			}
 		}
