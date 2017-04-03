@@ -80,8 +80,10 @@ public class GridManager: MonoBehaviour
 		}
 		Vector2 targetPos;
 		foreach (GameObject go in gameobjects) {
-			targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
-			GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "1");
+			if (go != null) {
+				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
+				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "1");
+			}
 		}
 
 	}
