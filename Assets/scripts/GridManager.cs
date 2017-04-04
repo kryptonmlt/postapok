@@ -119,12 +119,12 @@ public class GridManager: MonoBehaviour
 				Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit2);
 				Vector3 v2 = hit2.point;
 				GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
+				unitSelected.Clear ();
 				foreach (GameObject unit in allUnits) {
 					Vector3 pos = unit.transform.position;
 					//is inside the box
 					if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 					   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-						unitSelected.Clear ();
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
@@ -223,19 +223,19 @@ public class GridManager: MonoBehaviour
 				//Mark originTile as the tile with (0,0) coordinates
 				if (x == 0 && y == 0)
 				{
-					gameobjects.AddLast(createObject(tb,fanatic, "player1"));
+					gameobjects.AddLast(createObject(tb,fanatic, "player1",1));
 				}
 				if (x == 2 && y == 3)
 				{
-					gameobjects.AddLast(createObject(tb,fanatic, "player2"));
+					gameobjects.AddLast(createObject(tb,fanatic, "player2",1));
 				}
 				if (x == 4 && y == 5)
 				{
-					gameobjects.AddLast(createObject (tb, car, "player3"));
+					gameobjects.AddLast(createObject (tb, car, "player3",2));
 				}
 				if (x == 6 && y == 7)
 				{
-					gameobjects.AddLast(createObject (tb, truck, "player4"));
+					gameobjects.AddLast(createObject (tb, truck, "player4",1));
 				}
 			}
 		}
@@ -247,11 +247,32 @@ public class GridManager: MonoBehaviour
 			tile.FindNeighbours(board, gridSize, equalLineLengths);
 	}
 
-	private GameObject createObject(TileBehaviour tb,GameObject obj, string name){
+	private GameObject createObject(TileBehaviour tb,GameObject obj, string name, int id){
 		GameObject go = Instantiate (obj);
 		go.name = name;
 		originTileTB.Add(go.name,tb);
 		go.transform.position = tb.transform.position;
+		GOProperties gop = (GOProperties) go.GetComponent (typeof(GOProperties));
+		gop.setPId (id);
+		String type = obj.ToString ();
+		switch (type)
+		{
+		case "fanatic":
+			gop.setAV(1);
+			gop.setDV(1);
+			gop.setMV(1);
+			break;
+		case "car":
+			gop.setAV(2);
+			gop.setDV(2);
+			gop.setMV(2);
+			break;
+		case "truck":
+			gop.setAV(3);
+			gop.setDV(3);
+			gop.setMV(2);
+			break;
+		}
 		return go;
 	}
 

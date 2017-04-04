@@ -98,10 +98,27 @@ public class CharacterMovement: MonoBehaviour
 				CharacterMovement characterAction = (CharacterMovement)collision.gameObject.GetComponent (typeof(CharacterMovement));
 				characterAction.IsMoving = false;
 				IsMoving = false;
-				Destroy(collision.gameObject);
-				GridManager GM = GridManager.instance;
-				GM.DestroyPath ();
-				quantity += 1;
+				GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
+				GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
+				if (gop.PlayerId == gopE.PlayerId) {
+					Destroy (collision.gameObject);
+					GridManager GM = GridManager.instance;
+					GM.DestroyPath ();
+					quantity += 1;
+				} else {
+					Destroy (collision.gameObject);
+					GridManager GM = GridManager.instance;
+					GM.DestroyPath ();
+				}
+//				} else if (gop.AttackValue * quantity > gopE.DefenseValue * characterAction.quantity) {
+//					Destroy (collision.gameObject);
+//					GridManager GM = GridManager.instance;
+//					GM.DestroyPath ();
+//				} else {
+//					Destroy (this.gameObject);
+//					GridManager GM = GridManager.instance;
+//					GM.DestroyPath ();
+//				}
 				switchOriginAndDestinationTiles();
 			}
 		}
