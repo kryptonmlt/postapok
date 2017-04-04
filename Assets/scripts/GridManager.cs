@@ -118,7 +118,6 @@ public class GridManager: MonoBehaviour
 			GameObject selected = hitInfo.transform.gameObject;;
 			if (hit) {
 				if (hitInfo.transform.gameObject.tag == "Unit") {
-					deSelect ();
 					unitSelected.AddLast (hitInfo.transform.gameObject);
 					Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
 					foreach (Renderer renderer in renderers) {
@@ -364,6 +363,6 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-		GridManager.unitSelected = new LinkedList<GameObject> ();
+		deSelect ();
 	}
 }
