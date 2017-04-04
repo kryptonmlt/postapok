@@ -106,11 +106,11 @@ public class GridManager: MonoBehaviour
 			}
 		}
 		
-		if (Input.GetMouseButtonDown (0)& !unitSelected.Any()) {
+		if (Input.GetMouseButtonDown (0) & !unitSelected.Any()) {
 			GridManager.downmouseposition = Input.mousePosition;
 			GridManager.draw = true;
 			
-		} else if (Input.GetMouseButtonUp (0)) {
+		} else if (Input.GetMouseButtonUp (0) & !unitSelected.Any()) {
 
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit();
