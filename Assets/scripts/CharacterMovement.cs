@@ -78,7 +78,7 @@ public class CharacterMovement: MonoBehaviour
 			//if we reached the destination tile
 			if (path.IndexOf(curTile) == 0)
 			{
-				IsMoving = false;
+				IsMoving = false; 
 				switchOriginAndDestinationTiles();
 				return;
 			}
@@ -100,25 +100,16 @@ public class CharacterMovement: MonoBehaviour
 				IsMoving = false;
 				GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
 				GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
-				if (gop.PlayerId == gopE.PlayerId) {
-					Destroy (collision.gameObject);
-					GridManager GM = GridManager.instance;
-					GM.DestroyPath ();
-					quantity += 1;
-				} else {
-					Destroy (collision.gameObject);
-					GridManager GM = GridManager.instance;
-					GM.DestroyPath ();
-				}
+				//if (gop.PlayerId == gopE.PlayerId) {
+				Destroy (collision.gameObject);
+				GridManager GM = GridManager.instance;
+				GM.DestroyPath ();
+				quantity += 1;
 //				} else if (gop.AttackValue * quantity > gopE.DefenseValue * characterAction.quantity) {
 //					Destroy (collision.gameObject);
 //					GridManager GM = GridManager.instance;
 //					GM.DestroyPath ();
-//				} else {
-//					Destroy (this.gameObject);
-//					GridManager GM = GridManager.instance;
-//					GM.DestroyPath ();
-//				}
+//				} 
 				switchOriginAndDestinationTiles();
 			}
 		}

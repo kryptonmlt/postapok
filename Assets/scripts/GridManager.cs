@@ -90,49 +90,59 @@ public class GridManager: MonoBehaviour
 	}
 
 	void Update(){
-		
-			if (Input.GetMouseButtonDown (0)) {
-				GridManager.downmouseposition = Input.mousePosition;
-				GridManager.draw = true;
-				
-			} else if (Input.GetMouseButtonUp (0)) {
 
-				// Single hit 
-				RaycastHit hitInfo = new RaycastHit();
-				bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
-				if (hit) {
-					Debug.Log ("Hit " + hitInfo.transform.gameObject.name);
-					if (hitInfo.transform.gameObject.tag == "Unit") {
-						unitSelected.AddLast (hitInfo.transform.gameObject);
-						Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
-						foreach (Renderer renderer in renderers) {
-							renderer.material.shader = selfIllumShader;
-						}
-					}
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			unitSelected.Clear ();
+			GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
+			foreach (GameObject unit in allUnits) {
+				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+				foreach (Renderer renderer in renderers) {
+					renderer.material.shader = standardShader;
 				}
-				// Rectangular hit
-				GridManager.draw = false;
-				RaycastHit hit1;
-				Physics.Raycast (Camera.main.ScreenPointToRay (downmouseposition), out hit1);
-				Vector3 v1 = hit1.point;
-				RaycastHit hit2;
-				Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit2);
-				Vector3 v2 = hit2.point;
-				GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
-				unitSelected.Clear ();
-				foreach (GameObject unit in allUnits) {
-					Vector3 pos = unit.transform.position;
-					//is inside the box
-					if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
-					   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-						unitSelected.AddLast (unit);
-						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
-						foreach (Renderer renderer in renderers) {
-							renderer.material.shader = selfIllumShader;
-						}
+			}
+		}
+		
+		if (Input.GetMouseButtonDown (0)& !unitSelected.Any()) {
+			GridManager.downmouseposition = Input.mousePosition;
+			GridManager.draw = true;
+			
+		} else if (Input.GetMouseButtonUp (0)& !unitSelected.Any()) {
+
+			// Single hit 
+			RaycastHit hitInfo = new RaycastHit();
+			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
+			if (hit) {
+				if (hitInfo.transform.gameObject.tag == "Unit") {
+					unitSelected.Clear ();
+					unitSelected.AddLast (hitInfo.transform.gameObject);
+					Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
+					foreach (Renderer renderer in renderers) {
+						renderer.material.shader = selfIllumShader;
 					}
 				}
 			}
+			// Rectangular hit
+			GridManager.draw = false;
+			RaycastHit hit1;
+			Physics.Raycast (Camera.main.ScreenPointToRay (downmouseposition), out hit1);
+			Vector3 v1 = hit1.point;
+			RaycastHit hit2;
+			Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hit2);
+			Vector3 v2 = hit2.point;
+			GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
+			foreach (GameObject unit in allUnits) {
+				Vector3 pos = unit.transform.position;
+				//is inside the box
+				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
+				   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
+					unitSelected.AddLast (unit);
+					Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+					foreach (Renderer renderer in renderers) {
+						renderer.material.shader = selfIllumShader;
+					}
+				}
+			}
+		}
 	}
 
 	//The method used to calculate the number hexagons in a row and number of rows

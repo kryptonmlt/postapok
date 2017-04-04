@@ -30,7 +30,7 @@ public class TileBehaviour: MonoBehaviour
 				GridManager.instance.selectedTile = tile;
 				//when mouse is over some tile, the tile is passable and the current tile is neither destination nor origin tile, change color to orange
 				if (tile.Passable && this != GridManager.instance.destTileTB
-				   && this != GridManager.instance.getOriginTileTB () [unit.name]) {
+					&& this != GridManager.instance.getOriginTileTB () [unit.name]) {
 					changeColor (orange);
 				}
 			}
@@ -85,6 +85,13 @@ public class TileBehaviour: MonoBehaviour
 					GridManager.instance.generateAndShowPath();
 				}
 			}
+		}
+	}
+
+	void Update(){
+
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			changeColor (Color.white);
 		}
 	}
 
