@@ -63,7 +63,7 @@ public class GridManager: MonoBehaviour
 	};
 
 	public void deSelect(){
-		unitSelected.Clear ();
+		GridManager.unitSelected = new LinkedList<GameObject> ();
 	}
 
 	void setSizes()
@@ -110,11 +110,12 @@ public class GridManager: MonoBehaviour
 			GridManager.downmouseposition = Input.mousePosition;
 			GridManager.draw = true;
 			
-		} else if (Input.GetMouseButtonUp (0)& !unitSelected.Any()) {
+		} else if (Input.GetMouseButtonUp (0)) {
 
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit();
 			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
+			GameObject selected = hitInfo.transform.gameObject;;
 			if (hit) {
 				if (hitInfo.transform.gameObject.tag == "Unit") {
 					deSelect ();
@@ -139,10 +140,12 @@ public class GridManager: MonoBehaviour
 				//is inside the box
 				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 				   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-					unitSelected.AddLast (unit);
-					Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
-					foreach (Renderer renderer in renderers) {
-						renderer.material.shader = selfIllumShader;
+					if (unit != selected) {
+						unitSelected.AddLast (unit);
+						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+						foreach (Renderer renderer in renderers) {
+							renderer.material.shader = selfIllumShader;
+						}
 					}
 				}
 			}
