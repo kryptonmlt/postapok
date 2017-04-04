@@ -93,11 +93,25 @@ public class GridManager: MonoBehaviour
 		
 			if (Input.GetMouseButtonDown (0)) {
 				GridManager.downmouseposition = Input.mousePosition;
-				Debug.Log ("starting rectangle");
 				GridManager.draw = true;
+				
 			} else if (Input.GetMouseButtonUp (0)) {
+
+				// Single hit 
+				RaycastHit hitInfo = new RaycastHit();
+				bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
+				if (hit) {
+					Debug.Log ("Hit " + hitInfo.transform.gameObject.name);
+					if (hitInfo.transform.gameObject.tag == "Unit") {
+						unitSelected.AddLast (hitInfo.transform.gameObject);
+						Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
+						foreach (Renderer renderer in renderers) {
+							renderer.material.shader = selfIllumShader;
+						}
+					}
+				}
+				// Rectangular hit
 				GridManager.draw = false;
-				Debug.Log ("stopping rectangle");
 				RaycastHit hit1;
 				Physics.Raycast (Camera.main.ScreenPointToRay (downmouseposition), out hit1);
 				Vector3 v1 = hit1.point;
@@ -110,6 +124,7 @@ public class GridManager: MonoBehaviour
 					//is inside the box
 					if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 					   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
+						unitSelected.Clear ();
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
