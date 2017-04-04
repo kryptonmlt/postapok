@@ -62,6 +62,10 @@ public class GridManager: MonoBehaviour
 		{4,LandType.Desert}
 	};
 
+	public void deSelect(){
+		unitSelected.Clear ();
+	}
+
 	void setSizes()
 	{
 		hexWidth = Hex.GetComponent<Renderer>().bounds.size.x;
@@ -92,7 +96,7 @@ public class GridManager: MonoBehaviour
 	void Update(){
 
 		if (Input.GetKeyDown (KeyCode.Escape)) {
-			unitSelected.Clear ();
+			deSelect ();
 			GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
 			foreach (GameObject unit in allUnits) {
 				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
@@ -113,7 +117,7 @@ public class GridManager: MonoBehaviour
 			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
 			if (hit) {
 				if (hitInfo.transform.gameObject.tag == "Unit") {
-					unitSelected.Clear ();
+					deSelect ();
 					unitSelected.AddLast (hitInfo.transform.gameObject);
 					Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
 					foreach (Renderer renderer in renderers) {

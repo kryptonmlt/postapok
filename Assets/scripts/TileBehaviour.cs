@@ -82,8 +82,8 @@ public class TileBehaviour: MonoBehaviour
 					else
 						destTileChanged ();
 
-					GridManager.instance.generateAndShowPath();
-				}
+					GridManager.instance.generateAndShowPath ();
+				} 
 			}
 		}
 	}
