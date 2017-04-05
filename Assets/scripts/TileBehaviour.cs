@@ -114,8 +114,8 @@ public class TileBehaviour: MonoBehaviour
 			//return;
 		//}
 		//if there was other tile marked as destination, change its material to default (fully transparent) one
-		if (destTile != null)
-			destTile.GetComponent<Renderer>().material = defaultMaterial;
+		//if (destTile != null)
+		//	destTile.GetComponent<Renderer>().material = defaultMaterial;
 		GridManager.instance.destTileTB = this;
 		//changeColor(Color.green);
 	}

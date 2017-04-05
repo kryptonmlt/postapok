@@ -61,10 +61,16 @@ public class GridManager: MonoBehaviour
 		{3,LandType.OilField},
 		{4,LandType.Desert}
 	};
+		
+	public LinkedList<GameObject> getUS(){
+		return unitSelected;
+	}
 
 	public void deSelect(){
 		GridManager.unitSelected = new LinkedList<GameObject> ();
+		//unitSelected.Clear();
 	}
+
 
 	void setSizes()
 	{
