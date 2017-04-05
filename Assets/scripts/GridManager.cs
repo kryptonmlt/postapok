@@ -95,6 +95,16 @@ public class GridManager: MonoBehaviour
 
 	void Update(){
 
+		bool moving = false;
+		foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
+			if (active != null) {
+				CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
+				if (characterAction.IsMoving == true) {
+					moving = characterAction.IsMoving;
+				}
+			}
+		}
+
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			deSelect ();
 			GameObject[] allUnits = GameObject.FindGameObjectsWithTag ("Unit");
@@ -105,12 +115,12 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-		
-		if (Input.GetMouseButtonDown (0) & !unitSelected.Any()) {
+
+		if (Input.GetMouseButtonDown (0) & !unitSelected.Any() & moving==false) {
 			GridManager.downmouseposition = Input.mousePosition;
 			GridManager.draw = true;
 			
-		} else if (Input.GetMouseButtonUp (0) & !unitSelected.Any()) {
+		} else if (Input.GetMouseButtonUp (0) & !unitSelected.Any() & moving==false) {
 
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit();
