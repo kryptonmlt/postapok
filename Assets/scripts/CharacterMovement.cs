@@ -96,8 +96,11 @@ public class CharacterMovement: MonoBehaviour
 				// Disable the other gameObject we've collided with, then flag to destroy it
 				collision.gameObject.SetActive (false);
 				CharacterMovement characterAction = (CharacterMovement)collision.gameObject.GetComponent (typeof(CharacterMovement));
-				GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
-				GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
+				if (this.IsMoving = true) {
+					this.IsMoving = false;
+				}
+				//GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
+				//GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
 				//if (gop.PlayerId == gopE.PlayerId) {
 				GridManager GM = GridManager.instance;
 				quantity += 1;
