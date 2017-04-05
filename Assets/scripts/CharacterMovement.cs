@@ -105,7 +105,6 @@ public class CharacterMovement: MonoBehaviour
 				//if (gop.PlayerId == gopE.PlayerId) {
 				quantity += 1;
 				GM.deSelect ();
-				GM.destroyed = true;
 
 				LinkedList<GameObject> lista= GM.getUS ();
 				foreach (GameObject i in lista) {
