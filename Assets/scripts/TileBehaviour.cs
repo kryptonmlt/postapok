@@ -82,7 +82,7 @@ public class TileBehaviour: MonoBehaviour
 					if (this == originTileTB || originTileTB == null)
 						originTileChanged ();
 					else
-						destTileChanged (gop.UniqueID);
+						destTileChanged ();
 
 					GridManager.instance.generateAndShowPath ();
 				} 
@@ -105,20 +105,26 @@ public class TileBehaviour: MonoBehaviour
 		}
 	}
 
-	void destTileChanged(int id)
+	void destTileChanged()
 	{
-		//var destTile = GridManager.instance.destTileTB;
-		//deselect destination tile if user clicks on current destination tile
-		//if (this == destTile)
-		//{
-			//GridManager.instance.destTileTB = null;
-			//GetComponent<Renderer>().material.color = temptilecolour;
-			//return;
-		//}
-		//if there was other tile marked as destination, change its material to default (fully transparent) one
-		//if (destTile != null)
-		//	destTile.GetComponent<Renderer>().material = defaultMaterial;
-		GridManager.instance.destTileTB[id] = this;
-		//changeColor(Color.green);
+		foreach (GameObject unit in GridManager.unitSelected) {
+
+			if (unit != null) {
+				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
+				//var destTile = GridManager.instance.destTileTB;
+				//deselect destination tile if user clicks on current destination tile
+				//if (this == destTile)
+				//{
+				//GridManager.instance.destTileTB = null;
+				//GetComponent<Renderer>().material.color = temptilecolour;
+				//return;
+				//}
+				//if there was other tile marked as destination, change its material to default (fully transparent) one
+				//if (destTile != null)
+				//	destTile.GetComponent<Renderer>().material = defaultMaterial;
+				GridManager.instance.destTileTB [gop.UniqueID] = this;
+				//changeColor(Color.green);
+			}
+		}
 	}
 }

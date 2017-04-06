@@ -6,7 +6,6 @@ using System;
 using Random=UnityEngine.Random;
 using System.Text;
 using System.IO;
-using System.Collections;
 
 public class GridManager: MonoBehaviour
 {
@@ -73,7 +72,6 @@ public class GridManager: MonoBehaviour
 
 	public void deSelect(){
 		GridManager.unitSelected = new LinkedList<GameObject> ();
-		//unitSelected.Clear();
 	}
 
 
@@ -351,7 +349,7 @@ public class GridManager: MonoBehaviour
 		if (this.ObjsPaths[id] == null)
 			this.ObjsPaths[id] = new List<GameObject>();
 		
-		//DestroyPath();
+		//DestroyPath(id);
 		//Lines game object is used to hold all the "Line" game objects indicating the path
 		GameObject lines = GameObject.Find("Lines");
 		if (lines == null)
@@ -387,12 +385,16 @@ public class GridManager: MonoBehaviour
 				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 				//Don't do anything if origin or destination is not defined yet
 				if (originTileTB [gop.UniqueID] == null || destTileTB [gop.UniqueID] == null) {
-					DrawPath (new List<Tile> (),unit.GetInstanceID());
+					DrawPath (new List<Tile> (),gop.UniqueID);
 					return;
 				}
 
 				var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB[gop.UniqueID].tile);
 				DrawPath (path,gop.UniqueID);
+				Debug.Log (gop.UniqueID.ToString ());
+				Debug.Log (originTileTB [gop.UniqueID].tile.ToString());
+				Debug.Log (destTileTB [gop.UniqueID].tile.ToString());
+
 				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 				characterAction.StartMoving (path.ToList());
 
