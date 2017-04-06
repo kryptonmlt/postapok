@@ -8,12 +8,17 @@ public class GOProperties: MonoBehaviour
 	public int DefenseValue;
 	public int PlayerId;
 	public int MovementValue;
+	public int UniqueID;
 
 	public GOProperties ()
 	{
-		
+
 	}
 
+	public void setUId(int id){
+		UniqueID=id;
+	}
+		
 	public void setPId(int id){
 		PlayerId=id;
 	}
