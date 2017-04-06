@@ -27,10 +27,11 @@ public class TileBehaviour: MonoBehaviour
 		foreach (GameObject unit in GridManager.unitSelected) {
 			
 			if (unit != null) {
+				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 				GridManager.instance.selectedTile = tile;
 				//when mouse is over some tile, the tile is passable and the current tile is neither destination nor origin tile, change color to orange
-				if (tile.Passable && this != GridManager.instance.destTileTB
-					&& this != GridManager.instance.getOriginTileTB () [unit.name]) {
+				if (tile.Passable && this != GridManager.instance.destTileTB[gop.UniqueID]
+					&& this != GridManager.instance.getOriginTileTB () [gop.UniqueID]) {
 					changeColor (orange);
 				}
 			}
@@ -43,9 +44,10 @@ public class TileBehaviour: MonoBehaviour
 		foreach (GameObject unit in GridManager.unitSelected) {
 			
 			if (unit != null) {
+				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 				GridManager.instance.selectedTile = null;
-				if (tile.Passable && this != GridManager.instance.destTileTB
-				   && this != GridManager.instance.getOriginTileTB () [unit.name]) {
+				if (tile.Passable && this != GridManager.instance.destTileTB[gop.UniqueID]
+					&& this != GridManager.instance.getOriginTileTB () [gop.UniqueID]) {
 					changeColor (Color.white);
 				}
 			}
@@ -57,7 +59,7 @@ public class TileBehaviour: MonoBehaviour
 		foreach (GameObject unit in GridManager.unitSelected) {
 			
 			if (unit != null) {
-				
+				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 				//if player right-clicks on the tile, toggle passable variable and change the color accordingly
 				//		if (Input.GetMouseButtonUp(1))
 				//		{		
@@ -75,12 +77,12 @@ public class TileBehaviour: MonoBehaviour
 				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
 					tile.Passable = true;
 					changeColor (Color.white);
-					TileBehaviour originTileTB = GridManager.instance.getOriginTileTB () [unit.name];
+					TileBehaviour originTileTB = GridManager.instance.getOriginTileTB() [gop.UniqueID];
 					//if user clicks on origin tile or origin tile is not assigned yet
 					if (this == originTileTB || originTileTB == null)
 						originTileChanged ();
 					else
-						destTileChanged ();
+						destTileChanged (gop.UniqueID);
 
 					GridManager.instance.generateAndShowPath ();
 				} 
@@ -103,10 +105,9 @@ public class TileBehaviour: MonoBehaviour
 		}
 	}
 
-	void destTileChanged()
+	void destTileChanged(int id)
 	{
-		Debug.Log ("problem");
-		var destTile = GridManager.instance.destTileTB;
+		//var destTile = GridManager.instance.destTileTB;
 		//deselect destination tile if user clicks on current destination tile
 		//if (this == destTile)
 		//{
@@ -117,7 +118,7 @@ public class TileBehaviour: MonoBehaviour
 		//if there was other tile marked as destination, change its material to default (fully transparent) one
 		//if (destTile != null)
 		//	destTile.GetComponent<Renderer>().material = defaultMaterial;
-		GridManager.instance.destTileTB = this;
+		GridManager.instance.destTileTB[id] = this;
 		//changeColor(Color.green);
 	}
 }

@@ -60,10 +60,11 @@ public class CharacterMovement: MonoBehaviour
 	//Method used to switch destination and origin tiles after the destination is reached
 	void switchOriginAndDestinationTiles()
 	{
+		GOProperties gop = (GOProperties) this.GetComponent (typeof(GOProperties));
 		GridManager GM = GridManager.instance;
-		GM.DestroyPath ();
-		GM.getOriginTileTB()[m_character.getName()] = GM.destTileTB;
-		GM.destTileTB = null;
+		GM.DestroyPath (gop.UniqueID);
+		GM.getOriginTileTB()[gop.UniqueID] = GM.destTileTB[gop.UniqueID];
+		GM.destTileTB[gop.UniqueID] = null;
 	}
 
 	void Update()
@@ -95,11 +96,11 @@ public class CharacterMovement: MonoBehaviour
 			if (gameObject.activeSelf) {
 				// Disable the other gameObject we've collided with, then flag to destroy it
 				CharacterMovement characterAction = (CharacterMovement)collision.gameObject.GetComponent (typeof(CharacterMovement));
-				GridManager GM = GridManager.instance;
+				//GridManager GM = GridManager.instance;
 				collision.gameObject.SetActive (false);
 				characterAction.IsMoving = false;
-				GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
-				GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
+				//GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
+				//GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
 				//if (gop.PlayerId == gopE.PlayerId) {
 				quantity += 1;
 				Destroy (collision.gameObject);

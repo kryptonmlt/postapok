@@ -18,27 +18,31 @@ public class GridManager: MonoBehaviour
 	public GameObject truck;
 	public GameObject car;
 	public GameObject bike;
+	public int ID=0;
+
+	public int getId() {
+		return ID++;
+	}
 
 	public LinkedList<GameObject> gameobjects = new LinkedList<GameObject> ();
+	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
 
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
 	//TB of the tile which is the start of the path
-	public Dictionary<String, TileBehaviour> originTileTB = new Dictionary<String, TileBehaviour>();
+	public Dictionary<int, TileBehaviour> originTileTB = new Dictionary<int, TileBehaviour>();
+	public Dictionary<int, TileBehaviour> destTileTB = new Dictionary<int, TileBehaviour>();
 
-	public Dictionary<String, TileBehaviour> getOriginTileTB(){
+	public Dictionary<int, TileBehaviour> getOriginTileTB(){
 		return originTileTB;
 	}
 	//TB of the tile which is the end of the path
-	public TileBehaviour destTileTB = null;
 	public TileBehaviour tb =null;
 
 	public static GridManager instance = null;
 
 	//Line should be initialised to some 3d object that can fit nicely in the center of a hex tile and will be used to indicate the path. For example, it can be just a simple small sphere with some material attached to it. Initialise the variable using inspector pane.
 	public GameObject Line;
-	//List to hold "Lines" indicating the path
-	List<GameObject> path;
 
 	private float hexWidth;
 	private float hexHeight;
@@ -273,19 +277,19 @@ public class GridManager: MonoBehaviour
 				//int tTypeId = UnityEngine.Random.Range(1,15);
 				if (x == 0 && y == 0)
 				{
-					gameobjects.AddLast(createObject(tb,fanatic, "player1",1));
+					gameobjects.AddLast(createObject(tb,fanatic,1));
 				}
 				if (x == 2 && y == 3)
 				{
-					gameobjects.AddLast(createObject(tb,fanatic, "player2",1));
+					gameobjects.AddLast(createObject(tb,fanatic,1));
 				}
 				if (x == 4 && y == 5)
 				{
-					gameobjects.AddLast(createObject (tb, car, "player3",2));
+					gameobjects.AddLast(createObject (tb, car,2));
 				}
 				if (x == 6 && y == 7)
 				{
-					gameobjects.AddLast(createObject (tb, truck, "player4",1));
+					gameobjects.AddLast(createObject (tb, truck,1));
 				}
 			}
 		}
@@ -297,14 +301,16 @@ public class GridManager: MonoBehaviour
 			tile.FindNeighbours(board, gridSize, equalLineLengths);
 	}
 
-	private GameObject createObject(TileBehaviour tb,GameObject obj, string name, int id){
+	private GameObject createObject(TileBehaviour tb,GameObject obj,int id){
 		GameObject go = Instantiate (obj);
-		go.name = name;
-		originTileTB.Add(go.name,tb);
 		go.transform.position = tb.transform.position;
 		GOProperties gop = (GOProperties) go.GetComponent (typeof(GOProperties));
+		gop.setUId (this.getId());
 		gop.setPId (id);
 		String type = obj.ToString ();
+		originTileTB.Add(gop.UniqueID,tb);
+		destTileTB.Add(gop.UniqueID,tb);
+		ObjsPaths.Add(gop.UniqueID,new List<GameObject>());
 		switch (type)
 		{
 		case "fanatic":
@@ -327,23 +333,23 @@ public class GridManager: MonoBehaviour
 	}
 
 	//Distance between destination tile and some other tile in the grid
-	double calcDistance(Tile tile)
-	{
-		Tile destTile = destTileTB.tile;
-		//Formula used here can be found in Chris Schetter's article
-		float deltaX = Mathf.Abs(destTile.X - tile.X);
-		float deltaY = Mathf.Abs(destTile.Y - tile.Y);
-		int z1 = -(tile.X + tile.Y);
-		int z2 = -(destTile.X + destTile.Y);
-		float deltaZ = Mathf.Abs(z2 - z1);
+//	double calcDistance(Tile tile)
+//	{
+//		Tile destTile = destTileTB.tile;
+//		//Formula used here can be found in Chris Schetter's article
+//		float deltaX = Mathf.Abs(destTile.X - tile.X);
+//		float deltaY = Mathf.Abs(destTile.Y - tile.Y);
+//		int z1 = -(tile.X + tile.Y);
+//		int z2 = -(destTile.X + destTile.Y);
+//		float deltaZ = Mathf.Abs(z2 - z1);
+//
+//		return Mathf.Max(deltaX, deltaY, deltaZ);
+//	}
 
-		return Mathf.Max(deltaX, deltaY, deltaZ);
-	}
-
-	private void DrawPath(IEnumerable<Tile> path)
+	private void DrawPath(IEnumerable<Tile> path, int id)
 	{
-		if (this.path == null)
-			this.path = new List<GameObject>();
+		if (this.ObjsPaths[id] == null)
+			this.ObjsPaths[id] = new List<GameObject>();
 		
 		//DestroyPath();
 		//Lines game object is used to hold all the "Line" game objects indicating the path
@@ -356,39 +362,39 @@ public class GridManager: MonoBehaviour
 			//calcWorldCoord method uses squiggly axis coordinates so we add y / 2 to convert x coordinate from straight axis coordinate system
 			Vector2 gridPos = new Vector2(tile.X + tile.Y / 2, tile.Y);
 			line.transform.position = calcWorldCoord(gridPos);
-			this.path.Add(line);
+			this.ObjsPaths[id].Add(line);
 			line.transform.parent = lines.transform;
 		}
 	}
 
-	public void DestroyPath(){
+	public void DestroyPath(int id){
 	
 		//Destroy game objects which used to indicate the path
-		this.path.ForEach(Destroy);
-		this.path.Clear();
-	
+		ObjsPaths[id].ForEach(Destroy);
+		ObjsPaths[id].Clear();	
 	}
 
-	public bool isEmptyPath(){
-		if (this.path == null)
-			return true;
-		else return false;
-	}
+//	public bool isEmptyPath(){
+//		if (this.path == null)
+//			return true;
+//		else return false;
+//	}
 
 	public void generateAndShowPath()
 	{	
 		foreach(GameObject unit in GridManager.unitSelected) {
 			if (unit!=null) {
+				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 				//Don't do anything if origin or destination is not defined yet
-				if (originTileTB [unit.name] == null || destTileTB == null) {
-					DrawPath (new List<Tile> ());
+				if (originTileTB [gop.UniqueID] == null || destTileTB [gop.UniqueID] == null) {
+					DrawPath (new List<Tile> (),unit.GetInstanceID());
 					return;
 				}
 
-				var path = PathFinder.FindPath (originTileTB [unit.name].tile, destTileTB.tile);
-				DrawPath (path);
+				var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB[gop.UniqueID].tile);
+				DrawPath (path,gop.UniqueID);
 				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-				characterAction.StartMoving (path.ToList ());
+				characterAction.StartMoving (path.ToList());
 
 				//remove highlight
 				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
