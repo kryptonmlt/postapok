@@ -105,6 +105,7 @@ public class TileBehaviour: MonoBehaviour
 
 	void destTileChanged()
 	{
+		Debug.Log ("problem");
 		var destTile = GridManager.instance.destTileTB;
 		//deselect destination tile if user clicks on current destination tile
 		//if (this == destTile)
