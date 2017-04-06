@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Random=UnityEngine.Random;
+using System.Text;
+using System.IO;
+using System.Collections;
 
 public class GridManager: MonoBehaviour
 {
@@ -56,10 +59,12 @@ public class GridManager: MonoBehaviour
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
+		{0,LandType.Base},
 		{1,LandType.Oasis},
 		{2,LandType.Junkyard},
 		{3,LandType.OilField},
-		{4,LandType.Desert}
+		{4,LandType.Desert},
+		{5,LandType.Mountain}
 	};
 
 	public void deSelect(){
@@ -223,32 +228,49 @@ public class GridManager: MonoBehaviour
 
 	void createGrid()
 	{
+		GameObject camp = Resources.Load ("Models/structures/barracks/prefabs/barracks", typeof(GameObject)) as GameObject;
+		GameObject mountain = Resources.Load ("Models/mountain/prefab/mountain", typeof(GameObject)) as GameObject;
+		GameObject tree = Resources.Load ("Models/trees/Prefabs/tree", typeof(GameObject)) as GameObject;
+		List<int> loadedMap = LoadGameFile();
 		Vector2 gridSize = calcGridSize();
 		GameObject hexGridGO = new GameObject("HexGrid");
 		//board is used to store tile locations
 		Dictionary<Point, Tile> board = new Dictionary<Point, Tile>();
-
+		int landPos = 0;
 		for (float y = 0; y < gridSize.y; y++)
 		{
 			float sizeX = gridSize.x;
 			//if the offset row sticks up, reduce the number of hexes in a row
 			if (y % 2 != 0 && (gridSize.x + 0.5) * hexWidth > groundWidth)
 				sizeX--;
-			for (float x = 0; x < sizeX; x++)
+			for (float x = 0; x < sizeX; x++,landPos++)
 			{
 				GameObject hex = (GameObject)Instantiate(Hex);
 				Vector2 gridPos = new Vector2(x, y);
 				hex.transform.position = calcWorldCoord(gridPos);
 				hex.transform.parent = hexGridGO.transform;
 				var tb = (TileBehaviour)hex.GetComponent("TileBehaviour");
-				//y / 2 is subtracted from x because we are using straight axis coordinate system
-				int tTypeId = UnityEngine.Random.Range(1,15);
-				if (tTypeId > 3)
-					tTypeId = 4;
-				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[tTypeId]);
+
+				int landTypeId = loadedMap [landPos];
+				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[landTypeId]);
 				tb.setTileMaterial(tb.tile.landType);
 				board.Add(tb.tile.Location, tb.tile);
-				//Mark originTile as the tile with (0,0) coordinates
+				GameObject temp;
+				switch(landTypeId){
+				case 0:
+					temp = (GameObject)Instantiate (camp);
+					temp.transform.position = hex.transform.position;
+					break;
+				case 4:
+					temp = (GameObject)Instantiate (tree);
+					temp.transform.position = hex.transform.position;
+					break;
+				case 5:
+					temp = (GameObject)Instantiate (mountain);
+					temp.transform.position = hex.transform.position;
+					break;
+				}
+				//int tTypeId = UnityEngine.Random.Range(1,15);
 				if (x == 0 && y == 0)
 				{
 					gameobjects.AddLast(createObject(tb,fanatic, "player1",1));
@@ -376,5 +398,30 @@ public class GridManager: MonoBehaviour
 			}
 		}
 		deSelect ();
+	}
+
+	private List<int> LoadGameFile()
+	{
+			List<int> map = new List<int>();
+			string fileName = "Assets/Resources/testingMap";
+			string line;
+			StreamReader theReader = new StreamReader(fileName, Encoding.Default);
+			using (theReader)
+			{
+				do
+				{
+					line = theReader.ReadLine();
+					if (line != null)
+					{
+						string[] entries = line.Split(',');
+						foreach(string entry in entries){
+							map.Add(Int32.Parse(entry));
+						}
+					}
+				}
+				while (line != null);
+				theReader.Close();
+				return map;
+			}
 	}
 }

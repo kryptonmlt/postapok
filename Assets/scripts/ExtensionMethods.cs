@@ -21,6 +21,10 @@ public static class ExtensionMethods
 			return OilMaterial;
 		case LandType.Junkyard:
 			return JunkMaterial;
+		case LandType.Base:
+			return sandMaterial;
+		case LandType.Mountain:
+			return sandMaterial;
 		default:
 			return null;
 		}

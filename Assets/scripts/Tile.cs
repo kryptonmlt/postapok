@@ -2,14 +2,6 @@
 using System;
 using System.Linq;
 using UnityEngine;
-
-public enum LandType
-{
-	Oasis,
-	Junkyard,
-	OilField,
-	Desert
-};
 	
 public class Tile: GridObject, IHasNeighbours<Tile>
 {
