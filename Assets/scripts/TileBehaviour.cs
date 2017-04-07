@@ -75,16 +75,17 @@ public class TileBehaviour: MonoBehaviour
 					}
 				}
 				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
-					tile.Passable = true;
-					changeColor (Color.white);
-					TileBehaviour originTileTB = GridManager.instance.getOriginTileTB() [gop.UniqueID];
-					//if user clicks on origin tile or origin tile is not assigned yet
-					if (this == originTileTB || originTileTB == null)
-						originTileChanged ();
-					else
-						destTileChanged ();
-
-					GridManager.instance.generateAndShowPath ();
+					if (tile.Passable) {
+						changeColor (Color.white);
+						TileBehaviour originTileTB = GridManager.instance.getOriginTileTB () [gop.UniqueID];
+						//if user clicks on origin tile or origin tile is not assigned yet
+						if (this == originTileTB || originTileTB == null) {
+							originTileChanged ();
+						}else {
+							destTileChanged ();
+						}
+						GridManager.instance.generateAndShowPath ();
+					}
 				} 
 			}
 		}

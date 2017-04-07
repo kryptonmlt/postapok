@@ -6,7 +6,6 @@ using System;
 using Random=UnityEngine.Random;
 using System.Text;
 using System.IO;
-using System.Collections;
 using UnityEngine.UI;
 
 public class GridManager: MonoBehaviour
@@ -268,20 +267,21 @@ public class GridManager: MonoBehaviour
 				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[landTypeId]);
 				tb.setTileMaterial(tb.tile.landType);
 				board.Add(tb.tile.Location, tb.tile);
-				GameObject temp;
+				GameObject temp = null;
 				switch(landTypeId){
 				case 0:
 					temp = (GameObject)Instantiate (camp);
-					temp.transform.position = hex.transform.position;
 					break;
 				case 4:
 					temp = (GameObject)Instantiate (tree);
-					temp.transform.position = hex.transform.position;
 					break;
 				case 5:
 					temp = (GameObject)Instantiate (mountain);
-					temp.transform.position = hex.transform.position;
+					tb.tile.Passable = false;
 					break;
+				}
+				if(temp!=null){
+					temp.transform.position = hex.transform.position;
 				}
 				//int tTypeId = UnityEngine.Random.Range(1,15);
 				if (x == 0 && y == 0)
