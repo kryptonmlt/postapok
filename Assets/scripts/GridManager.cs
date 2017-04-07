@@ -167,7 +167,6 @@ public class GridManager: MonoBehaviour
 				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 				   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
 					if (unit != selected) {
-						Debug.Log (unit.name);
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
