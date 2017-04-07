@@ -7,6 +7,7 @@ using Random=UnityEngine.Random;
 using System.Text;
 using System.IO;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GridManager: MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class GridManager: MonoBehaviour
 	public GameObject car;
 	public GameObject bike;
 	public int ID=0;
+	public Button endTurnButton;
 
 	public int getId() {
 		return ID++;
@@ -213,8 +215,16 @@ public class GridManager: MonoBehaviour
 		return new Vector3(x, groundOffset, z);
 	}
 
+	void endTurnTask()
+	{
+		Debug.Log("Finished Turn!");
+	}
+
 	void Start()
 	{
+		Button btn = endTurnButton.GetComponent<Button>();
+		btn.onClick.AddListener(endTurnTask);
+
 		rectangleTexture= new Texture2D (1, 1);
 		rectangleTexture.SetPixel (0, 0, Color.black);
 		rectangleTexture.Apply();
