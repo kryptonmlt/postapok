@@ -49,6 +49,7 @@ public class GridManager: MonoBehaviour
 
 	static Vector3 downmouseposition;
 	static bool draw=false;
+	private bool clicked =false;
 
 	private Texture2D rectangleTexture;
 	public float fAlpha=0.25f;
@@ -134,15 +135,16 @@ public class GridManager: MonoBehaviour
 		if (Input.GetMouseButtonDown (0) & !unitSelected.Any() & moving==false) {
 			GridManager.downmouseposition = Input.mousePosition;
 			GridManager.draw = true;
+			clicked = true;
 			
-		} else if (Input.GetMouseButtonUp (0) & !unitSelected.Any() & moving==false) {
+		} else if (Input.GetMouseButtonUp (0) & !unitSelected.Any() & moving==false & clicked==true) {
 
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit();
 			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
 			GameObject selected = hitInfo.transform.gameObject;;
 			if (hit) {
-				if (hitInfo.transform.gameObject.tag == "Unit") {
+				if (hitInfo.transform.gameObject.tag == "Unit" & !unitSelected.Contains(hitInfo.transform.gameObject)) {
 					unitSelected.AddLast (hitInfo.transform.gameObject);
 					Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
 					foreach (Renderer renderer in renderers) {
@@ -165,6 +167,7 @@ public class GridManager: MonoBehaviour
 				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 				   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
 					if (unit != selected) {
+						Debug.Log (unit.name);
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
@@ -173,6 +176,7 @@ public class GridManager: MonoBehaviour
 					}
 				}
 			}
+			clicked = false;
 		}
 	}
 
@@ -219,11 +223,11 @@ public class GridManager: MonoBehaviour
 
 	void endTurnTask()
 	{
+		GridManager.draw = false;
 		Debug.Log("Finished Turn!");
 		foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
 			GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 			if (unit != null & ObjsPathsTiles.ContainsKey(gop.UniqueID)) {
-				Debug.Log ("found one");
 				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 				characterAction.StartMoving (ObjsPathsTiles[gop.UniqueID].ToList ());
 			}
@@ -461,6 +465,7 @@ public class GridManager: MonoBehaviour
 				//Don't do anything if origin or destination is not defined yet
 				if (originTileTB [gop.UniqueID] == null || destTileTB [gop.UniqueID] == null) {
 					DrawPath (new List<Tile> (),gop.UniqueID);
+					deSelect ();
 					return;
 				}
 				DestroyPath (gop.UniqueID);
