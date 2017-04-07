@@ -267,23 +267,33 @@ public class GridManager: MonoBehaviour
 				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[landTypeId]);
 				tb.setTileMaterial(tb.tile.landType);
 				board.Add(tb.tile.Location, tb.tile);
-				GameObject temp = null;
+				List<GameObject> stuffOnTile = new List<GameObject>();
 				switch(landTypeId){
 				case 0:
-					temp = (GameObject)Instantiate (camp);
+					stuffOnTile.Add((GameObject)Instantiate (camp));
 					break;
 				case 4:
-					temp = (GameObject)Instantiate (tree);
+					int placeTrees = UnityEngine.Random.Range(0,10);
+					if(placeTrees < 2){
+						int numberOfTrees = UnityEngine.Random.Range(1,4);
+						for(int i=0;i<numberOfTrees;i++){
+							stuffOnTile.Add((GameObject)Instantiate (tree));
+						}
+					}
 					break;
 				case 5:
-					temp = (GameObject)Instantiate (mountain);
+					stuffOnTile.Add((GameObject)Instantiate (mountain));
 					tb.tile.Passable = false;
 					break;
 				}
-				if(temp!=null){
-					temp.transform.position = hex.transform.position;
+				for(int i = 0;i <stuffOnTile.Count; i++){
+					float randX = UnityEngine.Random.Range(-3,3);
+					float randZ = UnityEngine.Random.Range(-3,3);
+					stuffOnTile[i].transform.position = hex.transform.position;
+					Vector3 temp = new Vector3 (randX,0f,randZ);
+					stuffOnTile[i].transform.position += temp;
 				}
-				//int tTypeId = UnityEngine.Random.Range(1,15);
+
 				if (x == 0 && y == 0)
 				{
 					gameobjects.AddLast(createObject(tb,fanatic,1));
