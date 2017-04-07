@@ -10,14 +10,6 @@ using UnityEngine.UI;
 
 public class GridManager: MonoBehaviour
 {
-	public GameObject Hex;
-	//This time instead of specifying the number of hexes you should just drop your ground game object on this public variable
-	public GameObject Ground;
-
-	public GameObject fanatic;
-	public GameObject truck;
-	public GameObject car;
-	public GameObject bike;
 	public int ID=0;
 	public Button endTurnButton;
 
@@ -59,6 +51,16 @@ public class GridManager: MonoBehaviour
 
 	private Texture2D rectangleTexture;
 	public float fAlpha=0.25f;
+
+	private GameObject camp;
+	private GameObject mountain;
+	private GameObject tree;
+	private GameObject Hex;
+	private GameObject Ground;
+	private GameObject fanatic;
+	private GameObject truck;
+	private GameObject car;
+	private GameObject bike;
 
 	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
@@ -220,6 +222,7 @@ public class GridManager: MonoBehaviour
 
 	void Start()
 	{
+		LoadResources();
 		Button btn = endTurnButton.GetComponent<Button>();
 		btn.onClick.AddListener(endTurnTask);
 
@@ -238,11 +241,20 @@ public class GridManager: MonoBehaviour
 		instance = this;
 	}
 
+	void LoadResources(){
+		camp = Resources.Load ("Models/structures/barracks/prefabs/barracks", typeof(GameObject)) as GameObject;
+		mountain = Resources.Load ("Models/extras/mountain/prefab/mountain", typeof(GameObject)) as GameObject;
+		tree = Resources.Load ("Models/extras/trees/Prefabs/tree", typeof(GameObject)) as GameObject;
+		Hex = Resources.Load ("Models/Grid/HexGrid/prefab/HexGrid", typeof(GameObject)) as GameObject;
+		Ground = Resources.Load ("Models/Grid/GroundSize/prefab/Ground", typeof(GameObject)) as GameObject;
+		fanatic = Resources.Load ("Models/ThirdCharacterController/Prefabs/ThirdPersonController", typeof(GameObject)) as GameObject;
+		truck = Resources.Load ("Models/Vehicles/F04/Prefabs/f_noladder", typeof(GameObject)) as GameObject;
+		car = Resources.Load ("Models/Vehicles/car/Prefabs/Apo_car_2015", typeof(GameObject)) as GameObject;
+		bike = Resources.Load ("Models/Vehicles/bike/prefabs/bike", typeof(GameObject)) as GameObject;
+	}
+
 	void createGrid()
 	{
-		GameObject camp = Resources.Load ("Models/structures/barracks/prefabs/barracks", typeof(GameObject)) as GameObject;
-		GameObject mountain = Resources.Load ("Models/mountain/prefab/mountain", typeof(GameObject)) as GameObject;
-		GameObject tree = Resources.Load ("Models/trees/Prefabs/tree", typeof(GameObject)) as GameObject;
 		List<int> loadedMap = LoadGameFile();
 		Vector2 gridSize = calcGridSize();
 		GameObject hexGridGO = new GameObject("HexGrid");
