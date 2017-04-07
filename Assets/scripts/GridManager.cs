@@ -61,6 +61,7 @@ public class GridManager: MonoBehaviour
 	private GameObject truck;
 	private GameObject car;
 	private GameObject bike;
+	private List<GameObject> stones = new List<GameObject>();
 
 	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
@@ -251,6 +252,10 @@ public class GridManager: MonoBehaviour
 		truck = Resources.Load ("Models/Vehicles/F04/Prefabs/f_noladder", typeof(GameObject)) as GameObject;
 		car = Resources.Load ("Models/Vehicles/car/Prefabs/Apo_car_2015", typeof(GameObject)) as GameObject;
 		bike = Resources.Load ("Models/Vehicles/bike/prefabs/bike", typeof(GameObject)) as GameObject;
+		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp0", typeof(GameObject)) as GameObject);
+		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp1", typeof(GameObject)) as GameObject);
+		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp2", typeof(GameObject)) as GameObject);
+		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp3", typeof(GameObject)) as GameObject);
 	}
 
 	void createGrid()
@@ -293,12 +298,26 @@ public class GridManager: MonoBehaviour
 						stuffOnTile.Add((GameObject)Instantiate (tree));
 					}
 					break;
+				case 3:
+					int nos = UnityEngine.Random.Range (0, 3);
+					for (int i = 0; i < nos; i++) {
+						int stone = UnityEngine.Random.Range (0, stones.Count);
+						stuffOnTile.Add ((GameObject)Instantiate (stones [stone]));
+					}
+					break;
 				case 4:
-					int placeTrees = UnityEngine.Random.Range(0,10);
-					if(placeTrees < 2){
-						int numberOfTrees = UnityEngine.Random.Range(1,4);
-						for(int i=0;i<numberOfTrees;i++){
-							stuffOnTile.Add((GameObject)Instantiate (tree));
+					int placeStuff = UnityEngine.Random.Range (0, 10);
+					if (placeStuff < 2) {
+						int numberOfTrees = UnityEngine.Random.Range (1, 4);
+						for (int i = 0; i < numberOfTrees; i++) {
+							stuffOnTile.Add ((GameObject)Instantiate (tree));
+						}
+					}
+					if (placeStuff < 8) {
+						int numberOfStones = UnityEngine.Random.Range (1, 4);
+						for (int i = 0; i < numberOfStones; i++) {
+							int stone = UnityEngine.Random.Range (0, stones.Count);
+							stuffOnTile.Add ((GameObject)Instantiate (stones[stone]));
 						}
 					}
 					break;
