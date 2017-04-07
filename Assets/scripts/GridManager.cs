@@ -222,13 +222,24 @@ public class GridManager: MonoBehaviour
 
 	void endTurnTask()
 	{
-		GridManager.draw = false;
-		Debug.Log("Finished Turn!");
-		foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-			GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
-			if (unit != null & ObjsPathsTiles.ContainsKey(gop.UniqueID)) {
-				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-				characterAction.StartMoving (ObjsPathsTiles[gop.UniqueID].ToList ());
+		bool moving = false;
+		foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
+			if (active != null) {
+				CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
+				if (characterAction.IsMoving == true) {
+					moving = characterAction.IsMoving;
+				}
+			}
+		}
+		if (!moving) {
+			GridManager.draw = false;
+			Debug.Log ("Finished Turn!");
+			foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+				GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+				if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
+					CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
+					characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
+				}
 			}
 		}
 	}
@@ -450,12 +461,12 @@ public class GridManager: MonoBehaviour
 		ObjsPaths[id].Clear();	
 	}
 
-//	public bool isEmptyPath(){
-//		if (this.path == null)
-//			return true;
-//		else return false;
-//	}
+	public void DestroyTilesPath(int id){
 
+		//Destroy game objects which used to indicate the path
+		ObjsPathsTiles.Remove(id);
+	}
+		
 	public void generateAndShowPath()
 	{	
 		foreach(GameObject unit in GridManager.unitSelected) {
