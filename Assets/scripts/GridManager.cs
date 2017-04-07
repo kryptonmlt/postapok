@@ -272,6 +272,12 @@ public class GridManager: MonoBehaviour
 				case 0:
 					stuffOnTile.Add((GameObject)Instantiate (camp));
 					break;
+				case 1:
+					int n = UnityEngine.Random.Range(3,6);
+					for(int i=0;i<n;i++){
+						stuffOnTile.Add((GameObject)Instantiate (tree));
+					}
+					break;
 				case 4:
 					int placeTrees = UnityEngine.Random.Range(0,10);
 					if(placeTrees < 2){
