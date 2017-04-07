@@ -19,6 +19,7 @@ public class GridManager: MonoBehaviour
 
 	public LinkedList<GameObject> gameobjects = new LinkedList<GameObject> ();
 	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
+	public Dictionary<int, Path<Tile>> ObjsPathsTiles = new Dictionary<int, Path<Tile>> ();
 
 	//selectedTile stores the tile mouse cursor is hovering on
 	public Tile selectedTile = null;
@@ -219,6 +220,14 @@ public class GridManager: MonoBehaviour
 	void endTurnTask()
 	{
 		Debug.Log("Finished Turn!");
+		foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+			GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
+			if (unit != null & ObjsPathsTiles.ContainsKey(gop.UniqueID)) {
+				Debug.Log ("found one");
+				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
+				characterAction.StartMoving (ObjsPathsTiles[gop.UniqueID].ToList ());
+			}
+		}
 	}
 
 	void Start()
@@ -454,15 +463,11 @@ public class GridManager: MonoBehaviour
 					DrawPath (new List<Tile> (),gop.UniqueID);
 					return;
 				}
+				DestroyPath (gop.UniqueID);
 
 				var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB[gop.UniqueID].tile);
 				DrawPath (path,gop.UniqueID);
-				Debug.Log (gop.UniqueID.ToString ());
-				Debug.Log (originTileTB [gop.UniqueID].tile.ToString());
-				Debug.Log (destTileTB [gop.UniqueID].tile.ToString());
-
-				CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-				characterAction.StartMoving (path.ToList());
+				ObjsPathsTiles [gop.UniqueID] = path;
 
 				//remove highlight
 				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
