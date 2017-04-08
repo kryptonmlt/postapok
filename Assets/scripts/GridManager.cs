@@ -56,6 +56,7 @@ public class GridManager: MonoBehaviour
 
 	private GameObject camp;
 	private GameObject mountain;
+	private GameObject junk;
 	private GameObject tree;
 	private GameObject Hex;
 	private GameObject Ground;
@@ -319,6 +320,7 @@ public class GridManager: MonoBehaviour
 	void LoadResources(){
 		camp = Resources.Load ("Models/structures/barracks/prefabs/barracks", typeof(GameObject)) as GameObject;
 		mountain = Resources.Load ("Models/extras/mountain/prefab/mountain", typeof(GameObject)) as GameObject;
+		junk = Resources.Load ("Models/extras/junkLand/Prefabs/junkmount", typeof(GameObject)) as GameObject;
 		tree = Resources.Load ("Models/extras/trees/Prefabs/tree", typeof(GameObject)) as GameObject;
 		Hex = Resources.Load ("Models/Grid/HexGrid/prefab/HexGrid", typeof(GameObject)) as GameObject;
 		Ground = Resources.Load ("Models/Grid/GroundSize/prefab/Ground", typeof(GameObject)) as GameObject;
@@ -371,6 +373,10 @@ public class GridManager: MonoBehaviour
 					for(int i=0;i<n;i++){
 						stuffOnTile.Add((GameObject)Instantiate (tree));
 					}
+					break;
+				case 2:
+					stuffOnTile.Add ((GameObject)Instantiate (junk));
+					rand = false;					
 					break;
 				case 3:
 					int nos = UnityEngine.Random.Range (0, 3);

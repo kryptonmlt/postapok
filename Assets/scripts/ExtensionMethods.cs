@@ -20,7 +20,7 @@ public static class ExtensionMethods
 		case LandType.OilField:
 			return OilMaterial;
 		case LandType.Junkyard:
-			return JunkMaterial;
+			return sandMaterial;
 		case LandType.Base:
 			return sandMaterial;
 		case LandType.Mountain:
