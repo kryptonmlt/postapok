@@ -21,6 +21,10 @@ public class TileBehaviour: MonoBehaviour
 		GetComponent<Renderer> ().material = type.getMaterial();
 	}
 
+	public Tile getTile(){
+		return tile;
+	}
+
 	//IMPORTANT: for methods like OnMouseEnter, OnMouseExit and so on to work, collider (Component -> Physics -> Mesh Collider) should be attached to the prefab
 	void OnMouseEnter()
 	{

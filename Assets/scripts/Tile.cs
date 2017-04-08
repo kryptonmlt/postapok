@@ -15,6 +15,10 @@ public class Tile: GridObject, IHasNeighbours<Tile>
 		this.landType = landType;
 	}
 
+	public LandType getLandType(){
+		return landType;
+	}
+
 	public IEnumerable<Tile> AllNeighbours { get; set; }
 	public IEnumerable<Tile> Neighbours
 	{
