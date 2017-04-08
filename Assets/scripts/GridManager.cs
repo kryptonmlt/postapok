@@ -141,7 +141,7 @@ public class GridManager: MonoBehaviour
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit();
 			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
-			GameObject selected = hitInfo.transform.gameObject;;
+			GameObject selected = hitInfo.transform.gameObject;
 			if (hit) {
 				if (hitInfo.transform.gameObject.tag == "Unit" & !unitSelected.Contains(hitInfo.transform.gameObject)) {
 					unitSelected.AddLast (hitInfo.transform.gameObject);
@@ -149,6 +149,7 @@ public class GridManager: MonoBehaviour
 					foreach (Renderer renderer in renderers) {
 						renderer.material.shader = selfIllumShader;
 					}
+					Debug.Log(retrieveTileOfObject(selected));
 				}
 			}
 			// Rectangular hit
@@ -443,6 +444,36 @@ public class GridManager: MonoBehaviour
 		//Neighboring tile coordinates of all the tiles are calculated
 		foreach(Tile tile in board.Values)
 			tile.FindNeighbours(board, gridSize, equalLineLengths);
+	}
+
+	private void updateSelectionMenu(LandType type){
+		switch(type){
+		case LandType.Base:
+			break;
+		case LandType.Oasis:
+			break;
+		case LandType.OilField:
+			break;
+		case LandType.Junkyard:
+			break;
+		default:
+			break;
+		}
+	}
+
+	private LandType retrieveTileOfObject(GameObject obj){
+		RaycastHit hitInfo = new RaycastHit();
+		if (Physics.Raycast(obj.transform.position, Vector3.down, out hitInfo)) {
+			GameObject selected = hitInfo.transform.gameObject;
+			TileBehaviour tb = (TileBehaviour)selected.GetComponent("TileBehaviour");
+			if(tb==null){
+				Debug.Log (selected.name);
+				return LandType.Desert;
+			}
+			return tb.getTile().landType;
+
+		}
+		return LandType.Desert;
 	}
 
 	private GameObject createObject(TileBehaviour tb,GameObject obj,int id){
