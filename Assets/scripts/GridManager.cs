@@ -256,11 +256,11 @@ public class GridManager: MonoBehaviour
 			for (int j = gameobjects.Count-1;j>=0;j--){
 				GOProperties gop2 = (GOProperties)gameobjects[j].GetComponent (typeof(GOProperties));
 				if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId == gop2.PlayerId) {
-					Debug.Log (originTileTB [gop1.PlayerId].tile);
-					Debug.Log (originTileTB [gop2.PlayerId].tile);
-					gop1.quantity += 1;
-					Destroy (gameobjects [j]);
-					gameobjects.Remove (gameobjects [j]);
+					if (gop1.type == gop2.type) {
+						gop1.quantity += 1;
+						Destroy (gameobjects [j]);
+						gameobjects.Remove (gameobjects [j]);
+					}
 				} else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
 					if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
 						attackers.Add (gameobjects [i]);
@@ -429,7 +429,7 @@ public class GridManager: MonoBehaviour
 				}
 				if (x == 4 && y == 5)
 				{
-					gameobjects.Add(createObject (tb, car,2));
+					gameobjects.Add(createObject (tb, car,1));
 				}
 				if (x == 6 && y == 7)
 				{
@@ -450,12 +450,12 @@ public class GridManager: MonoBehaviour
 		go.transform.position = tb.transform.position;
 		GOProperties gop = (GOProperties) go.GetComponent (typeof(GOProperties));
 		gop.setUId (this.getId());
-		gop.setPId (id);
-		String type = obj.ToString ();
+		gop.setPId (id); 
+		gop.type = obj.ToString ();
 		originTileTB.Add(gop.UniqueID,tb);
 		destTileTB.Add(gop.UniqueID,tb);
 		ObjsPaths.Add(gop.UniqueID,new List<GameObject>());
-		switch (type)
+		switch (gop.type)
 		{
 		case "fanatic":
 			gop.setAV(1);

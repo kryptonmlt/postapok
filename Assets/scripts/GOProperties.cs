@@ -10,6 +10,7 @@ public class GOProperties: MonoBehaviour
 	public int MovementValue;
 	public int UniqueID;
 	public int quantity;
+	public String type;
 
 	public GOProperties ()
 	{
