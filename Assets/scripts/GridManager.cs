@@ -463,7 +463,8 @@ public class GridManager: MonoBehaviour
 
 	private LandType retrieveTileOfObject(GameObject obj){
 		RaycastHit hitInfo = new RaycastHit();
-		if (Physics.Raycast(obj.transform.position, Vector3.down, out hitInfo)) {
+		int mask = 1<<LayerMask.NameToLayer ("grid");
+		if (Physics.Raycast(obj.transform.position, Vector3.down, out hitInfo,mask)) {
 			GameObject selected = hitInfo.transform.gameObject;
 			TileBehaviour tb = (TileBehaviour)selected.GetComponent("TileBehaviour");
 			if(tb==null){
