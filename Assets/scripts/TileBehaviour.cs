@@ -65,15 +65,7 @@ public class TileBehaviour: MonoBehaviour
 				//		{		
 				//		}
 				//if user left-clicks the tile
-				bool moving = false;
-				foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
-					if (active != null) {
-						CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
-						if (characterAction.IsMoving == true) {
-							moving = characterAction.IsMoving;
-						}
-					}
-				}
+				bool moving = GridManager.instance.isAnyMoving();
 				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
 					if (tile.Passable) {
 						changeColor (Color.white);

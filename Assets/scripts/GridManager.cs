@@ -17,7 +17,7 @@ public class GridManager: MonoBehaviour
 		return ID++;
 	}
 
-	public LinkedList<GameObject> gameobjects = new LinkedList<GameObject> ();
+	public List<GameObject> gameobjects = new List<GameObject> ();
 	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
 	public Dictionary<int, Path<Tile>> ObjsPathsTiles = new Dictionary<int, Path<Tile>> ();
 
@@ -112,15 +112,12 @@ public class GridManager: MonoBehaviour
 
 	void Update(){
 
-		bool moving = false;
-		foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
-			if (active != null) {
-				CharacterMovement characterAction = (CharacterMovement)active.GetComponent (typeof(CharacterMovement));
-				if (characterAction.IsMoving == true) {
-					moving = characterAction.IsMoving;
-				}
-			}
+		bool moving = isAnyMoving ();
+
+		if (!moving) {
+			resolution ();
 		}
+			
 
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			deSelect ();
@@ -221,8 +218,7 @@ public class GridManager: MonoBehaviour
 		return new Vector3(x, groundOffset, z);
 	}
 
-	void endTurnTask()
-	{
+	public bool isAnyMoving(){
 		bool moving = false;
 		foreach (GameObject active in GameObject.FindGameObjectsWithTag("Unit")) {
 			if (active != null) {
@@ -232,9 +228,14 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
+		return moving;
+	}
+
+	void endTurnTask()
+	{
+		bool moving = isAnyMoving ();
 		if (!moving) {
 			GridManager.draw = false;
-			Debug.Log ("Finished Turn!");
 			foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
 				GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
 				if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
@@ -243,24 +244,55 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-		//resolution ();
 	}
 
 	void resolution(){
+		List<GameObject> attackers = new List<GameObject> ();
+		List<GameObject> defenders = new List<GameObject> ();
 
-		foreach (GameObject unit1 in GameObject.FindGameObjectsWithTag("Unit")) {
-			GOProperties gop1 = (GOProperties)unit1.GetComponent (typeof(GOProperties));
-			foreach (GameObject unit2 in GameObject.FindGameObjectsWithTag("Unit")) {
-				GOProperties gop2 = (GOProperties)unit2.GetComponent (typeof(GOProperties));
-				if (gop1.UniqueID!=gop2.UniqueID & originTileTB [gop1.PlayerId] == originTileTB [gop2.PlayerId]) {
-					Debug.Log (gop1.UniqueID);
-					Debug.Log (gop2.UniqueID);
+		for (int i = gameobjects.Count-1;i>=0;i--){
+			GOProperties gop1 = (GOProperties)gameobjects[i].GetComponent (typeof(GOProperties));
+			for (int j = gameobjects.Count-1;j>=0;j--){
+				GOProperties gop2 = (GOProperties)gameobjects[j].GetComponent (typeof(GOProperties));
+				if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId == gop2.PlayerId) {
+					Debug.Log (originTileTB [gop1.PlayerId].tile);
+					Debug.Log (originTileTB [gop2.PlayerId].tile);
 					gop1.quantity += 1;
-					Destroy (unit2);
+					Destroy (gameobjects [j]);
+					gameobjects.Remove (gameobjects [j]);
+				} else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
+					if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
+						attackers.Add (gameobjects [i]);
+					}
+					if (!attackers.Contains (gameobjects [j]) & !defenders.Contains (gameobjects [j])) {
+						defenders.Add (gameobjects [j]);
+					}
 				}
+
 			}
 		}
+		int attackersvalue = 0;
+		int defendersvalue = 0;
+		foreach (GameObject attacker in attackers) {
+			GOProperties gop = (GOProperties)attacker.GetComponent (typeof(GOProperties));
+			attackersvalue += gop.AttackValue * gop.quantity;
+		}
+		foreach (GameObject defender in defenders) {
+			GOProperties gop = (GOProperties)defender.GetComponent (typeof(GOProperties));
+			defendersvalue += gop.AttackValue * gop.quantity;
+		}
 
+		if (attackersvalue > defendersvalue) {
+			foreach (GameObject defender in defenders) {
+				Destroy (defender);
+				gameobjects.Remove (defender);
+			}
+		} else {
+			foreach (GameObject attacker in attackers) {
+				Destroy (attacker);
+				gameobjects.Remove (attacker);
+			}
+		}
 	}
 
 	void Start()
@@ -383,19 +415,19 @@ public class GridManager: MonoBehaviour
 
 				if (x == 0 && y == 0)
 				{
-					gameobjects.AddLast(createObject(tb,fanatic,1));
+					gameobjects.Add(createObject(tb,fanatic,1));
 				}
 				if (x == 2 && y == 3)
 				{
-					gameobjects.AddLast(createObject(tb,fanatic,1));
+					gameobjects.Add(createObject(tb,fanatic,1));
 				}
 				if (x == 4 && y == 5)
 				{
-					gameobjects.AddLast(createObject (tb, car,2));
+					gameobjects.Add(createObject (tb, car,2));
 				}
 				if (x == 6 && y == 7)
 				{
-					gameobjects.AddLast(createObject (tb, truck,1));
+					gameobjects.Add(createObject (tb, truck,1));
 				}
 			}
 		}

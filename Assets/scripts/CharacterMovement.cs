@@ -95,23 +95,6 @@ public class CharacterMovement: MonoBehaviour
 		if (collision.gameObject.tag == "Unit") {
 			Physics.IgnoreCollision (collision.collider, this.GetComponent<Collider> ());
 		}
-//		if (collision.collider.CompareTag ("Unit")) {
-//			if (gameObject.activeSelf) {
-//				// Disable the other gameObject we've collided with, then flag to destroy it
-//				CharacterMovement characterAction = (CharacterMovement)collision.gameObject.GetComponent (typeof(CharacterMovement));
-//				//GridManager GM = GridManager.instance;
-//				collision.gameObject.SetActive (false);
-//				characterAction.IsMoving = false;
-//				//GOProperties gop = (GOProperties)this.gameObject.GetComponent (typeof(GOProperties));
-//				//GOProperties gopE = (GOProperties)collision.gameObject.GetComponent (typeof(GOProperties));
-//				//if (gop.PlayerId == gopE.PlayerId) {
-//				quantity += 1;
-//				Destroy (collision.gameObject);
-		////				} else if (gop.AttackValue * gop.quantity > gopE.DefenseValue * gopE.quantity) {
-////					Destroy (collision.gameObject);
-////				} 
-//			}
-//		}
 	}
 
 	void MoveTowards(Vector3 position)
