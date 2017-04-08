@@ -12,7 +12,6 @@ public class CharacterMovement: MonoBehaviour
 	public static float MinNextTileDist = 0.07f;
 
 	private MovingObject m_character;
-	public int quantity = 1;
 	//position of the tile we are heading to
 	Vector3 curTilePos;
 	Tile curTile;
@@ -108,7 +107,7 @@ public class CharacterMovement: MonoBehaviour
 //				//if (gop.PlayerId == gopE.PlayerId) {
 //				quantity += 1;
 //				Destroy (collision.gameObject);
-////				} else if (gop.AttackValue * quantity > gopE.DefenseValue * characterAction.quantity) {
+		////				} else if (gop.AttackValue * gop.quantity > gopE.DefenseValue * gopE.quantity) {
 ////					Destroy (collision.gameObject);
 ////				} 
 //			}

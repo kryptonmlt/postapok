@@ -9,10 +9,11 @@ public class GOProperties: MonoBehaviour
 	public int PlayerId;
 	public int MovementValue;
 	public int UniqueID;
+	public int quantity;
 
 	public GOProperties ()
 	{
-
+		quantity = 1;
 	}
 
 	public void setUId(int id){

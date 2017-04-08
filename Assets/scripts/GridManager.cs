@@ -102,8 +102,9 @@ public class GridManager: MonoBehaviour
 		foreach (GameObject go in gameobjects) {
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
+				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 				CharacterMovement characterAction = (CharacterMovement)go.GetComponent(typeof(CharacterMovement));
-				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), characterAction.quantity.ToString());
+				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString());
 			}
 		}
 
@@ -242,6 +243,24 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
+		//resolution ();
+	}
+
+	void resolution(){
+
+		foreach (GameObject unit1 in GameObject.FindGameObjectsWithTag("Unit")) {
+			GOProperties gop1 = (GOProperties)unit1.GetComponent (typeof(GOProperties));
+			foreach (GameObject unit2 in GameObject.FindGameObjectsWithTag("Unit")) {
+				GOProperties gop2 = (GOProperties)unit2.GetComponent (typeof(GOProperties));
+				if (gop1.UniqueID!=gop2.UniqueID & originTileTB [gop1.PlayerId] == originTileTB [gop2.PlayerId]) {
+					Debug.Log (gop1.UniqueID);
+					Debug.Log (gop2.UniqueID);
+					gop1.quantity += 1;
+					Destroy (unit2);
+				}
+			}
+		}
+
 	}
 
 	void Start()
