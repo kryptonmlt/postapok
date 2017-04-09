@@ -65,6 +65,9 @@ public class GridManager: MonoBehaviour
 	private GameObject car;
 	private GameObject bike;
 	private List<GameObject> stones = new List<GameObject>();
+	private List<GameObject> selectionMenu = new List<GameObject>();
+	//0=fanatic,1=bike,2=car,3=truck,4=refinery,5=windmill,6=junkyard
+	private List<Texture> textures = new List<Texture>();
 
 	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
@@ -80,6 +83,7 @@ public class GridManager: MonoBehaviour
 
 	public void deSelect(){
 		GridManager.unitSelected = new LinkedList<GameObject> ();
+		clearSelectionMenu ();
 	}
 
 
@@ -149,7 +153,9 @@ public class GridManager: MonoBehaviour
 					foreach (Renderer renderer in renderers) {
 						renderer.material.shader = selfIllumShader;
 					}
-					Debug.Log(retrieveTileOfObject(selected));
+					LandType landHit = retrieveTileOfObject (selected);
+					Debug.Log(landHit);
+					updateSelectionMenu(landHit);
 				}
 			}
 			// Rectangular hit
@@ -300,6 +306,9 @@ public class GridManager: MonoBehaviour
 	void Start()
 	{
 		LoadResources();
+		for(int i=0;i<4;i++){
+			selectionMenu.Add(GameObject.Find("sel"+i));
+		}
 		Button btn = endTurnButton.GetComponent<Button>();
 		btn.onClick.AddListener(endTurnTask);
 
@@ -333,6 +342,13 @@ public class GridManager: MonoBehaviour
 		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp1", typeof(GameObject)) as GameObject);
 		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp2", typeof(GameObject)) as GameObject);
 		stones.Add(Resources.Load ("Models/extras/stone/Prefabs/rockUp3", typeof(GameObject)) as GameObject);
+		textures.Add(Resources.Load("Textures/fanatic") as Texture);
+		textures.Add(Resources.Load("Textures/bike") as Texture);
+		textures.Add(Resources.Load("Textures/car") as Texture);
+		textures.Add(Resources.Load("Textures/truck") as Texture);
+		textures.Add(Resources.Load("Textures/refinery") as Texture);
+		textures.Add(Resources.Load("Textures/windmill") as Texture);
+		textures.Add(Resources.Load("Textures/junkyard") as Texture);
 	}
 
 	void createGrid()
@@ -445,16 +461,37 @@ public class GridManager: MonoBehaviour
 		foreach(Tile tile in board.Values)
 			tile.FindNeighbours(board, gridSize, equalLineLengths);
 	}
-
+	private void clearSelectionMenu(){
+		foreach(GameObject sel in selectionMenu){
+			RawImage img = (RawImage)sel.GetComponent<RawImage>();
+			img.texture = null;
+			((RawImage)sel.GetComponent<RawImage> ()).color = Color.clear;
+		}
+	}
 	private void updateSelectionMenu(LandType type){
+		clearSelectionMenu();
 		switch(type){
 		case LandType.Base:
+			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[0];
+			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
+			((RawImage)selectionMenu[1].GetComponent<RawImage>()).texture = textures[1];
+			((RawImage)selectionMenu[1].GetComponent<RawImage> ()).color = Color.white;
+			((RawImage)selectionMenu[2].GetComponent<RawImage>()).texture = textures[2];
+			((RawImage)selectionMenu[2].GetComponent<RawImage> ()).color = Color.white;
+			((RawImage)selectionMenu[3].GetComponent<RawImage>()).texture = textures[3];
+			((RawImage)selectionMenu[3].GetComponent<RawImage> ()).color = Color.white;
 			break;
 		case LandType.Oasis:
+			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[5];
+			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
 			break;
 		case LandType.OilField:
+			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[4];
+			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
 			break;
 		case LandType.Junkyard:
+			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[6];
+			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
 			break;
 		default:
 			break;
