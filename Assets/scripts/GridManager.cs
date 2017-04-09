@@ -549,24 +549,24 @@ public class GridManager: MonoBehaviour
 	private GameObject retrieveTile(GameObject obj){
 		RaycastHit hitInfo = new RaycastHit();
 		int mask = 1<<LayerMask.NameToLayer ("grid");
-		if (Physics.Raycast (obj.transform.position, Vector3.down, out hitInfo, mask)) {
+		Vector3 start = obj.transform.position;
+		start+=new Vector3(0f,0.2f,0f);
+		Debug.DrawRay (start, Vector3.down, Color.green, 30f, false);
+		if (Physics.Raycast (start, Vector3.down, out hitInfo, mask)) {
 			return hitInfo.transform.gameObject;
 		}
 		return null;
 	}
 
 	private LandType retrieveTileOfObject(GameObject obj){
-		RaycastHit hitInfo = new RaycastHit();
-		int mask = 1<<LayerMask.NameToLayer ("grid");
-		if (Physics.Raycast(obj.transform.position, Vector3.down, out hitInfo,mask)) {
-			GameObject selected = hitInfo.transform.gameObject;
-			TileBehaviour tb = (TileBehaviour)selected.GetComponent("TileBehaviour");
+		GameObject hit = retrieveTile (obj);
+		if(hit !=null){
+			TileBehaviour tb = (TileBehaviour)hit.GetComponent("TileBehaviour");
 			if(tb==null){
-				Debug.Log (selected.name);
+				Debug.Log (hit.name);
 				return LandType.Desert;
 			}
 			return tb.getTile().landType;
-
 		}
 		return LandType.Desert;
 	}
