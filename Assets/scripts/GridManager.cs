@@ -55,6 +55,9 @@ public class GridManager: MonoBehaviour
 	public float fAlpha=0.25f;
 
 	private GameObject camp;
+	private GameObject refinery;
+	private GameObject windmill;
+	private GameObject junkyard;
 	private GameObject mountain;
 	private GameObject junk;
 	private GameObject tree;
@@ -329,6 +332,9 @@ public class GridManager: MonoBehaviour
 
 	void LoadResources(){
 		camp = Resources.Load ("Models/structures/barracks/prefabs/barracks", typeof(GameObject)) as GameObject;
+		refinery = Resources.Load ("Models/structures/petrolfactory/Prefabs/refinery", typeof(GameObject)) as GameObject;
+		windmill = Resources.Load ("Models/structures/windmill/prefabs/windmIll", typeof(GameObject)) as GameObject;
+		junkyard = Resources.Load ("Models/structures/petrolfactory/Prefabs/refinery", typeof(GameObject)) as GameObject;
 		mountain = Resources.Load ("Models/extras/mountain/prefab/mountain", typeof(GameObject)) as GameObject;
 		junk = Resources.Load ("Models/extras/junkLand/Prefabs/junkmount", typeof(GameObject)) as GameObject;
 		tree = Resources.Load ("Models/extras/trees/Prefabs/tree", typeof(GameObject)) as GameObject;
@@ -468,6 +474,48 @@ public class GridManager: MonoBehaviour
 			((RawImage)sel.GetComponent<RawImage> ()).color = Color.clear;
 		}
 	}
+
+	public void buildOnTile(GameObject selection){
+		if(unitSelected.Count!=0){
+			GameObject hexGrid = retrieveTile(unitSelected.First());
+			if(hexGrid == null){
+				Debug.Log ("No Tile Found");
+				return;
+			}
+			TileBehaviour tb = (TileBehaviour)hexGrid.GetComponent("TileBehaviour");
+			switch (tb.getTile ().getLandType()) {
+			case LandType.Base:
+				if(selection.name.Equals("sel0")){
+					createObject (tb,fanatic,1);
+				}else if(selection.name.Equals("sel1")){
+					createObject (tb,bike,1);
+				}else if(selection.name.Equals("sel2")){
+					createObject (tb,car,1);
+				}else if(selection.name.Equals("sel3")){
+					createObject (tb,truck,1);
+				}
+				break;
+			case LandType.Oasis:
+				if(selection.name.Equals("sel0")){
+					createObject (tb,windmill,1);
+				}
+				break;
+			case LandType.OilField:
+				if(selection.name.Equals("sel0")){
+					createObject (tb,refinery,1);
+				}
+				break;
+			case LandType.Junkyard:
+				if(selection.name.Equals("sel0")){
+					createObject (tb,junkyard,1);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	private void updateSelectionMenu(LandType type){
 		clearSelectionMenu();
 		switch(type){
@@ -496,6 +544,15 @@ public class GridManager: MonoBehaviour
 		default:
 			break;
 		}
+	}
+
+	private GameObject retrieveTile(GameObject obj){
+		RaycastHit hitInfo = new RaycastHit();
+		int mask = 1<<LayerMask.NameToLayer ("grid");
+		if (Physics.Raycast (obj.transform.position, Vector3.down, out hitInfo, mask)) {
+			return hitInfo.transform.gameObject;
+		}
+		return null;
 	}
 
 	private LandType retrieveTileOfObject(GameObject obj){

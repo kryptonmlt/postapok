@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class TileBehaviour: MonoBehaviour
 {
@@ -28,15 +29,16 @@ public class TileBehaviour: MonoBehaviour
 	//IMPORTANT: for methods like OnMouseEnter, OnMouseExit and so on to work, collider (Component -> Physics -> Mesh Collider) should be attached to the prefab
 	void OnMouseEnter()
 	{
-		foreach (GameObject unit in GridManager.unitSelected) {
-			
-			if (unit != null) {
-				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
-				GridManager.instance.selectedTile = tile;
-				//when mouse is over some tile, the tile is passable and the current tile is neither destination nor origin tile, change color to orange
-				if (tile.Passable && this != GridManager.instance.destTileTB[gop.UniqueID]
-					&& this != GridManager.instance.getOriginTileTB () [gop.UniqueID]) {
-					changeColor (orange);
+		if (!EventSystem.current.IsPointerOverGameObject ()) {
+			foreach (GameObject unit in GridManager.unitSelected) {
+				if (unit != null) {
+					GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+					GridManager.instance.selectedTile = tile;
+					//when mouse is over some tile, the tile is passable and the current tile is neither destination nor origin tile, change color to orange
+					if (tile.Passable && this != GridManager.instance.destTileTB [gop.UniqueID]
+					   && this != GridManager.instance.getOriginTileTB () [gop.UniqueID]) {
+						changeColor (orange);
+					}
 				}
 			}
 		}
@@ -46,7 +48,6 @@ public class TileBehaviour: MonoBehaviour
 	void OnMouseExit()
 	{
 		foreach (GameObject unit in GridManager.unitSelected) {
-			
 			if (unit != null) {
 				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
 				GridManager.instance.selectedTile = null;
@@ -60,29 +61,30 @@ public class TileBehaviour: MonoBehaviour
 	//called every frame when mouse cursor is on this tile
 	void OnMouseOver()
 	{
-		foreach (GameObject unit in GridManager.unitSelected) {
-			
-			if (unit != null) {
-				GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
-				//if player right-clicks on the tile, toggle passable variable and change the color accordingly
-				//		if (Input.GetMouseButtonUp(1))
-				//		{		
-				//		}
-				//if user left-clicks the tile
-				bool moving = GridManager.instance.isAnyMoving();
-				if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
-					if (tile.Passable) {
-						changeColor (Color.white);
-						TileBehaviour originTileTB = GridManager.instance.getOriginTileTB () [gop.UniqueID];
-						//if user clicks on origin tile or origin tile is not assigned yet
-						if (this == originTileTB || originTileTB == null) {
-							originTileChanged ();
-						}else {
-							destTileChanged ();
+		if(!EventSystem.current.IsPointerOverGameObject()){
+			foreach (GameObject unit in GridManager.unitSelected) {
+				if (unit != null) {
+					GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
+					//if player right-clicks on the tile, toggle passable variable and change the color accordingly
+					//		if (Input.GetMouseButtonUp(1))
+					//		{		
+					//		}
+					//if user left-clicks the tile
+					bool moving = GridManager.instance.isAnyMoving();
+					if (Input.GetMouseButtonUp (0) & unit != null & moving == false) {
+						if (tile.Passable) {
+							changeColor (Color.white);
+							TileBehaviour originTileTB = GridManager.instance.getOriginTileTB () [gop.UniqueID];
+							//if user clicks on origin tile or origin tile is not assigned yet
+							if (this == originTileTB || originTileTB == null) {
+								originTileChanged ();
+							}else {
+								destTileChanged ();
+							}
+							GridManager.instance.generateAndShowPath ();
 						}
-						GridManager.instance.generateAndShowPath ();
-					}
-				} 
+					} 
+				}
 			}
 		}
 	}
