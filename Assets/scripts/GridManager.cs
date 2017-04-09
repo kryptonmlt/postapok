@@ -147,18 +147,15 @@ public class GridManager: MonoBehaviour
 
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit();
-			bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
-			GameObject selected = hitInfo.transform.gameObject;
-			if (hit) {
+			GameObject selected = null;
+			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo)) {
+				selected = hitInfo.transform.gameObject;
 				if (hitInfo.transform.gameObject.tag == "Unit" & !unitSelected.Contains(hitInfo.transform.gameObject)) {
 					unitSelected.AddLast (hitInfo.transform.gameObject);
 					Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
 					foreach (Renderer renderer in renderers) {
 						renderer.material.shader = selfIllumShader;
 					}
-					LandType landHit = retrieveTileOfObject (selected);
-					Debug.Log(landHit);
-					updateSelectionMenu(landHit);
 				}
 			}
 			// Rectangular hit
@@ -175,7 +172,7 @@ public class GridManager: MonoBehaviour
 				//is inside the box
 				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 				   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-					if (unit != selected) {
+					if(selected!=null && unit !=selected){
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
@@ -183,6 +180,11 @@ public class GridManager: MonoBehaviour
 						}
 					}
 				}
+			}
+			if(unitSelected.Count==1){
+				LandType landHit = retrieveTileOfObject (unitSelected.First());
+				Debug.Log(landHit);
+				updateSelectionMenu(landHit);
 			}
 			clicked = false;
 		}
