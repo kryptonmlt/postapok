@@ -12,6 +12,30 @@ public class TileBehaviour: MonoBehaviour
 	//Slightly transparent orange
 	Color orange = new Color(255f / 255f, 127f / 255f, 0, 127f/255f);
 
+	private int itemsOnTile { get; set; }
+	private List<Vector3> separatePositions = new List<Vector3>();
+
+	public void updatePositionOfTile(Vector3 position){
+		separatePositions.Clear ();
+		transform.position = position;
+		Mesh mesh = GetComponent<MeshFilter> ().mesh;
+		Vector3[] vertices = mesh.vertices;
+		foreach(Vector3 v in vertices){
+			Vector3 updated = (v + position) /2f;
+			separatePositions.Add(v);
+		}
+	}
+
+	public Vector3 getNextPosition(){
+		Vector3 result = separatePositions[itemsOnTile];
+		itemsOnTile++;
+		return result;
+	}
+
+	public void removeObjectFromTile(){
+		itemsOnTile--;
+	}
+
 	public void changeColor(Color color)
 	{
 		GetComponent<Renderer> ().material.color = color;

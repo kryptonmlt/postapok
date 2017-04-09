@@ -375,9 +375,9 @@ public class GridManager: MonoBehaviour
 			{
 				GameObject hex = (GameObject)Instantiate(Hex);
 				Vector2 gridPos = new Vector2(x, y);
-				hex.transform.position = calcWorldCoord(gridPos);
-				hex.transform.parent = hexGridGO.transform;
 				var tb = (TileBehaviour)hex.GetComponent("TileBehaviour");
+				tb.updatePositionOfTile(calcWorldCoord(gridPos));
+				hex.transform.parent = hexGridGO.transform;
 
 				int landTypeId = loadedMap [landPos];
 				tb.tile = new Tile((int)x - (int)(y / 2), (int)y, TerrainType[landTypeId]);
