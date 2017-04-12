@@ -14,7 +14,6 @@ public class GOProperties: MonoBehaviour
 
 	public GOProperties ()
 	{
-		quantity = 1;
 	}
 
 	public void setUId(int id){

@@ -295,13 +295,15 @@ public class GridManager: MonoBehaviour
 			defendersvalue += gop.AttackValue * gop.quantity;
 		}
 
-		if (attackersvalue > defendersvalue) {
+		if (attackersvalue >= defendersvalue) {
 			foreach (GameObject defender in defenders) {
 				Destroy (defender);
 				gameobjects.Remove (defender);
 			}
 		} else {
 			foreach (GameObject attacker in attackers) {
+				Debug.Log (attackersvalue);
+				Debug.Log (defendersvalue);
 				Destroy (attacker);
 				gameobjects.Remove (attacker);
 			}
@@ -454,11 +456,11 @@ public class GridManager: MonoBehaviour
 				}
 				if (x == 4 && y == 5)
 				{
-					gameobjects.Add(createObject (tb, car,1));
+					gameobjects.Add(createObject (tb,car,2));
 				}
 				if (x == 6 && y == 7)
 				{
-					gameobjects.Add(createObject (tb, truck,1));
+					gameobjects.Add(createObject (tb,truck,1));
 				}
 			}
 		}
@@ -579,23 +581,25 @@ public class GridManager: MonoBehaviour
 		GOProperties gop = (GOProperties) go.GetComponent (typeof(GOProperties));
 		gop.setUId (this.getId());
 		gop.setPId (id); 
-		gop.type = obj.ToString ();
+		gop.type = obj.name.ToString ();
+		gop.quantity = 1;
 		originTileTB.Add(gop.UniqueID,tb);
 		destTileTB.Add(gop.UniqueID,tb);
 		ObjsPaths.Add(gop.UniqueID,new List<GameObject>());
+		Debug.Log (gop.type);
 		switch (gop.type)
 		{
-		case "fanatic":
+		case "ThirdPersonController":
 			gop.setAV(1);
 			gop.setDV(1);
 			gop.setMV(1);
 			break;
-		case "car":
+		case "Apo_Car_2015":
 			gop.setAV(2);
 			gop.setDV(2);
 			gop.setMV(2);
 			break;
-		case "truck":
+		case "f_noladder":
 			gop.setAV(3);
 			gop.setDV(3);
 			gop.setMV(2);
