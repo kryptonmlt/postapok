@@ -471,6 +471,10 @@ public class GridManager: MonoBehaviour
 				{
 					gameobjects.Add(createObject (tb,truck,1));
 				}
+				if (x == 5 && y == 5)
+				{
+					gameobjects.Add(createObject (tb,bike,1));
+				}
 			}
 		}
 		//variable to indicate if all rows have the same number of hexes in them
