@@ -503,13 +503,13 @@ public class GridManager: MonoBehaviour
 			switch (tb.getTile ().getLandType()) {
 			case LandType.Base:
 				if(selection.name.Equals("sel0")){
-					createObject (tb,fanatic,1);
+					gameobjects.Add(createObject (tb,fanatic,1));
 				}else if(selection.name.Equals("sel1")){
-					createObject (tb,bike,1);
+					gameobjects.Add(createObject (tb,bike,1));
 				}else if(selection.name.Equals("sel2")){
-					createObject (tb,car,1);
+					gameobjects.Add(createObject (tb,car,1));
 				}else if(selection.name.Equals("sel3")){
-					createObject (tb,truck,1);
+					gameobjects.Add(createObject (tb,truck,1));
 				}
 				break;
 			case LandType.Oasis:
