@@ -501,11 +501,11 @@ public class GridManager: MonoBehaviour
 				if(selection.name.Equals("sel0")){
 					createObject (tb,fanatic,1);
 				}else if(selection.name.Equals("sel1")){
-					createObject (tb,bike,2);
+					createObject (tb,bike,1);
 				}else if(selection.name.Equals("sel2")){
-					createObject (tb,car,2);
+					createObject (tb,car,1);
 				}else if(selection.name.Equals("sel3")){
-					createObject (tb,truck,2);
+					createObject (tb,truck,1);
 				}
 				break;
 			case LandType.Oasis:
