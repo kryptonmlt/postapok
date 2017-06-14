@@ -79,9 +79,10 @@ public class CharacterMovement: MonoBehaviour
 			GOProperties gop = (GOProperties) this.GetComponent (typeof(GOProperties));
 			closeToDest = GM.destTileTB [gop.UniqueID].getNextPosition ();
 		}
-		/*if(path.IndexOf (curTile) == 1 ){
+		if(path.IndexOf (curTile) == 0 ){
 			curTilePos = closeToDest.Value;
-		}*/
+			curTilePos.y=myTransform.position.y;
+		}
 		//if the distance between the character and the center of the next tile is short enough
 		if ((curTilePos - myTransform.position).sqrMagnitude < MinNextTileDist * MinNextTileDist)
 		{
