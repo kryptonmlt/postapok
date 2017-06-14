@@ -275,9 +275,9 @@ public class GridManager: MonoBehaviour
 				GOProperties gop2 = (GOProperties)gameobjects[j].GetComponent (typeof(GOProperties));
 				if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId == gop2.PlayerId) {
 					if (gop1.type == gop2.type) {
-						gop1.quantity += gop2.quantity;
-						Destroy (gameobjects [j]);
-						gameobjects.Remove (gameobjects [j]);
+						gop2.quantity += gop1.quantity;
+						Destroy (gameobjects [i]);
+						gameobjects.Remove (gameobjects [i]);
 						i--;
 					} else if (gop1.type != gop2.type & pi1==pj1 & pi2==pj2 & pi3==pj3) {
 						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition());
