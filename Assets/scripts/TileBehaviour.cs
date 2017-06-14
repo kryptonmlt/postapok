@@ -15,13 +15,22 @@ public class TileBehaviour: MonoBehaviour
 	public int itemsOnTile =0;
 	public List<Vector3> separatePositions = new List<Vector3>();
 
+	private static float outerRadius =2.5f;
+	private static float innerRadius =1.5f;
+	private static Vector3[] corners = {
+		new Vector3(0f, 0f, outerRadius),
+		new Vector3(innerRadius, 0f, 0.5f * outerRadius),
+		new Vector3(innerRadius, 0f, -0.5f * outerRadius),
+		new Vector3(0f, 0f, -outerRadius),
+		new Vector3(-innerRadius, 0f, -0.5f * outerRadius),
+		new Vector3(-innerRadius, 0f, 0.5f * outerRadius)
+	};
+
 	public void updatePositionOfTile(Vector3 position){
-		separatePositions.Clear ();
+		separatePositions.Clear();
 		transform.position = position;
-		Mesh mesh = GetComponent<MeshFilter> ().mesh;
-		Vector3[] vertices = mesh.vertices;
-		foreach(Vector3 v in vertices){
-			Vector3 updated = (v + position) /2f;
+		foreach(Vector3 v in corners){
+			Vector3 updated = v + position;
 			separatePositions.Add(updated);
 		}
 	}

@@ -590,7 +590,7 @@ public class GridManager: MonoBehaviour
 
 	private GameObject createObject(TileBehaviour tb,GameObject obj,int teamId){
 		GameObject go = Instantiate (obj);
-		go.transform.position = tb.transform.position;
+		go.transform.position = tb.getNextPosition ();
 		GOProperties gop = (GOProperties) go.GetComponent (typeof(GOProperties));
 		gop.setUId (this.getId());
 		gop.setPId (teamId); 
