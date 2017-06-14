@@ -464,34 +464,42 @@ public class GridManager: MonoBehaviour
 				if (x == 0 && y == 1)
 				{
 					gameobjects.Add(createObject(tb,fanatic,1));
+					createObject (tb,junkyard,1);
 				}
 				if (x == 1 && y == 0)
 				{
 					gameobjects.Add(createObject (tb,fanatic,1));
+					createObject (tb,windmill,1);
 				}
 				if (x == 8 && y == 0)
 				{
 					gameobjects.Add(createObject(tb,fanatic,2));
+					createObject (tb,windmill,2);
 				}
 				if (x == 8 && y == 1)
 				{
 					gameobjects.Add(createObject (tb,fanatic,2));
+					createObject (tb,junkyard,2);
 				}
 				if (x == 0 && y == 9)
 				{
 					gameobjects.Add(createObject(tb,fanatic,3));
+					createObject (tb,junkyard,4);
 				}
 				if (x == 1 && y == 10)
 				{
 					gameobjects.Add(createObject (tb,fanatic,3));
+					createObject (tb,windmill,3);
 				}
 				if (x == 8 && y == 10)
 				{
 					gameobjects.Add(createObject(tb,fanatic,4));
+					createObject (tb,windmill,4);
 				}
 				if (x == 8 && y == 9)
 				{
 					gameobjects.Add(createObject (tb,fanatic,4));
+					createObject (tb,junkyard,4);
 				}
 			}
 		}
