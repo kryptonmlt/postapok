@@ -406,6 +406,7 @@ public class GridManager: MonoBehaviour
 				switch(landTypeId){
 				case 0:
 					stuffOnTile.Add (createObject (tb, camp, tId));
+					gameobjects.Add(createObject(tb,fanatic,tId));
 					tId++;
 					rand = false;
 					break;
@@ -459,22 +460,38 @@ public class GridManager: MonoBehaviour
 					Vector3 temp = new Vector3 (randX,0f,randZ);
 					stuffOnTile[i].transform.position += temp;
 				}
-
-				if (x == 0 && y == 0)
+					
+				if (x == 0 && y == 1)
 				{
 					gameobjects.Add(createObject(tb,fanatic,1));
 				}
-				if (x == 0 && y == 1)
+				if (x == 1 && y == 0)
 				{
-					gameobjects.Add(createObject(tb,car,1));
+					gameobjects.Add(createObject (tb,fanatic,1));
 				}
 				if (x == 8 && y == 0)
 				{
-					gameobjects.Add(createObject (tb,fanatic,2));
+					gameobjects.Add(createObject(tb,fanatic,2));
 				}
 				if (x == 8 && y == 1)
 				{
-					gameobjects.Add(createObject (tb,truck,2));
+					gameobjects.Add(createObject (tb,fanatic,2));
+				}
+				if (x == 0 && y == 9)
+				{
+					gameobjects.Add(createObject(tb,fanatic,3));
+				}
+				if (x == 1 && y == 10)
+				{
+					gameobjects.Add(createObject (tb,fanatic,3));
+				}
+				if (x == 8 && y == 10)
+				{
+					gameobjects.Add(createObject(tb,fanatic,4));
+				}
+				if (x == 8 && y == 9)
+				{
+					gameobjects.Add(createObject (tb,fanatic,4));
 				}
 			}
 		}
@@ -494,7 +511,13 @@ public class GridManager: MonoBehaviour
 	}
 
 	public void buildOnTile(GameObject selection){
-		if(unitSelected.Count!=0){
+		bool build = false;
+		foreach (GameObject unit in unitSelected) {
+			GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
+			if (gop.type == "ThirdPersonController")
+				build = true;
+		}
+		if(unitSelected.Count!=0 & build==true){
 			GameObject hexGrid = retrieveTile(unitSelected.First());
 			if(hexGrid == null){
 				Debug.Log ("No Tile Found");
@@ -537,31 +560,39 @@ public class GridManager: MonoBehaviour
 
 	private void updateSelectionMenu(LandType type){
 		clearSelectionMenu();
-		switch(type){
-		case LandType.Base:
-			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[0];
-			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
-			((RawImage)selectionMenu[1].GetComponent<RawImage>()).texture = textures[1];
-			((RawImage)selectionMenu[1].GetComponent<RawImage> ()).color = Color.white;
-			((RawImage)selectionMenu[2].GetComponent<RawImage>()).texture = textures[2];
-			((RawImage)selectionMenu[2].GetComponent<RawImage> ()).color = Color.white;
-			((RawImage)selectionMenu[3].GetComponent<RawImage>()).texture = textures[3];
-			((RawImage)selectionMenu[3].GetComponent<RawImage> ()).color = Color.white;
-			break;
-		case LandType.Oasis:
-			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[5];
-			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
-			break;
-		case LandType.OilField:
-			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[4];
-			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
-			break;
-		case LandType.Junkyard:
-			((RawImage)selectionMenu[0].GetComponent<RawImage>()).texture = textures[6];
-			((RawImage)selectionMenu[0].GetComponent<RawImage> ()).color = Color.white;
-			break;
-		default:
-			break;
+		bool build = false;
+		foreach (GameObject unit in unitSelected) {
+			GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
+			if (gop.type == "ThirdPersonController")
+				build = true;
+		}
+		if (build == true) {
+			switch (type) {
+			case LandType.Base:
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [0];
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+				((RawImage)selectionMenu [1].GetComponent<RawImage> ()).texture = textures [1];
+				((RawImage)selectionMenu [1].GetComponent<RawImage> ()).color = Color.white;
+				((RawImage)selectionMenu [2].GetComponent<RawImage> ()).texture = textures [2];
+				((RawImage)selectionMenu [2].GetComponent<RawImage> ()).color = Color.white;
+				((RawImage)selectionMenu [3].GetComponent<RawImage> ()).texture = textures [3];
+				((RawImage)selectionMenu [3].GetComponent<RawImage> ()).color = Color.white;
+				break;
+			case LandType.Oasis:
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [5];
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+				break;
+			case LandType.OilField:
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [4];
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+				break;
+			case LandType.Junkyard:
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [6];
+				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -612,12 +643,17 @@ public class GridManager: MonoBehaviour
 		case "Apo_Car_2015":
 			gop.setAV(2);
 			gop.setDV(2);
-			gop.setMV(2);
+			gop.setMV(3);
 			break;
 		case "f_noladder":
 			gop.setAV(3);
 			gop.setDV(3);
 			gop.setMV(2);
+			break;
+		case "bike":
+			gop.setAV(2);
+			gop.setDV(1);
+			gop.setMV(3);
 			break;
 		}
 		return go;
