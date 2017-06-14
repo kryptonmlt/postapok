@@ -254,6 +254,7 @@ public class GridManager: MonoBehaviour
 				if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
 					CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 					characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
+					originTileTB [gop.UniqueID].removeObjectFromTile ();
 				}
 			}
 		}
@@ -278,6 +279,7 @@ public class GridManager: MonoBehaviour
 						gop2.quantity += gop1.quantity;
 						Destroy (gameobjects [i]);
 						gameobjects.Remove (gameobjects [i]);
+						originTileTB [gop1.UniqueID].removeObjectFromTile ();
 						i--;
 					} else if (gop1.type != gop2.type & pi1==pj1 & pi2==pj2 & pi3==pj3) {
 						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition());

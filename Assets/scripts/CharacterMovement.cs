@@ -18,6 +18,7 @@ public class CharacterMovement: MonoBehaviour
 	List<Tile> path;
 	public bool IsMoving { get; private set; }
 	Transform myTransform;
+	private Vector3? closeToDest = null;
 
 	void Awake()
 	{
@@ -73,19 +74,29 @@ public class CharacterMovement: MonoBehaviour
 			m_character.Move (Vector3.zero, false, false);
 			return;
 		}
+		if (closeToDest==null) {
+			GridManager GM = GridManager.instance;
+			GOProperties gop = (GOProperties) this.GetComponent (typeof(GOProperties));
+			closeToDest = GM.destTileTB [gop.UniqueID].getNextPosition ();
+		}
+		/*if(path.IndexOf (curTile) == 1 ){
+			curTilePos = closeToDest.Value;
+		}*/
 		//if the distance between the character and the center of the next tile is short enough
 		if ((curTilePos - myTransform.position).sqrMagnitude < MinNextTileDist * MinNextTileDist)
 		{
+			//set custom destinitation
 			//if we reached the destination tile
 			if (path.IndexOf(curTile) == 0)
 			{
 				IsMoving = false; 
 				switchOriginAndDestinationTiles();
+				closeToDest = null;
 				return;
 			}
 			//curTile becomes the next one
-			curTile = path[path.IndexOf(curTile) - 1];
-			curTilePos = calcTilePos(curTile);
+			curTile = path [path.IndexOf (curTile) - 1];
+			curTilePos = calcTilePos (curTile);
 		}
 		MoveTowards(curTilePos);
 	}
