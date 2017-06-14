@@ -90,13 +90,6 @@ public class CharacterMovement: MonoBehaviour
 		MoveTowards(curTilePos);
 	}
 
-	void OnCollisionEnter(Collision collision)
-	{
-		if (collision.gameObject.tag == "Unit") {
-			Physics.IgnoreCollision (collision.collider, this.GetComponent<Collider> ());
-		}
-	}
-
 	void MoveTowards(Vector3 position)
 	{
 		//mevement direction

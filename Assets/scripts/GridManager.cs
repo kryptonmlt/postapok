@@ -379,6 +379,7 @@ public class GridManager: MonoBehaviour
 		//board is used to store tile locations
 		Dictionary<Point, Tile> board = new Dictionary<Point, Tile>();
 		int landPos = 0;
+		int tId = 1;
 		for (float y = 0; y < gridSize.y; y++)
 		{
 			float sizeX = gridSize.x;
@@ -402,7 +403,8 @@ public class GridManager: MonoBehaviour
 				bool rand = true;
 				switch(landTypeId){
 				case 0:
-					stuffOnTile.Add ((GameObject)Instantiate (camp));
+					stuffOnTile.Add (createObject (tb, camp, tId));
+					tId++;
 					rand = false;
 					break;
 				case 1:
@@ -460,21 +462,17 @@ public class GridManager: MonoBehaviour
 				{
 					gameobjects.Add(createObject(tb,fanatic,1));
 				}
-				if (x == 2 && y == 3)
+				if (x == 0 && y == 1)
 				{
-					gameobjects.Add(createObject(tb,fanatic,1));
+					gameobjects.Add(createObject(tb,car,1));
 				}
-				if (x == 4 && y == 5)
+				if (x == 8 && y == 0)
 				{
-					gameobjects.Add(createObject (tb,car,1));
+					gameobjects.Add(createObject (tb,fanatic,2));
 				}
-				if (x == 6 && y == 7)
+				if (x == 8 && y == 1)
 				{
-					gameobjects.Add(createObject (tb,truck,1));
-				}
-				if (x == 5 && y == 5)
-				{
-					gameobjects.Add(createObject (tb,bike,1));
+					gameobjects.Add(createObject (tb,truck,2));
 				}
 			}
 		}
@@ -500,32 +498,33 @@ public class GridManager: MonoBehaviour
 				Debug.Log ("No Tile Found");
 				return;
 			}
+			int tId = unitSelected.First ().GetComponent<GOProperties> ().PlayerId;
 			TileBehaviour tb = (TileBehaviour)hexGrid.GetComponent("TileBehaviour");
 			switch (tb.getTile ().getLandType()) {
 			case LandType.Base:
 				if(selection.name.Equals("sel0")){
-					gameobjects.Add(createObject (tb,fanatic,1));
+					gameobjects.Add(createObject (tb,fanatic,tId));
 				}else if(selection.name.Equals("sel1")){
-					gameobjects.Add(createObject (tb,bike,1));
+					gameobjects.Add(createObject (tb,bike,tId));
 				}else if(selection.name.Equals("sel2")){
-					gameobjects.Add(createObject (tb,car,1));
+					gameobjects.Add(createObject (tb,car,tId));
 				}else if(selection.name.Equals("sel3")){
-					gameobjects.Add(createObject (tb,truck,1));
+					gameobjects.Add(createObject (tb,truck,tId));
 				}
 				break;
 			case LandType.Oasis:
 				if(selection.name.Equals("sel0")){
-					createObject (tb,windmill,1);
+					createObject (tb,windmill,tId);
 				}
 				break;
 			case LandType.OilField:
 				if(selection.name.Equals("sel0")){
-					createObject (tb,refinery,1);
+					createObject (tb,refinery,tId);
 				}
 				break;
 			case LandType.Junkyard:
 				if(selection.name.Equals("sel0")){
-					createObject (tb,junkyard,1);
+					createObject (tb,junkyard,tId);
 				}
 				break;
 			default:
@@ -589,12 +588,12 @@ public class GridManager: MonoBehaviour
 		return LandType.Desert;
 	}
 
-	private GameObject createObject(TileBehaviour tb,GameObject obj,int id){
+	private GameObject createObject(TileBehaviour tb,GameObject obj,int teamId){
 		GameObject go = Instantiate (obj);
 		go.transform.position = tb.transform.position;
 		GOProperties gop = (GOProperties) go.GetComponent (typeof(GOProperties));
 		gop.setUId (this.getId());
-		gop.setPId (id); 
+		gop.setPId (teamId); 
 		gop.type = obj.name.ToString ();
 		gop.quantity = 1;
 		originTileTB.Add(gop.UniqueID,tb);
