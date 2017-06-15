@@ -26,6 +26,12 @@ public class TileBehaviour: MonoBehaviour
 		new Vector3(-innerRadius, 0f, 0.5f * outerRadius)
 	};
 
+	public bool built = false;
+
+	public void Builded(){
+		built = true;
+	}
+
 	public void updatePositionOfTile(Vector3 position){
 		separatePositions.Clear();
 		transform.position = position;
