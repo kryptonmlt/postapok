@@ -74,6 +74,9 @@ public class GridManager: MonoBehaviour
 
 	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
+	private int turn = 1;
+	private int players = 4;
+
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
 		{0,LandType.Base},
@@ -150,7 +153,8 @@ public class GridManager: MonoBehaviour
 			GameObject selected = null;
 			if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo)) {
 				selected = hitInfo.transform.gameObject;
-				if (hitInfo.transform.gameObject.tag == "Unit" & !unitSelected.Contains(hitInfo.transform.gameObject)) {
+				GOProperties gop = (GOProperties) selected.GetComponent (typeof(GOProperties));
+				if (hitInfo.transform.gameObject.tag == "Unit" & !unitSelected.Contains(hitInfo.transform.gameObject) && gop.PlayerId==turn) {
 					unitSelected.AddLast (hitInfo.transform.gameObject);
 					Renderer[] renderers= hitInfo.transform.gameObject.GetComponentsInChildren<Renderer> ();
 					foreach (Renderer renderer in renderers) {
@@ -172,7 +176,8 @@ public class GridManager: MonoBehaviour
 				//is inside the box
 				if (Mathf.Max (v1.x, v2.x) >= pos.x && Mathf.Min (v1.x, v2.x) <= pos.x
 				   && Mathf.Max (v1.z, v2.z) >= pos.z && Mathf.Min (v1.z, v2.z) <= pos.z) {
-					if(selected!=null && unit !=selected){
+					GOProperties gop = (GOProperties) unit.GetComponent (typeof(GOProperties));
+					if(selected!=null && unit !=selected && gop.PlayerId==turn){
 						unitSelected.AddLast (unit);
 						Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 						foreach (Renderer renderer in renderers) {
@@ -246,17 +251,21 @@ public class GridManager: MonoBehaviour
 
 	void endTurnTask()
 	{
-		bool moving = isAnyMoving ();
-		if (!moving) {
-			GridManager.draw = false;
-			foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-				GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
-				if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
-					CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-					characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
-					originTileTB [gop.UniqueID].removeObjectFromTile ();
+		if (turn == players) {
+			bool moving = isAnyMoving ();
+			if (!moving) {
+				GridManager.draw = false;
+				foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+					GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
+						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
+						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
+						originTileTB [gop.UniqueID].removeObjectFromTile ();
+					}
 				}
 			}
+		} else {
+			turn++;
 		}
 	}
 
