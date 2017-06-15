@@ -74,8 +74,15 @@ public class GridManager: MonoBehaviour
 
 	public static LinkedList<GameObject> unitSelected=new LinkedList<GameObject>();
 
+	private int currentPlayer=1;
 	private int turn = 1;
 	private int players = 4;
+	private PlayerData[] playerData;
+
+	private Text  waterResource;
+	private Text  petrolResource;
+	private Text  scrapResource;
+	private Text  turnResource;
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType>()
 	{
@@ -121,7 +128,18 @@ public class GridManager: MonoBehaviour
 
 	}
 
+	void updateResourcesMenu (int playerId){
+		playerId -= 1;
+		PlayerData data = playerData[playerId];
+		turnResource.text=""+turn;
+		waterResource.text=""+playerData[playerId].water;
+		petrolResource.text=""+playerData[playerId].petrol;
+		scrapResource.text=""+playerData[playerId].scrap;
+	}
+
 	void Update(){
+
+		updateResourcesMenu (currentPlayer);
 
 		bool moving = isAnyMoving ();
 
@@ -348,6 +366,11 @@ public class GridManager: MonoBehaviour
 		setSizes();
 		createGrid();
 		generateAndShowPath();
+
+		playerData = new PlayerData[players];
+		for(int i=0;i<players;i++){
+			playerData[i]=new PlayerData(2,0,2);
+		}
 	}
 
 	void Awake()
@@ -380,6 +403,11 @@ public class GridManager: MonoBehaviour
 		textures.Add(Resources.Load("Textures/refinery") as Texture);
 		textures.Add(Resources.Load("Textures/windmill") as Texture);
 		textures.Add(Resources.Load("Textures/junkyard") as Texture);
+
+		waterResource = GameObject.Find("ActionMenu/WaterText").GetComponent<Text>();
+		petrolResource = GameObject.Find("ActionMenu/PetrolText").GetComponent<Text>();
+		scrapResource = GameObject.Find("ActionMenu/ScrapText").GetComponent<Text>();
+		turnResource = GameObject.Find("ActionMenu/TurnText").GetComponent<Text>();
 	}
 
 	void createGrid()
