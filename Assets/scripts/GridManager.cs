@@ -77,6 +77,7 @@ public class GridManager: MonoBehaviour
 	private int currentPlayer=1;
 	private int turn = 1;
 	private int players = 4;
+	private int round = 0;
 	private PlayerData[] playerData;
 
 	private Text  waterResource;
@@ -282,6 +283,8 @@ public class GridManager: MonoBehaviour
 					}
 				}
 			}
+			round++;
+			turn = 1;
 		} else {
 			turn++;
 		}
