@@ -440,7 +440,6 @@ public class GridManager: MonoBehaviour
 		//board is used to store tile locations
 		Dictionary<Point, Tile> board = new Dictionary<Point, Tile> ();
 		int landPos = 0;
-		int tId = 1;
 		for (float y = 0; y < gridSize.y; y++) {
 			float sizeX = gridSize.x;
 			//if the offset row sticks up, reduce the number of hexes in a row
@@ -462,8 +461,6 @@ public class GridManager: MonoBehaviour
 				bool rand = true;
 				switch (landTypeId) {
 				case 0:
-					stuffOnTile.Add (createObject (tb, camp, tId));
-					tId++;
 					rand = false;
 					break;
 				case 1:
@@ -518,6 +515,7 @@ public class GridManager: MonoBehaviour
 				}
 				if (players > 0) {
 					if (x ==0 && y ==0){
+						stuffOnTile.Add (createObject (tb, camp, 1));
 						gameobjects.Add (createObject (tb, fanatic, 1));
 					}
 
@@ -534,6 +532,7 @@ public class GridManager: MonoBehaviour
 				}
 				if (players > 1) {
 					if (x ==9 & y ==10){
+						stuffOnTile.Add (createObject (tb, camp, 1));
 						gameobjects.Add (createObject (tb, fanatic, 2));
 					}	
 					if (x == 8 && y == 10) {
@@ -549,6 +548,7 @@ public class GridManager: MonoBehaviour
 				}
 				if (players > 2) {
 					if (x ==9 & y ==0){
+						stuffOnTile.Add (createObject (tb, camp, 1));
 						gameobjects.Add (createObject (tb, fanatic, 3));
 					}	
 					if (x == 8 && y == 0) {
@@ -564,6 +564,7 @@ public class GridManager: MonoBehaviour
 				}
 				if (players > 3) {	
 					if (x ==0 & y ==10){
+						stuffOnTile.Add (createObject (tb, camp, 1));
 						gameobjects.Add (createObject (tb, fanatic, 4));
 					}
 					if (x == 0 && y == 9) {
