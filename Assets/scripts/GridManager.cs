@@ -666,7 +666,7 @@ public class GridManager: MonoBehaviour
 				} else if (selection.name.Equals ("sel3")) {
 					gameobjects.Add (createObject (tb, truck, tId));
 				}
-				break;
+				break;	
 			case LandType.Oasis:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
 					createObject (tb, windmill, tId);
