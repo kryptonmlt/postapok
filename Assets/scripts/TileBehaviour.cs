@@ -65,6 +65,16 @@ public class TileBehaviour: MonoBehaviour
 		}
 	}
 
+	public int objectTypeExists(string type){
+		for(int i=0;i<objsOnTile.Count;i++){
+			GOProperties gop = (GOProperties)objsOnTile[i].GetComponent (typeof(GOProperties));
+			if(gop.type==type){
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public void changeColor(Color color)
 	{
 		GetComponent<Renderer> ().material.color = color;
