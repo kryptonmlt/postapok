@@ -136,7 +136,7 @@ public class GridManager: MonoBehaviour
 
 	void updateResourcesMenu (int playerId)
 	{
-		playerId = playerId >= players ? playerId-1 : playerId;
+		playerId = playerId >= players ? playerId - 1 : playerId;
 		PlayerData data = playerData [playerId];
 		turnResource.text = "" + round;
 		playerResource.text = "" + (playerId + 1);
@@ -304,37 +304,50 @@ public class GridManager: MonoBehaviour
 		List<GameObject> attackers = new List<GameObject> ();
 		List<GameObject> defenders = new List<GameObject> ();
 
-		for (int i = gameobjects.Count - 1; i >= 0; i--) {
+		List<int> objectsForDeletion = new List<int> ();
+
+		//join quantities
+		for (int i = 0; i < gameobjects.Count; i++) {
 			GOProperties gop1 = (GOProperties)gameobjects [i].GetComponent (typeof(GOProperties));
-			for (int j = gameobjects.Count - 1; j >= 0; j--) {
-				int pi1 = (int)gameobjects [i].transform.position [0];
-				int pi2 = (int)gameobjects [i].transform.position [1];
-				int pi3 = (int)gameobjects [i].transform.position [2];
-				int pj1 = (int)gameobjects [j].transform.position [0];
-				int pj2 = (int)gameobjects [j].transform.position [1];
-				int pj3 = (int)gameobjects [j].transform.position [2];
-				GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
-				if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId == gop2.PlayerId) {
-					if (gop2.type == gop1.type) {
-						gop2.quantity += gop1.quantity;
-						Destroy (gameobjects [j]);
-						gameobjects.Remove (gameobjects [j]);
-						originTileTB [gop1.UniqueID].removeObjectFromTile (gop1.UniqueID);
-						i--;
-					} else if (gop1.type != gop2.type & pi1 == pj1 & pi2 == pj2 & pi3 == pj3) {
-						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition (gameobjects [i]));
-					}
-				} else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
-					if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
-						attackers.Add (gameobjects [i]);
-					}
-					if (!attackers.Contains (gameobjects [j]) & !defenders.Contains (gameobjects [j])) {
-						defenders.Add (gameobjects [j]);
+			for (int j = 0; j < gameobjects.Count; j++) {
+				if (i < j) {
+					GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
+					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId == gop2.PlayerId && gop2.type == gop1.type) {
+						if(!objectsForDeletion.Contains(j)){
+							gop1.quantity += gop2.quantity;
+							objectsForDeletion.Add (j);
+						}
 					}
 				}
-
 			}
 		}
+		//delete duplicate objects that were joined
+		for (int i = 0; i < objectsForDeletion.Count; i++) {
+			Destroy (gameobjects [objectsForDeletion[i]]);
+			gameobjects.Remove (gameobjects [objectsForDeletion[i]]);
+			GOProperties gop = (GOProperties)gameobjects [objectsForDeletion[i]].GetComponent (typeof(GOProperties));
+			originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+		}
+
+		//find who is attacking/defending
+		for (int i = 0; i < gameobjects.Count; i++) {
+			GOProperties gop1 = (GOProperties)gameobjects [i].GetComponent (typeof(GOProperties));
+			for (int j = 0; j < gameobjects.Count; j++) {
+				if (i <= j) {
+					GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
+
+					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId != gop2.PlayerId) {
+						if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
+							attackers.Add (gameobjects [i]);
+						}
+						if (!attackers.Contains (gameobjects [j]) && !defenders.Contains (gameobjects [j])) {
+							defenders.Add (gameobjects [j]);
+						}
+					}
+				}
+			}
+		}
+
 		int attackersvalue = 0;
 		int defendersvalue = 0;
 		foreach (GameObject attacker in attackers) {
