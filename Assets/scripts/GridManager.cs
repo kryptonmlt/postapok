@@ -100,8 +100,18 @@ public class GridManager: MonoBehaviour
 
 	public void deSelect ()
 	{
+		//remove highlight
+		foreach (GameObject unit in unitSelected) {
+			Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
+			foreach (Renderer renderer in renderers) {
+				renderer.material.shader = standardShader;
+			}
+		}
 		GridManager.unitSelected = new LinkedList<GameObject> ();
 		clearSelectionMenu ();
+		foreach (TileBehaviour tb in board.Values) {
+			tb.decolour ();
+		}
 	}
 
 
@@ -282,6 +292,7 @@ public class GridManager: MonoBehaviour
 
 	void endTurnTask ()
 	{
+		deSelect ();
 		if (turn == players - 1) {
 			bool moving = isAnyMoving ();
 			if (!moving) {
@@ -831,11 +842,6 @@ public class GridManager: MonoBehaviour
 					var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB [gop.UniqueID].tile);
 					DrawPath (path, gop.UniqueID);
 					ObjsPathsTiles [gop.UniqueID] = path;
-				}
-				//remove highlight
-				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
-				foreach (Renderer renderer in renderers) {
-					renderer.material.shader = standardShader;
 				}
 			}
 		}

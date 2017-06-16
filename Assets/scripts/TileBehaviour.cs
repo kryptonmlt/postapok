@@ -116,6 +116,10 @@ public class TileBehaviour: MonoBehaviour
 		}
 	}
 
+	public void decolour(){
+		changeColor (Color.white);
+	}
+
 	//changes back to fully transparent material when mouse cursor is no longer hovering over the tile
 	void OnMouseExit()
 	{
