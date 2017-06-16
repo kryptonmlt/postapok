@@ -464,8 +464,11 @@ public class GridManager: MonoBehaviour
 				bool rand = true;
 				switch (landTypeId) {
 				case 0:
+<<<<<<< HEAD
+=======
 					stuffOnTile.Add (createObject (tb, camp, players));
 					players++;
+>>>>>>> 197e67a001ec94a481f387590bc67440dd98c0f5
 					rand = false;
 					break;
 				case 1:
@@ -518,6 +521,74 @@ public class GridManager: MonoBehaviour
 					Vector3 temp = new Vector3 (randX, 0f, randZ);
 					stuffOnTile [i].transform.position += temp;
 				}
+<<<<<<< HEAD
+				if (players > 0) {
+					if (x ==0 && y ==0){
+						stuffOnTile.Add (createObject (tb, camp, 1));
+						gameobjects.Add (createObject (tb, fanatic, 1));
+					}
+
+					if (x == 0 && y == 1) {
+						gameobjects.Add (createObject (tb, fanatic, 1));
+						createObject (tb, junkyard, 1);
+						tb.Builded ();
+					}
+					if (x == 1 && y == 0) {
+						gameobjects.Add (createObject (tb, fanatic, 1));
+						createObject (tb, windmill, 1);
+						tb.Builded ();
+					}
+				}
+				if (players > 1) {
+					if (x ==9 & y ==10){
+						stuffOnTile.Add (createObject (tb, camp, 1));
+						gameobjects.Add (createObject (tb, fanatic, 2));
+					}	
+					if (x == 8 && y == 10) {
+						gameobjects.Add (createObject (tb, fanatic, 2));
+						createObject (tb, windmill, 4);
+						tb.Builded ();
+					}
+					if (x == 8 && y == 9) {
+						gameobjects.Add (createObject (tb, fanatic, 2));
+						createObject (tb, junkyard, 4);
+						tb.Builded ();
+					}
+				}
+				if (players > 2) {
+					if (x ==9 & y ==0){
+						stuffOnTile.Add (createObject (tb, camp, 1));
+						gameobjects.Add (createObject (tb, fanatic, 3));
+					}	
+					if (x == 8 && y == 0) {
+						gameobjects.Add (createObject (tb, fanatic, 3));
+						createObject (tb, windmill, 2);
+						tb.Builded ();
+					}
+					if (x == 8 && y == 1) {
+						gameobjects.Add (createObject (tb, fanatic, 3));
+						createObject (tb, junkyard, 2);
+						tb.Builded ();
+					}
+				}
+				if (players > 3) {	
+					if (x ==0 & y ==10){
+						stuffOnTile.Add (createObject (tb, camp, 1));
+						gameobjects.Add (createObject (tb, fanatic, 4));
+					}
+					if (x == 0 && y == 9) {
+						gameobjects.Add (createObject (tb, fanatic, 4));
+						createObject (tb, junkyard, 4);
+						tb.Builded ();
+					}
+					if (x == 1 && y == 10) {
+						gameobjects.Add (createObject (tb, fanatic, 4));
+						createObject (tb, windmill, 3);
+						tb.Builded ();
+					}
+				}
+=======
+>>>>>>> 197e67a001ec94a481f387590bc67440dd98c0f5
 			}
 		}
 		if (players > 0) {
