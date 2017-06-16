@@ -136,9 +136,10 @@ public class GridManager: MonoBehaviour
 
 	void updateResourcesMenu (int playerId)
 	{
+		playerId = playerId >= players ? playerId-1 : playerId;
 		PlayerData data = playerData [playerId];
 		turnResource.text = "" + round;
-		playerResource.text = "" + (turn+1);
+		playerResource.text = "" + (playerId + 1);
 		waterResource.text = "" + playerData [playerId].water;
 		petrolResource.text = "" + playerData [playerId].petrol;
 		scrapResource.text = "" + playerData [playerId].scrap;
@@ -151,8 +152,10 @@ public class GridManager: MonoBehaviour
 
 		bool moving = isAnyMoving ();
 
-		if (!moving) {
+		if (turn == players && !moving) {
 			resolution ();
+			turn = 0;
+			round++;
 		}
 			
 
@@ -279,7 +282,7 @@ public class GridManager: MonoBehaviour
 
 	void endTurnTask ()
 	{
-		if (turn == players-1) {
+		if (turn == players - 1) {
 			bool moving = isAnyMoving ();
 			if (!moving) {
 				GridManager.draw = false;
@@ -292,11 +295,8 @@ public class GridManager: MonoBehaviour
 					}
 				}
 			}
-			round++;
-			turn = 0;
-		} else {
-			turn++;
 		}
+		turn++;
 	}
 
 	void resolution ()
@@ -324,8 +324,7 @@ public class GridManager: MonoBehaviour
 					} else if (gop1.type != gop2.type & pi1 == pj1 & pi2 == pj2 & pi3 == pj3) {
 						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition (gameobjects [i]));
 					}
-				} 
-				else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
+				} else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
 					if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
 						attackers.Add (gameobjects [i]);
 					}
@@ -365,7 +364,7 @@ public class GridManager: MonoBehaviour
 
 	void calculateResourcesForEveryone ()
 	{
-		foreach(PlayerData p in playerData){
+		foreach (PlayerData p in playerData) {
 			
 		}
 	}
@@ -388,7 +387,7 @@ public class GridManager: MonoBehaviour
 		createGrid ();
 		generateAndShowPath ();
 
-		playerData = new PlayerData[players+1];
+		playerData = new PlayerData[players + 1];
 		for (int i = 0; i < players; i++) {
 			playerData [i] = new PlayerData (2, 0, 2);
 		}
@@ -458,7 +457,7 @@ public class GridManager: MonoBehaviour
 				tb.setTileMaterial (tb.tile.landType);
 
 				tempBoard.Add (tb.tile.Location, tb.tile);
-				board.Add (new Point((int)x, (int)y), tb);
+				board.Add (new Point ((int)x, (int)y), tb);
 
 				List<GameObject> stuffOnTile = new List<GameObject> ();
 				bool rand = true;
@@ -521,39 +520,39 @@ public class GridManager: MonoBehaviour
 			}
 		}
 		if (players > 0) {
-			addObjsToLists (board[new Point(0,0)],fanatic,0);
-			addObjsToLists (board[new Point(0,1)],fanatic,0);
-			createObject (board[new Point(0,1)], junkyard, 0);
-			addObjsToLists (board[new Point(1,0)],fanatic,0);
-			createObject (board[new Point(1,0)], windmill, 0);
+			addObjsToLists (board [new Point (0, 0)], fanatic, 0);
+			addObjsToLists (board [new Point (0, 1)], fanatic, 0);
+			createObject (board [new Point (0, 1)], junkyard, 0);
+			addObjsToLists (board [new Point (1, 0)], fanatic, 0);
+			createObject (board [new Point (1, 0)], windmill, 0);
 			board [new Point (0, 1)].Builded ();
 			board [new Point (1, 0)].Builded ();
 		}
 		if (players > 1) {
 			int temp = players == 4 ? 3 : 1; 
-			addObjsToLists (board[new Point(9,10)],fanatic,temp);
-			addObjsToLists (board[new Point(8,10)],fanatic,temp);
-			createObject (board[new Point(8,10)], windmill, temp);
-			addObjsToLists (board[new Point(8,9)],fanatic,temp);
-			createObject (board[new Point(8,9)], junkyard, temp);
+			addObjsToLists (board [new Point (9, 10)], fanatic, temp);
+			addObjsToLists (board [new Point (8, 10)], fanatic, temp);
+			createObject (board [new Point (8, 10)], windmill, temp);
+			addObjsToLists (board [new Point (8, 9)], fanatic, temp);
+			createObject (board [new Point (8, 9)], junkyard, temp);
 			board [new Point (8, 10)].Builded ();
 			board [new Point (8, 9)].Builded ();
 		}
 		if (players > 2) {
-			addObjsToLists (board[new Point(9,0)],fanatic,1);
-			addObjsToLists (board[new Point(8,1)],fanatic,1);
-			createObject (board[new Point(8,1)], junkyard, 1);
-			addObjsToLists (board[new Point(8,0)],fanatic,1);
-			createObject (board[new Point(8,0)], windmill, 1);
+			addObjsToLists (board [new Point (9, 0)], fanatic, 1);
+			addObjsToLists (board [new Point (8, 1)], fanatic, 1);
+			createObject (board [new Point (8, 1)], junkyard, 1);
+			addObjsToLists (board [new Point (8, 0)], fanatic, 1);
+			createObject (board [new Point (8, 0)], windmill, 1);
 			board [new Point (8, 1)].Builded ();
 			board [new Point (8, 0)].Builded ();
 		}
 		if (players > 3) {	
-			addObjsToLists (board[new Point(0,10)],fanatic,0);
-			addObjsToLists (board[new Point(0,9)],fanatic,0);
-			createObject (board[new Point(0,9)], junkyard, 2);
-			addObjsToLists (board[new Point(1,10)],fanatic,0);
-			createObject (board[new Point(1,10)], windmill, 2);
+			addObjsToLists (board [new Point (0, 10)], fanatic, 0);
+			addObjsToLists (board [new Point (0, 9)], fanatic, 0);
+			createObject (board [new Point (0, 9)], junkyard, 2);
+			addObjsToLists (board [new Point (1, 10)], fanatic, 0);
+			createObject (board [new Point (1, 10)], windmill, 2);
 			board [new Point (0, 9)].Builded ();
 			board [new Point (1, 10)].Builded ();
 		}
@@ -574,8 +573,9 @@ public class GridManager: MonoBehaviour
 		}
 	}
 
-	private bool onTile(TileBehaviour tb, String type){
-		foreach (GameObject go in tb.objsOnTile){
+	private bool onTile (TileBehaviour tb, String type)
+	{
+		foreach (GameObject go in tb.objsOnTile) {
 			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 			if (gop.type == type) {
 				gop.quantity++;
@@ -585,8 +585,9 @@ public class GridManager: MonoBehaviour
 		return false;
 	}
 
-	private void addObjsToLists(TileBehaviour tb, GameObject go, int tID){
-		if(!onTile(tb,go.name.ToString())){
+	private void addObjsToLists (TileBehaviour tb, GameObject go, int tID)
+	{
+		if (!onTile (tb, go.name.ToString ())) {
 			GameObject ngo = createObject (tb, go, tID);
 			gameobjects.Add (ngo);
 			//tb.objsOnTile.Add (ngo);
@@ -612,16 +613,16 @@ public class GridManager: MonoBehaviour
 			switch (tb.getTile ().getLandType ()) {
 			case LandType.Base:
 				if (selection.name.Equals ("sel0")) {
-					addObjsToLists (tb,fanatic,tId);
+					addObjsToLists (tb, fanatic, tId);
 
 				} else if (selection.name.Equals ("sel1")) {
-					addObjsToLists (tb,bike,tId);
+					addObjsToLists (tb, bike, tId);
 
 				} else if (selection.name.Equals ("sel2")) {
-					addObjsToLists (tb,car,tId);
+					addObjsToLists (tb, car, tId);
 
 				} else if (selection.name.Equals ("sel3")) {
-					addObjsToLists (tb,truck,tId);
+					addObjsToLists (tb, truck, tId);
 				}
 				break;	
 			case LandType.Oasis:
