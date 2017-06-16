@@ -404,7 +404,7 @@ public class GridManager: MonoBehaviour
 		camp = Resources.Load ("Models/structures/barracks/prefabs/barracks", typeof(GameObject)) as GameObject;
 		refinery = Resources.Load ("Models/structures/petrolfactory/Prefabs/refinery", typeof(GameObject)) as GameObject;
 		windmill = Resources.Load ("Models/structures/windmill/prefabs/windmIll", typeof(GameObject)) as GameObject;
-		junkyard = Resources.Load ("Models/structures/petrolfactory/Prefabs/refinery", typeof(GameObject)) as GameObject;
+		junkyard = Resources.Load ("Models/structures/junkYard/prefabs/crane", typeof(GameObject)) as GameObject;
 		mountain = Resources.Load ("Models/extras/mountain/prefab/mountain", typeof(GameObject)) as GameObject;
 		junk = Resources.Load ("Models/extras/junkLand/Prefabs/junkmount", typeof(GameObject)) as GameObject;
 		tree = Resources.Load ("Models/extras/trees/Prefabs/tree", typeof(GameObject)) as GameObject;
@@ -586,7 +586,11 @@ public class GridManager: MonoBehaviour
 	}
 
 	private void addObjsToLists(TileBehaviour tb, GameObject go, int tID){
+<<<<<<< HEAD
 		if(!onTile(tb,go.name.ToString())){
+=======
+		if(!onTile(tb,go.name.ToString ())){
+>>>>>>> 740de7b1570a1360ae4437154e1ac59264464c62
 			GameObject ngo = createObject (tb, go, tID);
 			gameobjects.Add (ngo);
 			//tb.objsOnTile.Add (ngo);
