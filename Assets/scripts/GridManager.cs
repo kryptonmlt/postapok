@@ -323,10 +323,10 @@ public class GridManager: MonoBehaviour
 		}
 		//delete duplicate objects that were joined
 		for (int i = 0; i < objectsForDeletion.Count; i++) {
-			Destroy (gameobjects [objectsForDeletion[i]]);
-			gameobjects.Remove (gameobjects [objectsForDeletion[i]]);
-			GOProperties gop = (GOProperties)gameobjects [objectsForDeletion[i]].GetComponent (typeof(GOProperties));
+			GOProperties gop = (GOProperties)gameobjects [objectsForDeletion[i]-i].GetComponent (typeof(GOProperties));
 			originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+			Destroy (gameobjects [objectsForDeletion[i]-i]);
+			gameobjects.Remove (gameobjects [objectsForDeletion[i]-i]);
 		}
 
 		//find who is attacking/defending
