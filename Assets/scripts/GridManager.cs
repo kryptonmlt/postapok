@@ -791,11 +791,11 @@ public class GridManager: MonoBehaviour
 					return;
 				}
 				DestroyPath (gop.UniqueID);
-
-				var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB [gop.UniqueID].tile);
-				DrawPath (path, gop.UniqueID);
-				ObjsPathsTiles [gop.UniqueID] = path;
-
+				if (destTileTB [gop.UniqueID] != originTileTB [gop.UniqueID]) {
+					var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB [gop.UniqueID].tile);
+					DrawPath (path, gop.UniqueID);
+					ObjsPathsTiles [gop.UniqueID] = path;
+				}
 				//remove highlight
 				Renderer[] renderers = unit.GetComponentsInChildren<Renderer> ();
 				foreach (Renderer renderer in renderers) {
