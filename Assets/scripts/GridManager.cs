@@ -324,7 +324,8 @@ public class GridManager: MonoBehaviour
 					} else if (gop1.type != gop2.type & pi1 == pj1 & pi2 == pj2 & pi3 == pj3) {
 						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition (gameobjects [i]));
 					}
-				} else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
+				} 
+				else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
 					if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
 						attackers.Add (gameobjects [i]);
 					}
@@ -523,7 +524,7 @@ public class GridManager: MonoBehaviour
 			addObjsToLists (board[new Point(0,0)],fanatic,0);
 			addObjsToLists (board[new Point(0,1)],fanatic,0);
 			createObject (board[new Point(0,1)], junkyard, 0);
-			addObjsToLists (board[new Point(1,1)],fanatic,0);
+			addObjsToLists (board[new Point(1,0)],fanatic,0);
 			createObject (board[new Point(1,0)], windmill, 0);
 			board [new Point (0, 1)].Builded ();
 			board [new Point (1, 0)].Builded ();
@@ -585,8 +586,7 @@ public class GridManager: MonoBehaviour
 	}
 
 	private void addObjsToLists(TileBehaviour tb, GameObject go, int tID){
-		GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-		if(!onTile(tb,gop.type)){
+		if(!onTile(tb,go.name.ToString())){
 			GameObject ngo = createObject (tb, go, tID);
 			gameobjects.Add (ngo);
 			//tb.objsOnTile.Add (ngo);
