@@ -840,8 +840,10 @@ public class GridManager: MonoBehaviour
 				DestroyPath (gop.UniqueID);
 				if (destTileTB [gop.UniqueID] != originTileTB [gop.UniqueID]) {
 					var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, destTileTB [gop.UniqueID].tile);
-					DrawPath (path, gop.UniqueID);
-					ObjsPathsTiles [gop.UniqueID] = path;
+					if (path.TotalCost <= gop.MovementValue) {
+						DrawPath (path, gop.UniqueID);
+						ObjsPathsTiles [gop.UniqueID] = path;
+					}
 				}
 			}
 		}

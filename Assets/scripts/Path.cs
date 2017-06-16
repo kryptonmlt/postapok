@@ -33,4 +33,5 @@ public class Path<Node>: IEnumerable<Node>
 	{
 		return GetEnumerator();
 	}
+		
 }
