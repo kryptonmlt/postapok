@@ -288,7 +288,7 @@ public class GridManager: MonoBehaviour
 					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
 						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
-						originTileTB [gop.UniqueID].removeObjectFromTile ();
+						originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
 					}
 				}
 			}
@@ -319,11 +319,10 @@ public class GridManager: MonoBehaviour
 						gop1.quantity += gop2.quantity;
 						Destroy (gameobjects [j]);
 						gameobjects.Remove (gameobjects [j]);
-						originTileTB [gop2.UniqueID].removeObjectFromTile ();
+						originTileTB [gop2.UniqueID].removeObjectFromTile (gop2.UniqueID);
 						i--;
 					} else if (gop1.type != gop2.type & pi1 == pj1 & pi2 == pj2 & pi3 == pj3) {
-						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition ());
-						originTileTB [gop1.UniqueID].getNextPosition ();
+						gameobjects [i].transform.Translate (originTileTB [gop1.UniqueID].getNextPosition (gameobjects [i]));
 					}
 				} else if (gop1.UniqueID != gop2.UniqueID & originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile & gop1.PlayerId != gop2.PlayerId) {
 					if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
@@ -521,38 +520,38 @@ public class GridManager: MonoBehaviour
 			}
 		}
 		if (players > 0) {
-			gameobjects.Add (createObject (board[new Point(0,0)], fanatic, 0));
-			gameobjects.Add (createObject (board[new Point(0,1)], fanatic, 0));
+			addObjsToLists (board[new Point(0,0)],fanatic,0);
+			addObjsToLists (board[new Point(0,1)],fanatic,0);
 			createObject (board[new Point(0,1)], junkyard, 0);
-			gameobjects.Add (createObject (board[new Point(1,0)], fanatic, 0));
+			addObjsToLists (board[new Point(1,1)],fanatic,0);
 			createObject (board[new Point(1,0)], windmill, 0);
 			board [new Point (0, 1)].Builded ();
 			board [new Point (1, 0)].Builded ();
 		}
 		if (players > 1) {
 			int temp = players == 4 ? 3 : 1; 
-			gameobjects.Add (createObject (board[new Point(9,10)], fanatic, temp));
-			gameobjects.Add (createObject (board[new Point(8,10)], fanatic, temp));
+			addObjsToLists (board[new Point(9,10)],fanatic,temp);
+			addObjsToLists (board[new Point(8,10)],fanatic,temp);
 			createObject (board[new Point(8,10)], windmill, temp);
-			gameobjects.Add (createObject (board[new Point(8,9)], fanatic, temp));
+			addObjsToLists (board[new Point(8,9)],fanatic,temp);
 			createObject (board[new Point(8,9)], junkyard, temp);
 			board [new Point (8, 10)].Builded ();
 			board [new Point (8, 9)].Builded ();
 		}
 		if (players > 2) {
-			gameobjects.Add (createObject (board[new Point(9,0)], fanatic, 1));
-			gameobjects.Add (createObject (board[new Point(8,1)], fanatic, 1));
+			addObjsToLists (board[new Point(9,0)],fanatic,1);
+			addObjsToLists (board[new Point(8,1)],fanatic,1);
 			createObject (board[new Point(8,1)], junkyard, 1);
-			gameobjects.Add (createObject (board[new Point(8,0)], fanatic, 1));
+			addObjsToLists (board[new Point(8,0)],fanatic,1);
 			createObject (board[new Point(8,0)], windmill, 1);
 			board [new Point (8, 1)].Builded ();
 			board [new Point (8, 0)].Builded ();
 		}
 		if (players > 3) {	
-			gameobjects.Add (createObject (board[new Point(0,10)], fanatic, 2));
-			gameobjects.Add (createObject (board[new Point(0,9)], fanatic, 2));
+			addObjsToLists (board[new Point(0,10)],fanatic,0);
+			addObjsToLists (board[new Point(0,9)],fanatic,0);
 			createObject (board[new Point(0,9)], junkyard, 2);
-			gameobjects.Add (createObject (board[new Point(1,10)], fanatic, 2));
+			addObjsToLists (board[new Point(1,10)],fanatic,0);
 			createObject (board[new Point(1,10)], windmill, 2);
 			board [new Point (0, 9)].Builded ();
 			board [new Point (1, 10)].Builded ();
@@ -571,6 +570,26 @@ public class GridManager: MonoBehaviour
 			RawImage img = (RawImage)sel.GetComponent<RawImage> ();
 			img.texture = null;
 			((RawImage)sel.GetComponent<RawImage> ()).color = Color.clear;
+		}
+	}
+
+	private bool onTile(TileBehaviour tb, String type){
+		foreach (GameObject go in tb.objsOnTile){
+			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+			if (gop.type == type) {
+				gop.quantity++;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void addObjsToLists(TileBehaviour tb, GameObject go, int tID){
+		GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+		if(!onTile(tb,gop.type)){
+			GameObject ngo = createObject (tb, go, tID);
+			gameobjects.Add (ngo);
+			//tb.objsOnTile.Add (ngo);
 		}
 	}
 
@@ -593,13 +612,16 @@ public class GridManager: MonoBehaviour
 			switch (tb.getTile ().getLandType ()) {
 			case LandType.Base:
 				if (selection.name.Equals ("sel0")) {
-					gameobjects.Add (createObject (tb, fanatic, tId));
+					addObjsToLists (tb,fanatic,tId);
+
 				} else if (selection.name.Equals ("sel1")) {
-					gameobjects.Add (createObject (tb, bike, tId));
+					addObjsToLists (tb,bike,tId);
+
 				} else if (selection.name.Equals ("sel2")) {
-					gameobjects.Add (createObject (tb, car, tId));
+					addObjsToLists (tb,car,tId);
+
 				} else if (selection.name.Equals ("sel3")) {
-					gameobjects.Add (createObject (tb, truck, tId));
+					addObjsToLists (tb,truck,tId);
 				}
 				break;	
 			case LandType.Oasis:
@@ -695,7 +717,7 @@ public class GridManager: MonoBehaviour
 	private GameObject createObject (TileBehaviour tb, GameObject obj, int teamId)
 	{
 		GameObject go = Instantiate (obj);
-		go.transform.position = tb.getNextPosition ();
+		go.transform.position = tb.getNextPosition (go);
 		GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 		gop.setUId (this.getId ());
 		gop.setPId (teamId); 

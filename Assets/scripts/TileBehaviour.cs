@@ -25,6 +25,7 @@ public class TileBehaviour: MonoBehaviour
 		new Vector3(-innerRadius, 0f, -0.5f * outerRadius),
 		new Vector3(-innerRadius, 0f, 0.5f * outerRadius)
 	};
+	public List<GameObject> objsOnTile = new List<GameObject> ();
 
 	public bool built = false;
 
@@ -41,14 +42,27 @@ public class TileBehaviour: MonoBehaviour
 		}
 	}
 
-	public Vector3 getNextPosition(){
+	public Vector3 getNextPosition(GameObject obj){
 		Vector3 result = separatePositions[itemsOnTile];
 		itemsOnTile++;
+		objsOnTile.Add (obj);
 		return result;
 	}
 
-	public void removeObjectFromTile(){
-		itemsOnTile--;
+	public void removeObjectFromTile(int gId){
+		int pos = -1;
+		for(int i=0;i<objsOnTile.Count;i++){
+			GOProperties gop = (GOProperties)objsOnTile[i].GetComponent (typeof(GOProperties));
+
+			if(gop.UniqueID==gId){
+				pos = i;
+				break;
+			}
+		}
+		if(pos!=-1){
+			itemsOnTile--;
+			objsOnTile.RemoveAt (pos);
+		}
 	}
 
 	public void changeColor(Color color)

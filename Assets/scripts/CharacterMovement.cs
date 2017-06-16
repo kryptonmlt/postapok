@@ -77,7 +77,7 @@ public class CharacterMovement: MonoBehaviour
 		if (closeToDest==null) {
 			GridManager GM = GridManager.instance;
 			GOProperties gop = (GOProperties) this.GetComponent (typeof(GOProperties));
-			closeToDest = GM.destTileTB [gop.UniqueID].getNextPosition ();
+			closeToDest = GM.destTileTB [gop.UniqueID].getNextPosition (this.gameObject);
 		}
 		if(path.IndexOf (curTile) == 0 ){
 			curTilePos = closeToDest.Value;
