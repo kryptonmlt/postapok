@@ -26,6 +26,7 @@ public class TileBehaviour: MonoBehaviour
 		new Vector3(-innerRadius, 0f, 0.5f * outerRadius)
 	};
 	public List<GameObject> objsOnTile = new List<GameObject> ();
+	public List<int> objPosition = new List<int>();
 
 	public bool built = false;
 
@@ -43,10 +44,17 @@ public class TileBehaviour: MonoBehaviour
 	}
 
 	public Vector3 getNextPosition(GameObject obj){
-		Vector3 result = separatePositions[itemsOnTile];
-		itemsOnTile++;
-		objsOnTile.Add (obj);
-		return result;
+		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+		int index = objectTypeExists (gop.type);
+		if(index!=-1){
+			return separatePositions[objPosition [index]];
+		}else{
+			objsOnTile.Add (obj);
+			objPosition.Add (itemsOnTile);
+			Vector3 result = separatePositions[itemsOnTile];
+			itemsOnTile++;
+			return result;
+		}
 	}
 
 	public void removeObjectFromTile(int gId){
@@ -62,6 +70,7 @@ public class TileBehaviour: MonoBehaviour
 		if(pos!=-1){
 			itemsOnTile--;
 			objsOnTile.RemoveAt (pos);
+			objPosition.RemoveAt (pos);
 		}
 	}
 

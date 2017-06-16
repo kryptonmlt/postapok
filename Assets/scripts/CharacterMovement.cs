@@ -77,13 +77,13 @@ public class CharacterMovement: MonoBehaviour
 		if (closeToDest==null) {
 			GridManager GM = GridManager.instance;
 			GOProperties gop = (GOProperties) this.GetComponent (typeof(GOProperties));
-			int index = GM.destTileTB [gop.UniqueID].objectTypeExists (gop.type);
+			/*int index = GM.destTileTB [gop.UniqueID].objectTypeExists (gop.type);
 			if (index != -1) {
 				GOProperties gopOnTile = (GOProperties) GM.destTileTB [gop.UniqueID].objsOnTile[index].GetComponent (typeof(GOProperties));
 				gopOnTile.quantity += 1;
 				GM.gameobjects.Remove (this.gameObject);
 				Destroy(this.gameObject);
-			}
+			}*/
 			closeToDest = GM.destTileTB [gop.UniqueID].getNextPosition (this.gameObject);
 		}
 		if(path.IndexOf (curTile) == 0 ){
