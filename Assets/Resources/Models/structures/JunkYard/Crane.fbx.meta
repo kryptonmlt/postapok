@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: f7477233f14d34b5589537b145010831
-timeCreated: 1496610457
+guid: fb42433a389ac9d419947765fd3b0873
+timeCreated: 1497629514
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,7 +9,9 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Hex_JunkYard
+    4300000: Crane
+    7400000: Crane|CraneAction
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
@@ -20,6 +22,8 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -72,7 +76,7 @@ ModelImporter:
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 0
+  animationType: 2
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
