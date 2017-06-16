@@ -586,11 +586,7 @@ public class GridManager: MonoBehaviour
 	}
 
 	private void addObjsToLists(TileBehaviour tb, GameObject go, int tID){
-<<<<<<< HEAD
 		if(!onTile(tb,go.name.ToString())){
-=======
-		if(!onTile(tb,go.name.ToString ())){
->>>>>>> 740de7b1570a1360ae4437154e1ac59264464c62
 			GameObject ngo = createObject (tb, go, tID);
 			gameobjects.Add (ngo);
 			//tb.objsOnTile.Add (ngo);
