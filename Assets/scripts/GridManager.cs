@@ -529,30 +529,31 @@ public class GridManager: MonoBehaviour
 			board [new Point (0, 1)].Builded ();
 			board [new Point (1, 0)].Builded ();
 		}
-		if (players > 1) {					
-			gameobjects.Add (createObject (board[new Point(9,10)], fanatic, 1));
-			gameobjects.Add (createObject (board[new Point(8,10)], fanatic, 1));
-			createObject (board[new Point(8,10)], windmill, 1);
-			gameobjects.Add (createObject (board[new Point(8,9)], fanatic, 1));
-			createObject (board[new Point(8,9)], junkyard, 1);
+		if (players > 1) {
+			int temp = players == 4 ? 3 : 1; 
+			gameobjects.Add (createObject (board[new Point(9,10)], fanatic, temp));
+			gameobjects.Add (createObject (board[new Point(8,10)], fanatic, temp));
+			createObject (board[new Point(8,10)], windmill, temp);
+			gameobjects.Add (createObject (board[new Point(8,9)], fanatic, temp));
+			createObject (board[new Point(8,9)], junkyard, temp);
 			board [new Point (8, 10)].Builded ();
 			board [new Point (8, 9)].Builded ();
 		}
 		if (players > 2) {
-			gameobjects.Add (createObject (board[new Point(9,0)], fanatic, 2));
-			gameobjects.Add (createObject (board[new Point(8,1)], fanatic, 2));
-			createObject (board[new Point(8,1)], junkyard, 2);
-			gameobjects.Add (createObject (board[new Point(8,0)], fanatic, 2));
-			createObject (board[new Point(8,0)], windmill, 2);
+			gameobjects.Add (createObject (board[new Point(9,0)], fanatic, 1));
+			gameobjects.Add (createObject (board[new Point(8,1)], fanatic, 1));
+			createObject (board[new Point(8,1)], junkyard, 1);
+			gameobjects.Add (createObject (board[new Point(8,0)], fanatic, 1));
+			createObject (board[new Point(8,0)], windmill, 1);
 			board [new Point (8, 1)].Builded ();
 			board [new Point (8, 0)].Builded ();
 		}
 		if (players > 3) {	
-			gameobjects.Add (createObject (board[new Point(0,10)], fanatic, 3));
-			gameobjects.Add (createObject (board[new Point(0,9)], fanatic, 3));
-			createObject (board[new Point(0,9)], junkyard, 3);
-			gameobjects.Add (createObject (board[new Point(1,10)], fanatic, 3));
-			createObject (board[new Point(1,10)], windmill, 3);
+			gameobjects.Add (createObject (board[new Point(0,10)], fanatic, 2));
+			gameobjects.Add (createObject (board[new Point(0,9)], fanatic, 2));
+			createObject (board[new Point(0,9)], junkyard, 2);
+			gameobjects.Add (createObject (board[new Point(1,10)], fanatic, 2));
+			createObject (board[new Point(1,10)], windmill, 2);
 			board [new Point (0, 9)].Builded ();
 			board [new Point (1, 10)].Builded ();
 		}
