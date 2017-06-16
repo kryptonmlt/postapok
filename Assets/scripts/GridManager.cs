@@ -76,8 +76,8 @@ public class GridManager: MonoBehaviour
 
 	public static LinkedList<GameObject> unitSelected = new LinkedList<GameObject> ();
 
-	private int turn = 1;
-	private int players = 4;
+	private int turn = 0;
+	private int players = 0;
 	private int round = 0;
 	private PlayerData[] playerData;
 
@@ -86,6 +86,8 @@ public class GridManager: MonoBehaviour
 	private Text scrapResource;
 	private Text turnResource;
 	private Text playerResource;
+
+	Dictionary<Point, TileBehaviour> board = new Dictionary<Point, TileBehaviour> ();
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType> () {
 		{ 0,LandType.Base },
@@ -134,7 +136,6 @@ public class GridManager: MonoBehaviour
 
 	void updateResourcesMenu (int playerId)
 	{
-		playerId -= 1;
 		PlayerData data = playerData [playerId];
 		turnResource.text = "" + round;
 		playerResource.text = "" + turn;
@@ -387,7 +388,7 @@ public class GridManager: MonoBehaviour
 		createGrid ();
 		generateAndShowPath ();
 
-		playerData = new PlayerData[players];
+		playerData = new PlayerData[players+1];
 		for (int i = 0; i < players; i++) {
 			playerData [i] = new PlayerData (2, 0, 2);
 		}
@@ -425,11 +426,11 @@ public class GridManager: MonoBehaviour
 		textures.Add (Resources.Load ("Textures/windmill") as Texture);
 		textures.Add (Resources.Load ("Textures/junkyard") as Texture);
 
-		waterResource = GameObject.Find ("ActionMenu/WaterText").GetComponent<Text> ();
-		petrolResource = GameObject.Find ("ActionMenu/PetrolText").GetComponent<Text> ();
-		scrapResource = GameObject.Find ("ActionMenu/ScrapText").GetComponent<Text> ();
-		turnResource = GameObject.Find ("ActionMenu/TurnText").GetComponent<Text> ();
-		playerResource = GameObject.Find ("ActionMenu/PlayerText").GetComponent<Text> ();
+		waterResource = GameObject.Find ("ActionMenu/PlayerResources/WaterText").GetComponent<Text> ();
+		petrolResource = GameObject.Find ("ActionMenu/PlayerResources/PetrolText").GetComponent<Text> ();
+		scrapResource = GameObject.Find ("ActionMenu/PlayerResources/ScrapText").GetComponent<Text> ();
+		turnResource = GameObject.Find ("ActionMenu/PlayerResources/TurnText").GetComponent<Text> ();
+		playerResource = GameObject.Find ("ActionMenu/PlayerResources/PlayerText").GetComponent<Text> ();
 	}
 
 	void createGrid ()
@@ -438,7 +439,7 @@ public class GridManager: MonoBehaviour
 		Vector2 gridSize = calcGridSize ();
 		GameObject hexGridGO = new GameObject ("HexGrid");
 		//board is used to store tile locations
-		Dictionary<Point, Tile> board = new Dictionary<Point, Tile> ();
+		Dictionary<Point, Tile> tempBoard = new Dictionary<Point, Tile> ();
 		int landPos = 0;
 		for (float y = 0; y < gridSize.y; y++) {
 			float sizeX = gridSize.x;
@@ -455,12 +456,19 @@ public class GridManager: MonoBehaviour
 				int landTypeId = loadedMap [landPos];
 				tb.tile = new Tile ((int)x - (int)(y / 2), (int)y, TerrainType [landTypeId]);
 				tb.setTileMaterial (tb.tile.landType);
-				board.Add (tb.tile.Location, tb.tile);
+
+				tempBoard.Add (tb.tile.Location, tb.tile);
+				board.Add (new Point((int)x, (int)y), tb);
 
 				List<GameObject> stuffOnTile = new List<GameObject> ();
 				bool rand = true;
 				switch (landTypeId) {
 				case 0:
+<<<<<<< HEAD
+=======
+					stuffOnTile.Add (createObject (tb, camp, players));
+					players++;
+>>>>>>> 197e67a001ec94a481f387590bc67440dd98c0f5
 					rand = false;
 					break;
 				case 1:
@@ -513,6 +521,7 @@ public class GridManager: MonoBehaviour
 					Vector3 temp = new Vector3 (randX, 0f, randZ);
 					stuffOnTile [i].transform.position += temp;
 				}
+<<<<<<< HEAD
 				if (players > 0) {
 					if (x ==0 && y ==0){
 						stuffOnTile.Add (createObject (tb, camp, 1));
@@ -578,14 +587,52 @@ public class GridManager: MonoBehaviour
 						tb.Builded ();
 					}
 				}
+=======
+>>>>>>> 197e67a001ec94a481f387590bc67440dd98c0f5
 			}
+		}
+		if (players > 0) {
+			gameobjects.Add (createObject (board[new Point(0,0)], fanatic, 0));
+			gameobjects.Add (createObject (board[new Point(0,1)], fanatic, 0));
+			createObject (board[new Point(0,1)], junkyard, 0);
+			gameobjects.Add (createObject (board[new Point(1,0)], fanatic, 0));
+			createObject (board[new Point(1,0)], windmill, 0);
+			board [new Point (0, 1)].Builded ();
+			board [new Point (1, 0)].Builded ();
+		}
+		if (players > 1) {					
+			gameobjects.Add (createObject (board[new Point(9,10)], fanatic, 1));
+			gameobjects.Add (createObject (board[new Point(8,10)], fanatic, 1));
+			createObject (board[new Point(8,10)], windmill, 1);
+			gameobjects.Add (createObject (board[new Point(8,9)], fanatic, 1));
+			createObject (board[new Point(8,9)], junkyard, 1);
+			board [new Point (8, 10)].Builded ();
+			board [new Point (8, 9)].Builded ();
+		}
+		if (players > 2) {
+			gameobjects.Add (createObject (board[new Point(9,0)], fanatic, 2));
+			gameobjects.Add (createObject (board[new Point(8,1)], fanatic, 2));
+			createObject (board[new Point(8,1)], junkyard, 2);
+			gameobjects.Add (createObject (board[new Point(8,0)], fanatic, 2));
+			createObject (board[new Point(8,0)], windmill, 2);
+			board [new Point (8, 1)].Builded ();
+			board [new Point (8, 0)].Builded ();
+		}
+		if (players > 3) {	
+			gameobjects.Add (createObject (board[new Point(0,10)], fanatic, 3));
+			gameobjects.Add (createObject (board[new Point(0,9)], fanatic, 3));
+			createObject (board[new Point(0,9)], junkyard, 3);
+			gameobjects.Add (createObject (board[new Point(1,10)], fanatic, 3));
+			createObject (board[new Point(1,10)], windmill, 3);
+			board [new Point (0, 9)].Builded ();
+			board [new Point (1, 10)].Builded ();
 		}
 		//variable to indicate if all rows have the same number of hexes in them
 		//this is checked by comparing width of the first hex row plus half of the hexWidth with groundWidth
 		bool equalLineLengths = (gridSize.x + 0.5) * hexWidth <= groundWidth;
 		//Neighboring tile coordinates of all the tiles are calculated
-		foreach (Tile tile in board.Values)
-			tile.FindNeighbours (board, gridSize, equalLineLengths);
+		foreach (TileBehaviour tb in board.Values)
+			tb.tile.FindNeighbours (tempBoard, gridSize, equalLineLengths);
 	}
 
 	private void clearSelectionMenu ()
