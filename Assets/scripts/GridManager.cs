@@ -77,7 +77,7 @@ public class GridManager: MonoBehaviour
 	public static LinkedList<GameObject> unitSelected = new LinkedList<GameObject> ();
 
 	private int turn = 1;
-	private int players = 0;
+	private int players = 4;
 	private int round = 0;
 	private PlayerData[] playerData;
 
@@ -463,9 +463,7 @@ public class GridManager: MonoBehaviour
 				switch (landTypeId) {
 				case 0:
 					stuffOnTile.Add (createObject (tb, camp, tId));
-					gameobjects.Add (createObject (tb, fanatic, tId));
 					tId++;
-					players++;
 					rand = false;
 					break;
 				case 1:
@@ -518,7 +516,11 @@ public class GridManager: MonoBehaviour
 					Vector3 temp = new Vector3 (randX, 0f, randZ);
 					stuffOnTile [i].transform.position += temp;
 				}
-				if (players > 0) {	
+				if (players > 0) {
+					if (x ==0 && y ==0){
+						gameobjects.Add (createObject (tb, fanatic, 1));
+					}
+
 					if (x == 0 && y == 1) {
 						gameobjects.Add (createObject (tb, fanatic, 1));
 						createObject (tb, junkyard, 1);
@@ -530,7 +532,10 @@ public class GridManager: MonoBehaviour
 						tb.Builded ();
 					}
 				}
-				if (players > 1) {	
+				if (players > 1) {
+					if (x ==9 & y ==10){
+						gameobjects.Add (createObject (tb, fanatic, 2));
+					}	
 					if (x == 8 && y == 10) {
 						gameobjects.Add (createObject (tb, fanatic, 2));
 						createObject (tb, windmill, 4);
@@ -542,7 +547,10 @@ public class GridManager: MonoBehaviour
 						tb.Builded ();
 					}
 				}
-				if (players > 2) {	
+				if (players > 2) {
+					if (x ==9 & y ==0){
+						gameobjects.Add (createObject (tb, fanatic, 3));
+					}	
 					if (x == 8 && y == 0) {
 						gameobjects.Add (createObject (tb, fanatic, 3));
 						createObject (tb, windmill, 2);
@@ -555,6 +563,9 @@ public class GridManager: MonoBehaviour
 					}
 				}
 				if (players > 3) {	
+					if (x ==0 & y ==10){
+						gameobjects.Add (createObject (tb, fanatic, 4));
+					}
 					if (x == 0 && y == 9) {
 						gameobjects.Add (createObject (tb, fanatic, 4));
 						createObject (tb, junkyard, 4);
