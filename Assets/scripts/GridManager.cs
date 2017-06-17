@@ -88,7 +88,7 @@ public class GridManager: MonoBehaviour
 
 	Dictionary<Point, TileBehaviour> board = new Dictionary<Point, TileBehaviour> ();
 
-	private int[] initialResources = { 2, 0, 2 };
+	private int[] initialResources = { 10, 10, 12 };
 	private int[] fanaticCost = { 1, 0, 1 };
 	private int[] bikeCost = { 1, 1, 2 };
 	private int[] carCost = { 2, 2, 3 };
@@ -100,6 +100,8 @@ public class GridManager: MonoBehaviour
 	private int[] unitUpgradeCost = { 0, 0, 10 };
 
 	private int resourceLimitGain = 5;
+	public int globalInterval = 0;
+	private List<CharacterMovement> chMovements = new List<CharacterMovement>();
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType> () {
 		{ 0,LandType.Base },
@@ -149,7 +151,6 @@ public class GridManager: MonoBehaviour
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-				CharacterMovement characterAction = (CharacterMovement)go.GetComponent (typeof(CharacterMovement));
 				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
 			}
 		}
@@ -173,8 +174,10 @@ public class GridManager: MonoBehaviour
 		updateResourcesMenu (turn);
 
 		bool moving = isAnyMoving ();
+		updateGlobalInterval (moving);
 
 		if (turn == players && !moving) {
+			chMovements.Clear ();
 			resolution ();
 			turn = 0;
 			round++;
@@ -302,21 +305,42 @@ public class GridManager: MonoBehaviour
 		return moving;
 	}
 
+	void updateGlobalInterval (bool moving)
+	{
+		if(moving){
+			bool everyoneWaiting = true;
+			foreach(CharacterMovement ch in chMovements){
+				if(ch.IsMoving){
+					if(ch.unitInterval < globalInterval){
+						everyoneWaiting = false;
+					}
+				}
+			}
+			if(everyoneWaiting){
+				globalInterval++;
+			}
+		}
+	}
+
 	void endTurnTask ()
 	{
 		deSelect ();
 		if (turn == players - 1) {
+			globalInterval = 1;
 			bool moving = isAnyMoving ();
 			if (!moving) {
 				GridManager.draw = false;
+				List<CharacterMovement> chMovementsTemp = new List<CharacterMovement> ();
 				foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
 					GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
 					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
 						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
 						originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+						chMovementsTemp.Add (characterAction);
 					}
 				}
+				chMovements = chMovementsTemp;
 			}
 		}
 		turn++;
