@@ -80,7 +80,6 @@ public class GridManager: MonoBehaviour
 	private int players = 0;
 	private int round = 0;
 	private PlayerData[] playerData;
-
 	private Text waterResource;
 	private Text petrolResource;
 	private Text scrapResource;
@@ -88,6 +87,19 @@ public class GridManager: MonoBehaviour
 	private Text playerResource;
 
 	Dictionary<Point, TileBehaviour> board = new Dictionary<Point, TileBehaviour> ();
+
+	private int[] initialResources = { 2, 0, 2 };
+	private int[] fanaticCost = { 1, 0, 1 };
+	private int[] bikeCost = { 1, 1, 2 };
+	private int[] carCost = { 2, 2, 3 };
+	private int[] truckCost = { 3, 3, 4 };
+	private int[] waterMillCost = { 0, 0, 4 };
+	private int[] junkYardCost = { 0, 0, 4 };
+	private int[] refineryCost = { 0, 0, 4 };
+	private int[] structureUpgradeCost = { 0, 0, 4 };
+	private int[] unitUpgradeCost = { 0, 0, 10 };
+
+	private int resourceLimitGain = 5;
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType> () {
 		{ 0,LandType.Base },
@@ -324,7 +336,7 @@ public class GridManager: MonoBehaviour
 				if (i < j) {
 					GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
 					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId == gop2.PlayerId && gop2.type == gop1.type) {
-						if(!objectsForDeletion.Contains(j)){
+						if (!objectsForDeletion.Contains (j)) {
 							gop1.quantity += gop2.quantity;
 							objectsForDeletion.Add (j);
 						}
@@ -334,10 +346,10 @@ public class GridManager: MonoBehaviour
 		}
 		//delete duplicate objects that were joined
 		for (int i = 0; i < objectsForDeletion.Count; i++) {
-			GOProperties gop = (GOProperties)gameobjects [objectsForDeletion[i]-i].GetComponent (typeof(GOProperties));
+			GOProperties gop = (GOProperties)gameobjects [objectsForDeletion [i] - i].GetComponent (typeof(GOProperties));
 			originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
-			Destroy (gameobjects [objectsForDeletion[i]-i]);
-			gameobjects.Remove (gameobjects [objectsForDeletion[i]-i]);
+			Destroy (gameobjects [objectsForDeletion [i] - i]);
+			gameobjects.Remove (gameobjects [objectsForDeletion [i] - i]);
 		}
 
 		//find who is attacking/defending
@@ -413,7 +425,7 @@ public class GridManager: MonoBehaviour
 
 		playerData = new PlayerData[players + 1];
 		for (int i = 0; i < players; i++) {
-			playerData [i] = new PlayerData (2, 0, 2);
+			playerData [i] = new PlayerData (initialResources [0], initialResources [1], initialResources [2]);
 		}
 	}
 
@@ -618,6 +630,35 @@ public class GridManager: MonoBehaviour
 		}
 	}
 
+	private bool hasEnough (int playerId, int[] cost)
+	{
+		PlayerData p = playerData [playerId];
+		if (p.water < cost [0]) {
+			return false;
+		}
+		if (p.petrol < cost [1]) {
+			return false;
+		}
+		if (p.scrap < cost [2]) {
+			return false;
+		}
+		return true;
+	}
+
+	private bool hasEnoughAndDeduct (int playerId, int[] cost)
+	{
+		if (hasEnough (playerId, cost)) {
+			PlayerData p = playerData [playerId];
+			p.water -= cost [0];
+			p.petrol -= cost [1];
+			p.scrap -= cost [2];
+			return true;
+		} else {
+			print ("Not enough resources to build!");
+		}
+		return false;
+	}
+
 	public void buildOnTile (GameObject selection)
 	{
 		bool build = false;
@@ -637,34 +678,45 @@ public class GridManager: MonoBehaviour
 			switch (tb.getTile ().getLandType ()) {
 			case LandType.Base:
 				if (selection.name.Equals ("sel0")) {
-					addObjsToLists (tb, fanatic, tId);
-
+					if (hasEnoughAndDeduct (tId, fanaticCost)) {
+						addObjsToLists (tb, fanatic, tId);
+					}
 				} else if (selection.name.Equals ("sel1")) {
-					addObjsToLists (tb, bike, tId);
-
+					if (hasEnoughAndDeduct (tId, bikeCost)) {
+						addObjsToLists (tb, bike, tId);
+					}
 				} else if (selection.name.Equals ("sel2")) {
-					addObjsToLists (tb, car, tId);
-
+					if (hasEnoughAndDeduct (tId, carCost)) {
+						addObjsToLists (tb, car, tId);
+					}
 				} else if (selection.name.Equals ("sel3")) {
-					addObjsToLists (tb, truck, tId);
+					if (hasEnoughAndDeduct (tId, truckCost)) {
+						addObjsToLists (tb, truck, tId);
+					}
 				}
 				break;	
 			case LandType.Oasis:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
-					createObject (tb, windmill, tId);
-					tb.Builded ();
+					if (hasEnoughAndDeduct (tId, waterMillCost)) {
+						createObject (tb, windmill, tId);
+						tb.Builded ();
+					}
 				}
 				break;
 			case LandType.OilField:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
-					createObject (tb, refinery, tId);
-					tb.Builded ();
+					if (hasEnoughAndDeduct (tId, refineryCost)) {
+						createObject (tb, refinery, tId);
+						tb.Builded ();
+					}
 				}
 				break;
 			case LandType.Junkyard:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
-					createObject (tb, junkyard, tId);
-					tb.Builded ();
+					if (hasEnoughAndDeduct (tId, junkYardCost)) {
+						createObject (tb, junkyard, tId);
+						tb.Builded ();
+					}
 				}
 				break;
 			default:
