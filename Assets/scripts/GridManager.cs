@@ -162,9 +162,9 @@ public class GridManager: MonoBehaviour
 		PlayerData data = playerData [playerId];
 		turnResource.text = "" + round;
 		playerResource.text = "" + (playerId + 1);
-		waterResource.text = "" + playerData [playerId].water;
-		petrolResource.text = "" + playerData [playerId].petrol;
-		scrapResource.text = "" + playerData [playerId].scrap;
+		waterResource.text = "" + data.water;
+		petrolResource.text = "" + data.petrol;
+		scrapResource.text = "" + data.scrap;
 	}
 
 	void Update ()
@@ -339,6 +339,10 @@ public class GridManager: MonoBehaviour
 						if (!objectsForDeletion.Contains (j)) {
 							gop1.quantity += gop2.quantity;
 							objectsForDeletion.Add (j);
+							if(!originTileTB [gop1.UniqueID].objsOnTile.Contains(gameobjects [i])){
+								originTileTB [gop1.UniqueID].objsOnTile.Add (gameobjects [i]);
+								originTileTB [gop1.UniqueID].objPosition.Add(originTileTB [gop1.UniqueID].objectTypeExists (gop1.type));
+							}
 						}
 					}
 				}
@@ -400,8 +404,37 @@ public class GridManager: MonoBehaviour
 
 	void calculateResourcesForEveryone ()
 	{
-		foreach (PlayerData p in playerData) {
-			
+		int[,] resourcesGained = new int[playerData.Length,3];
+
+		//calculate resources
+		foreach (TileBehaviour tb in board.Values) {
+			if(tb.built){
+				int f = tb.getFanaticsOnTile ();
+				if(f>resourceLimitGain){
+					f = resourceLimitGain;
+				}
+				int playerOwner = tb.getPlayerOwner ();
+				switch(tb.getTile().landType){
+				case LandType.Oasis:
+					resourcesGained [playerOwner,0] += f;
+					break;
+				case LandType.OilField:
+					resourcesGained [playerOwner,1] += f;
+					break;
+				case LandType.Junkyard:
+					resourcesGained [playerOwner,2] += f;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		//update resources
+		for (int i=0; i < playerData.Length-1; i++) {
+			PlayerData p = playerData [i];
+			p.water += resourcesGained[i,0];
+			p.petrol += resourcesGained[i,1];
+			p.scrap += resourcesGained[i,2];
 		}
 	}
 
@@ -583,11 +616,11 @@ public class GridManager: MonoBehaviour
 			board [new Point (8, 1)].Builded ();
 			board [new Point (8, 0)].Builded ();
 		}
-		if (players > 3) {	
-			addObjsToLists (board [new Point (0, 10)], fanatic, 0);
-			addObjsToLists (board [new Point (0, 9)], fanatic, 0);
+		if (players > 3) {
+			addObjsToLists (board [new Point (0, 10)], fanatic, 2);
+			addObjsToLists (board [new Point (0, 9)], fanatic, 2);
 			createObject (board [new Point (0, 9)], junkyard, 2);
-			addObjsToLists (board [new Point (1, 10)], fanatic, 0);
+			addObjsToLists (board [new Point (1, 10)], fanatic, 2);
 			createObject (board [new Point (1, 10)], windmill, 2);
 			board [new Point (0, 9)].Builded ();
 			board [new Point (1, 10)].Builded ();

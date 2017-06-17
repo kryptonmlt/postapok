@@ -34,6 +34,25 @@ public class TileBehaviour: MonoBehaviour
 		built = true;
 	}
 
+	public int getPlayerOwner(){
+		if(objsOnTile.Count>0){
+			GOProperties gop = (GOProperties)objsOnTile[0].GetComponent (typeof(GOProperties));
+			return gop.PlayerId;
+		}
+		return -1;
+	}
+
+	public int getFanaticsOnTile(){
+		int f = 0;
+		foreach(GameObject o in objsOnTile){
+			GOProperties gop = (GOProperties)o.GetComponent (typeof(GOProperties));
+			if (gop.type.Equals ("ThirdPersonController")) {
+				f += gop.quantity;
+			}
+		}
+		return f;
+	}
+
 	public void updatePositionOfTile(Vector3 position){
 		separatePositions.Clear();
 		transform.position = position;
