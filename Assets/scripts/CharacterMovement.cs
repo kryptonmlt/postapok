@@ -17,6 +17,7 @@ public class CharacterMovement: MonoBehaviour
 	Tile curTile;
 	List<Tile> path;
 	public bool IsMoving { get; private set; }
+	public int timesteps=0;
 	Transform myTransform;
 	private Vector3? closeToDest = null;
 
@@ -93,15 +94,23 @@ public class CharacterMovement: MonoBehaviour
 		//if the distance between the character and the center of the next tile is short enough
 		if ((curTilePos - myTransform.position).sqrMagnitude < MinNextTileDist * MinNextTileDist)
 		{
+			timesteps++;
+			GridManager GM = GridManager.instance;
 			//set custom destinitation
 			//if we reached the destination tile
 			if (path.IndexOf(curTile) == 0)
 			{
 				IsMoving = false; 
+				timesteps = 0;
 				switchOriginAndDestinationTiles();
 				closeToDest = null;
 				return;
 			}
+//			foreach (GameObject go in GM.gameobjects) {
+//				CharacterMovement characterAction = (CharacterMovement)go.GetComponent (typeof(CharacterMovement));
+//				while (characterAction.IsMoving == true && this.timesteps>characterAction.timesteps) {
+//				}
+//			}
 			//curTile becomes the next one
 			curTile = path [path.IndexOf (curTile) - 1];
 			curTilePos = calcTilePos (curTile);
