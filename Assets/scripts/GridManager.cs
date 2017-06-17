@@ -101,7 +101,7 @@ public class GridManager: MonoBehaviour
 
 	private int resourceLimitGain = 5;
 	public int globalInterval = 0;
-	private List<CharacterMovement> chMovements = new List<CharacterMovement>();
+	private List<CharacterMovement> chMovements = new List<CharacterMovement> ();
 
 	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType> () {
 		{ 0,LandType.Base },
@@ -247,6 +247,51 @@ public class GridManager: MonoBehaviour
 			}
 			clicked = false;
 		}
+		highlightAccessibleTiles ();
+	}
+
+	public int getLeastMovementOfSelectedUnits (List<GameObject> units)
+	{
+		int movement = int.MaxValue;
+		foreach (GameObject unit in units) {
+			GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+			if (gop.MovementValue < movement) {
+				movement = gop.MovementValue;
+			}
+		}
+		return movement;
+	}
+
+	public void highlightAccessibleTiles ()
+	{
+		foreach (TileBehaviour tb in board.Values) {
+			if (unitSelected.Count > 0) {
+				if (canUnitsGoToTile (unitSelected, tb)) {
+					tb.highlightMovementPossible ();
+				}
+			}
+		}
+	}
+
+	public bool canUnitsGoToTile (LinkedList<GameObject> units, TileBehaviour tb)
+	{
+		bool possible = true;
+		foreach (GameObject unit in units) {
+			if (!canUnitGoToTile (unit, tb)) {
+				return false;
+			}
+		}
+		return possible;
+	}
+
+	public bool canUnitGoToTile (GameObject unit, TileBehaviour tb)
+	{	
+		GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+		var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, tb.tile);
+		if(path == null){
+			return false;
+		}
+		return path.TotalCost <= gop.MovementValue;
 	}
 
 	//The method used to calculate the number hexagons in a row and number of rows
@@ -307,16 +352,16 @@ public class GridManager: MonoBehaviour
 
 	void updateGlobalInterval (bool moving)
 	{
-		if(moving){
+		if (moving) {
 			bool everyoneWaiting = true;
-			foreach(CharacterMovement ch in chMovements){
-				if(ch.IsMoving){
-					if(ch.unitInterval < globalInterval){
+			foreach (CharacterMovement ch in chMovements) {
+				if (ch.IsMoving) {
+					if (ch.unitInterval < globalInterval) {
 						everyoneWaiting = false;
 					}
 				}
 			}
-			if(everyoneWaiting){
+			if (everyoneWaiting) {
 				globalInterval++;
 			}
 		}
@@ -363,9 +408,9 @@ public class GridManager: MonoBehaviour
 						if (!objectsForDeletion.Contains (j)) {
 							gop1.quantity += gop2.quantity;
 							objectsForDeletion.Add (j);
-							if(!originTileTB [gop1.UniqueID].objsOnTile.Contains(gameobjects [i])){
+							if (!originTileTB [gop1.UniqueID].objsOnTile.Contains (gameobjects [i])) {
 								originTileTB [gop1.UniqueID].objsOnTile.Add (gameobjects [i]);
-								originTileTB [gop1.UniqueID].objPosition.Add(originTileTB [gop1.UniqueID].objectTypeExists (gop1.type));
+								originTileTB [gop1.UniqueID].objPosition.Add (originTileTB [gop1.UniqueID].objectTypeExists (gop1.type));
 							}
 						}
 					}
@@ -428,25 +473,25 @@ public class GridManager: MonoBehaviour
 
 	void calculateResourcesForEveryone ()
 	{
-		int[,] resourcesGained = new int[playerData.Length,3];
+		int[,] resourcesGained = new int[playerData.Length, 3];
 
 		//calculate resources
 		foreach (TileBehaviour tb in board.Values) {
-			if(tb.built){
+			if (tb.built) {
 				int f = tb.getFanaticsOnTile ();
-				if(f>resourceLimitGain){
+				if (f > resourceLimitGain) {
 					f = resourceLimitGain;
 				}
 				int playerOwner = tb.getPlayerOwner ();
-				switch(tb.getTile().landType){
+				switch (tb.getTile ().landType) {
 				case LandType.Oasis:
-					resourcesGained [playerOwner,0] += f;
+					resourcesGained [playerOwner, 0] += f;
 					break;
 				case LandType.OilField:
-					resourcesGained [playerOwner,1] += f;
+					resourcesGained [playerOwner, 1] += f;
 					break;
 				case LandType.Junkyard:
-					resourcesGained [playerOwner,2] += f;
+					resourcesGained [playerOwner, 2] += f;
 					break;
 				default:
 					break;
@@ -454,11 +499,11 @@ public class GridManager: MonoBehaviour
 			}
 		}
 		//update resources
-		for (int i=0; i < playerData.Length-1; i++) {
+		for (int i = 0; i < playerData.Length - 1; i++) {
 			PlayerData p = playerData [i];
-			p.water += resourcesGained[i,0];
-			p.petrol += resourcesGained[i,1];
-			p.scrap += resourcesGained[i,2];
+			p.water += resourcesGained [i, 0];
+			p.petrol += resourcesGained [i, 1];
+			p.scrap += resourcesGained [i, 2];
 		}
 	}
 

@@ -139,6 +139,12 @@ public class TileBehaviour: MonoBehaviour
 		changeColor (Color.white);
 	}
 
+	public void highlightMovementPossible(){		
+		if(GetComponent<Renderer> ().material.color.Equals(Color.white)){			
+			changeColor (Color.grey);
+		}
+	}
+
 	//changes back to fully transparent material when mouse cursor is no longer hovering over the tile
 	void OnMouseExit()
 	{
