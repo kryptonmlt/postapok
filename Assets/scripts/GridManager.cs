@@ -152,7 +152,7 @@ public class GridManager: MonoBehaviour
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-				if(gop.PlayerId == getCurrentPlayerId()){
+				if(gop.shown){
 					GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
 				}
 			}
@@ -294,6 +294,8 @@ public class GridManager: MonoBehaviour
 	}
 
 	public void show(GameObject obj, bool show){
+		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+		gop.shown = show;
 		Renderer[] renderers = obj.GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			renderer.enabled = show;

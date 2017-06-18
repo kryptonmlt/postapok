@@ -11,6 +11,7 @@ public class GOProperties: MonoBehaviour
 	public int UniqueID;
 	public int quantity;
 	public String type;
+	public bool shown { get; set; }
 
 	public void setUId(int id){
 		UniqueID=id;
