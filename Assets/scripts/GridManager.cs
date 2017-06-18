@@ -259,6 +259,16 @@ public class GridManager: MonoBehaviour
 
 	public void hideEnemyObjects(int playerId){
 		//set all enemies to false
+		for(int i=0;i<players;i++){
+			string linesName = "Lines"+i;
+			GameObject lines = GameObject.Find (linesName);
+			if (lines != null){
+				Renderer[] renderers = lines.GetComponentsInChildren<Renderer> ();
+				foreach (Renderer renderer in renderers) {
+					renderer.enabled = getCurrentPlayerId() == i;
+				}
+			}
+		}
 		foreach(GameObject obj in gameobjects){
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 			show (obj, gop.PlayerId == playerId);
@@ -1006,9 +1016,10 @@ public class GridManager: MonoBehaviour
 		
 		//DestroyPath(id);
 		//Lines game object is used to hold all the "Line" game objects indicating the path
-		GameObject lines = GameObject.Find ("Lines");
+		string linesName = "Lines"+getCurrentPlayerId();
+		GameObject lines = GameObject.Find (linesName);
 		if (lines == null)
-			lines = new GameObject ("Lines");
+			lines = new GameObject (linesName);
 		foreach (Tile tile in path) {
 			var line = (GameObject)Instantiate (Line);
 			//calcWorldCoord method uses squiggly axis coordinates so we add y / 2 to convert x coordinate from straight axis coordinate system
