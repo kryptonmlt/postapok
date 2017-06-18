@@ -100,6 +100,7 @@ public class GridManager: MonoBehaviour
 	private int[] unitUpgradeCost = { 0, 0, 10 };
 
 	private int resourceLimitGain = 5;
+	private int viewRange = 2;
 	public int globalInterval = 0;
 	private List<CharacterMovement> chMovements = new List<CharacterMovement> ();
 
@@ -244,7 +245,7 @@ public class GridManager: MonoBehaviour
 			}
 			if (unitSelected.Count == 1) {
 				LandType landHit = retrieveTileOfObject (unitSelected.First ());
-				Debug.Log (landHit);
+				Debug.Log ("Selected Tile: "+landHit);
 				updateSelectionMenu (landHit);
 			}
 			clicked = false;
@@ -258,9 +259,19 @@ public class GridManager: MonoBehaviour
 
 
 	public void hideEnemyObjects(int playerId){
+		//set all enemies to false
 		foreach(GameObject obj in gameobjects){
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 			show (obj, gop.PlayerId == playerId);
+		}
+		//check if there is anyone in range
+		foreach (GameObject obj in gameobjects) {
+			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+			if(gop.PlayerId == playerId){
+				foreach (TileBehaviour tb in board.Values) {
+					//viewRange
+				}
+			}
 		}
 	}
 
@@ -390,26 +401,26 @@ public class GridManager: MonoBehaviour
 
 	void endTurnTask ()
 	{
-		deSelect ();
-		if (turn == players - 1) {
-			globalInterval = 1;
-			bool moving = isAnyMoving ();
-			if (!moving) {
-				GridManager.draw = false;
-				List<CharacterMovement> chMovementsTemp = new List<CharacterMovement> ();
-				foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-					GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
-					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
-						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
-						originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
-						chMovementsTemp.Add (characterAction);
+		bool moving = isAnyMoving ();
+		if (!moving) {
+			deSelect ();
+			if (turn == players - 1) {
+				globalInterval = 1;
+					GridManager.draw = false;
+					List<CharacterMovement> chMovementsTemp = new List<CharacterMovement> ();
+					foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+						GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+						if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
+							CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
+							characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
+							originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+							chMovementsTemp.Add (characterAction);
+						}
 					}
-				}
 				chMovements = chMovementsTemp;
 			}
+			turn++;
 		}
-		turn++;
 	}
 
 	void resolution ()
@@ -906,7 +917,7 @@ public class GridManager: MonoBehaviour
 		if (hit != null) {
 			TileBehaviour tb = (TileBehaviour)hit.GetComponent ("TileBehaviour");
 			if (tb == null) {
-				Debug.Log (hit.name);
+				Debug.Log ("TB=null: "+hit.name);
 				return LandType.Desert;
 			}
 			return tb.getTile ().landType;
@@ -926,7 +937,7 @@ public class GridManager: MonoBehaviour
 		originTileTB.Add (gop.UniqueID, tb);
 		destTileTB.Add (gop.UniqueID, tb);
 		ObjsPaths.Add (gop.UniqueID, new List<GameObject> ());
-		Debug.Log (gop.type);
+		//Debug.Log ("Created Object: "+gop.type);
 		switch (gop.type) {
 		case "ThirdPersonController":
 			gop.setAV (1);
