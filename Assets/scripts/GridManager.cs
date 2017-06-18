@@ -172,8 +172,6 @@ public class GridManager: MonoBehaviour
 
 	void Update ()
 	{
-
-		hideEnemyObjects (getCurrentPlayerId());
 		updateResourcesMenu (getCurrentPlayerId());
 
 		bool moving = isAnyMoving ();
@@ -184,6 +182,7 @@ public class GridManager: MonoBehaviour
 			resolution ();
 			turn = 0;
 			round++;
+			hideEnemyObjects (getCurrentPlayerId());
 		}
 			
 
@@ -268,11 +267,30 @@ public class GridManager: MonoBehaviour
 		foreach (GameObject obj in gameobjects) {
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 			if(gop.PlayerId == playerId){
-				foreach (TileBehaviour tb in board.Values) {
-					//viewRange
+				foreach (TileBehaviour tb in board.Values) {					
+					//find shortest path between enemy tile and friendly unit
+					var path = PathFinder.FindPath (getTileOfUnit(gop.UniqueID).tile, tb.tile);
+					//show objs on enemy tile if in range
+					if(path != null && path.TotalCost <= viewRange){
+						foreach(GameObject objOnTile in tb.objsOnTile){
+							show (objOnTile, true);
+						}
+					}
 				}
 			}
 		}
+	}
+
+	public TileBehaviour getTileOfUnit(int uniqueId){
+		foreach (TileBehaviour tb in board.Values) {
+			foreach(GameObject obj in tb.objsOnTile){
+				GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+				if(gop.UniqueID == uniqueId){
+					return tb;
+				}
+			}
+		}
+		return null;
 	}
 
 	public void show(GameObject obj, bool show){
@@ -420,6 +438,7 @@ public class GridManager: MonoBehaviour
 				chMovements = chMovementsTemp;
 			}
 			turn++;
+			hideEnemyObjects (getCurrentPlayerId());
 		}
 	}
 
@@ -561,6 +580,7 @@ public class GridManager: MonoBehaviour
 		for (int i = 0; i < players; i++) {
 			playerData [i] = new PlayerData (initialResources [0], initialResources [1], initialResources [2]);
 		}
+		hideEnemyObjects (getCurrentPlayerId());
 	}
 
 	void Awake ()
