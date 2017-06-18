@@ -151,7 +151,9 @@ public class GridManager: MonoBehaviour
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-				GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+				if(gop.PlayerId == getCurrentPlayerId()){
+					GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+				}
 			}
 		}
 
@@ -159,7 +161,6 @@ public class GridManager: MonoBehaviour
 
 	void updateResourcesMenu (int playerId)
 	{
-		playerId = playerId >= players ? playerId - 1 : playerId;
 		PlayerData data = playerData [playerId];
 		turnResource.text = "" + round;
 		playerResource.text = "" + (playerId + 1);
@@ -171,7 +172,8 @@ public class GridManager: MonoBehaviour
 	void Update ()
 	{
 
-		updateResourcesMenu (turn);
+		hideEnemyObjects (getCurrentPlayerId());
+		updateResourcesMenu (getCurrentPlayerId());
 
 		bool moving = isAnyMoving ();
 		updateGlobalInterval (moving);
@@ -248,6 +250,25 @@ public class GridManager: MonoBehaviour
 			clicked = false;
 		}
 		highlightAccessibleTiles ();
+	}
+
+	public int getCurrentPlayerId(){
+		return turn >= players ? turn - 1 : turn;
+	}
+
+
+	public void hideEnemyObjects(int playerId){
+		foreach(GameObject obj in gameobjects){
+			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+			show (obj, gop.PlayerId == playerId);
+		}
+	}
+
+	public void show(GameObject obj, bool show){
+		Renderer[] renderers = obj.GetComponentsInChildren<Renderer> ();
+		foreach (Renderer renderer in renderers) {
+			renderer.enabled = show;
+		}
 	}
 
 	public int getLeastMovementOfSelectedUnits (List<GameObject> units)
