@@ -18,6 +18,7 @@ public class GridManager: MonoBehaviour
 		return ID++;
 	}
 
+	public List<GameObject> structureList = new List<GameObject> ();
 	public List<GameObject> gameobjects = new List<GameObject> ();
 	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
 	public Dictionary<int, Path<Tile>> ObjsPathsTiles = new Dictionary<int, Path<Tile>> ();
@@ -265,10 +266,20 @@ public class GridManager: MonoBehaviour
 			if (lines != null){
 				Renderer[] renderers = lines.GetComponentsInChildren<Renderer> ();
 				foreach (Renderer renderer in renderers) {
-					renderer.enabled = getCurrentPlayerId() == i;
+					renderer.enabled = playerId == i;
 				}
 			}
 		}
+
+		foreach (GameObject structure in structureList) {
+			GOProperties gop = (GOProperties)structure.GetComponent (typeof(GOProperties));
+			if(!gop.structureShown[playerId]){
+				//if structure is not visible check if there is any unit close by
+
+			}
+			show (structure, gop.structureShown[playerId]);
+		}
+
 		foreach(GameObject obj in gameobjects){
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 			show (obj, gop.PlayerId == playerId);
@@ -724,9 +735,9 @@ public class GridManager: MonoBehaviour
 		if (players > 0) {
 			addObjsToLists (board [new Point (0, 0)], fanatic, 0);
 			addObjsToLists (board [new Point (0, 1)], fanatic, 0);
-			createObject (board [new Point (0, 1)], junkyard, 0);
+			structureList.Add(createObject (board [new Point (0, 1)], junkyard, 0));
 			addObjsToLists (board [new Point (1, 0)], fanatic, 0);
-			createObject (board [new Point (1, 0)], windmill, 0);
+			structureList.Add(createObject (board [new Point (1, 0)], windmill, 0));
 			board [new Point (0, 1)].Builded ();
 			board [new Point (1, 0)].Builded ();
 		}
@@ -734,29 +745,36 @@ public class GridManager: MonoBehaviour
 			int temp = players == 4 ? 3 : 1; 
 			addObjsToLists (board [new Point (9, 10)], fanatic, temp);
 			addObjsToLists (board [new Point (8, 10)], fanatic, temp);
-			createObject (board [new Point (8, 10)], windmill, temp);
+			structureList.Add(createObject (board [new Point (8, 10)], windmill, temp));
 			addObjsToLists (board [new Point (8, 9)], fanatic, temp);
-			createObject (board [new Point (8, 9)], junkyard, temp);
+			structureList.Add(createObject (board [new Point (8, 9)], junkyard, temp));
 			board [new Point (8, 10)].Builded ();
 			board [new Point (8, 9)].Builded ();
 		}
 		if (players > 2) {
 			addObjsToLists (board [new Point (9, 0)], fanatic, 1);
 			addObjsToLists (board [new Point (8, 1)], fanatic, 1);
-			createObject (board [new Point (8, 1)], junkyard, 1);
+			structureList.Add(createObject (board [new Point (8, 1)], junkyard, 1));
 			addObjsToLists (board [new Point (8, 0)], fanatic, 1);
-			createObject (board [new Point (8, 0)], windmill, 1);
+			structureList.Add(createObject (board [new Point (8, 0)], windmill, 1));
 			board [new Point (8, 1)].Builded ();
 			board [new Point (8, 0)].Builded ();
 		}
 		if (players > 3) {
 			addObjsToLists (board [new Point (0, 10)], fanatic, 2);
 			addObjsToLists (board [new Point (0, 9)], fanatic, 2);
-			createObject (board [new Point (0, 9)], junkyard, 2);
+			structureList.Add(createObject (board [new Point (0, 9)], windmill, 2));
 			addObjsToLists (board [new Point (1, 10)], fanatic, 2);
-			createObject (board [new Point (1, 10)], windmill, 2);
+			structureList.Add(createObject (board [new Point (1, 10)], junkyard, 2));
 			board [new Point (0, 9)].Builded ();
 			board [new Point (1, 10)].Builded ();
+		}
+		foreach(GameObject structure in structureList){
+			GOProperties gop = (GOProperties)structure.GetComponent (typeof(GOProperties));
+			gop.initStructureShown(0,players);
+			for(int i=0;i<players;i++){
+				gop.structureShown [i] = true;
+			}
 		}
 		//variable to indicate if all rows have the same number of hexes in them
 		//this is checked by comparing width of the first hex row plus half of the hexWidth with groundWidth
@@ -864,7 +882,10 @@ public class GridManager: MonoBehaviour
 			case LandType.Oasis:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
 					if (hasEnoughAndDeduct (tId, waterMillCost)) {
-						createObject (tb, windmill, tId);
+						GameObject temp = createObject (tb, windmill, tId);
+						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
+						gop.initStructureShown (tId,players);
+						structureList.Add(temp);
 						tb.Builded ();
 					}
 				}
@@ -872,7 +893,10 @@ public class GridManager: MonoBehaviour
 			case LandType.OilField:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
 					if (hasEnoughAndDeduct (tId, refineryCost)) {
-						createObject (tb, refinery, tId);
+						GameObject temp = createObject (tb, refinery, tId);
+						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
+						gop.initStructureShown (tId,players);
+						structureList.Add(temp);
 						tb.Builded ();
 					}
 				}
@@ -880,7 +904,10 @@ public class GridManager: MonoBehaviour
 			case LandType.Junkyard:
 				if (selection.name.Equals ("sel0") && tb.built == false) {
 					if (hasEnoughAndDeduct (tId, junkYardCost)) {
-						createObject (tb, junkyard, tId);
+						GameObject temp = createObject (tb, junkyard, tId);
+						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
+						gop.initStructureShown (tId,players);
+						structureList.Add(temp);
 						tb.Builded ();
 					}
 				}
