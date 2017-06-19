@@ -163,15 +163,9 @@ public class GridManager: MonoBehaviour
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 				if (gop.split == true) {
 					gop.shown = false;
-					bool join = GUI.Button(new Rect(targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
+					GUI.Button(new Rect(targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
 					GUI.Box (new Rect (targetPos.x+20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
-					bool split = GUI.Button (new Rect (targetPos.x+40, Screen.height - targetPos.y, 20, 20), "-");
-					if (join) {
-						
-					} else if (split){
-						
-					}
-
+					GUI.Button (new Rect (targetPos.x+40, Screen.height - targetPos.y, 20, 20), "-");
 				}
 			}
 		}
