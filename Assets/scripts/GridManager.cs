@@ -18,7 +18,6 @@ public class GridManager: MonoBehaviour
 		return ID++;
 	}
 
-	public List<GameObject> structureList = new List<GameObject> ();
 	public List<GameObject> gameobjects = new List<GameObject> ();
 	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
 	public Dictionary<int, Path<Tile>> ObjsPathsTiles = new Dictionary<int, Path<Tile>> ();
@@ -271,15 +270,6 @@ public class GridManager: MonoBehaviour
 			}
 		}
 
-		foreach (GameObject structure in structureList) {
-			GOProperties gop = (GOProperties)structure.GetComponent (typeof(GOProperties));
-			if(!gop.structureShown[playerId]){
-				//if structure is not visible check if there is any unit close by
-
-			}
-			show (structure, gop.structureShown[playerId]);
-		}
-
 		foreach(GameObject obj in gameobjects){
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 			show (obj, gop.PlayerId == playerId);
@@ -292,9 +282,23 @@ public class GridManager: MonoBehaviour
 					//find shortest path between enemy tile and friendly unit
 					var path = PathFinder.FindPath (getTileOfUnit(gop.UniqueID).tile, tb.tile);
 					//show objs on enemy tile if in range
-					if(path != null && path.TotalCost <= viewRange){
-						foreach(GameObject objOnTile in tb.objsOnTile){
-							show (objOnTile, true);
+					if (path != null && path.TotalCost <= viewRange) {
+						foreach (GameObject objOnTile in tb.objsOnTile) {
+							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
+							if (gopOnTile.structureShown == null) {
+								show (objOnTile, true);
+							} else if (!gopOnTile.structureShown [playerId]) {
+								gopOnTile.structureShown [playerId] = true;	
+								show (objOnTile, gopOnTile.structureShown [playerId]);						
+							}
+						}
+					} else {
+						//if out of view range check structures
+						foreach (GameObject objOnTile in tb.objsOnTile) {
+							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
+							if (gopOnTile.structureShown != null) {
+								show (objOnTile, gopOnTile.structureShown [playerId]);
+							}
 						}
 					}
 				}
@@ -735,9 +739,9 @@ public class GridManager: MonoBehaviour
 		if (players > 0) {
 			addObjsToLists (board [new Point (0, 0)], fanatic, 0);
 			addObjsToLists (board [new Point (0, 1)], fanatic, 0);
-			structureList.Add(createObject (board [new Point (0, 1)], junkyard, 0));
+			createObject (board [new Point (0, 1)], junkyard, 0);
 			addObjsToLists (board [new Point (1, 0)], fanatic, 0);
-			structureList.Add(createObject (board [new Point (1, 0)], windmill, 0));
+			createObject (board [new Point (1, 0)], windmill, 0);
 			board [new Point (0, 1)].Builded ();
 			board [new Point (1, 0)].Builded ();
 		}
@@ -745,37 +749,31 @@ public class GridManager: MonoBehaviour
 			int temp = players == 4 ? 3 : 1; 
 			addObjsToLists (board [new Point (9, 10)], fanatic, temp);
 			addObjsToLists (board [new Point (8, 10)], fanatic, temp);
-			structureList.Add(createObject (board [new Point (8, 10)], windmill, temp));
+			createObject (board [new Point (8, 10)], windmill, temp);
 			addObjsToLists (board [new Point (8, 9)], fanatic, temp);
-			structureList.Add(createObject (board [new Point (8, 9)], junkyard, temp));
+			createObject (board [new Point (8, 9)], junkyard, temp);
 			board [new Point (8, 10)].Builded ();
 			board [new Point (8, 9)].Builded ();
 		}
 		if (players > 2) {
 			addObjsToLists (board [new Point (9, 0)], fanatic, 1);
 			addObjsToLists (board [new Point (8, 1)], fanatic, 1);
-			structureList.Add(createObject (board [new Point (8, 1)], junkyard, 1));
+			createObject (board [new Point (8, 1)], junkyard, 1);
 			addObjsToLists (board [new Point (8, 0)], fanatic, 1);
-			structureList.Add(createObject (board [new Point (8, 0)], windmill, 1));
+			createObject (board [new Point (8, 0)], windmill, 1);
 			board [new Point (8, 1)].Builded ();
 			board [new Point (8, 0)].Builded ();
 		}
 		if (players > 3) {
 			addObjsToLists (board [new Point (0, 10)], fanatic, 2);
 			addObjsToLists (board [new Point (0, 9)], fanatic, 2);
-			structureList.Add(createObject (board [new Point (0, 9)], windmill, 2));
+			createObject (board [new Point (0, 9)], windmill, 2);
 			addObjsToLists (board [new Point (1, 10)], fanatic, 2);
-			structureList.Add(createObject (board [new Point (1, 10)], junkyard, 2));
+			createObject (board [new Point (1, 10)], junkyard, 2);
 			board [new Point (0, 9)].Builded ();
 			board [new Point (1, 10)].Builded ();
 		}
-		foreach(GameObject structure in structureList){
-			GOProperties gop = (GOProperties)structure.GetComponent (typeof(GOProperties));
-			gop.initStructureShown(0,players);
-			for(int i=0;i<players;i++){
-				gop.structureShown [i] = true;
-			}
-		}
+
 		//variable to indicate if all rows have the same number of hexes in them
 		//this is checked by comparing width of the first hex row plus half of the hexWidth with groundWidth
 		bool equalLineLengths = (gridSize.x + 0.5) * hexWidth <= groundWidth;
@@ -885,7 +883,6 @@ public class GridManager: MonoBehaviour
 						GameObject temp = createObject (tb, windmill, tId);
 						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
 						gop.initStructureShown (tId,players);
-						structureList.Add(temp);
 						tb.Builded ();
 					}
 				}
@@ -896,7 +893,6 @@ public class GridManager: MonoBehaviour
 						GameObject temp = createObject (tb, refinery, tId);
 						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
 						gop.initStructureShown (tId,players);
-						structureList.Add(temp);
 						tb.Builded ();
 					}
 				}
@@ -907,7 +903,6 @@ public class GridManager: MonoBehaviour
 						GameObject temp = createObject (tb, junkyard, tId);
 						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
 						gop.initStructureShown (tId,players);
-						structureList.Add(temp);
 						tb.Builded ();
 					}
 				}
