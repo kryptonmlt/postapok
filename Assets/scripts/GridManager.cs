@@ -12,8 +12,6 @@ public class GridManager: MonoBehaviour
 {
 	public int ID = 0;
 	public Button endTurnButton;
-	public Button join;
-	public Button split;
 
 	public int getId ()
 	{
@@ -166,22 +164,18 @@ public class GridManager: MonoBehaviour
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 				if (gop.split == true) {
 					gop.shown = false;
-					GUI.Button(new Rect(targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
+					bool join = GUI.Button(new Rect(targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
 					GUI.Box (new Rect (targetPos.x+20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
-					GUI.Button (new Rect (targetPos.x+40, Screen.height - targetPos.y, 20, 20), "-");
+					bool split = GUI.Button (new Rect (targetPos.x+40, Screen.height - targetPos.y, 20, 20), "-");
+					if (join) {
+						
+					} else if (split){
+						
+					}
+
 				}
 			}
 		}
-	}
-
-	void joinUnit(){
-		
-		
-	}
-
-	void splitUnit(){
-
-
 	}
 
 	void updateResourcesMenu (int playerId)
@@ -624,11 +618,6 @@ public class GridManager: MonoBehaviour
 		}
 		Button btn = endTurnButton.GetComponent<Button> ();
 		btn.onClick.AddListener (endTurnTask);
-		Button joinbtn = join.GetComponent<Button> ();
-		joinbtn.onClick.AddListener (joinUnit);
-		Button splitbtn = split.GetComponent<Button> ();
-		splitbtn.onClick.AddListener (splitUnit);
-
 		rectangleTexture = new Texture2D (1, 1);
 		rectangleTexture.SetPixel (0, 0, Color.black);
 		rectangleTexture.Apply ();
