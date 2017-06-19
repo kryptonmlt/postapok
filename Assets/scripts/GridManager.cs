@@ -12,6 +12,8 @@ public class GridManager: MonoBehaviour
 {
 	public int ID = 0;
 	public Button endTurnButton;
+	public Button join;
+	public Button split;
 
 	public int getId ()
 	{
@@ -157,6 +159,27 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
+		foreach (GameObject go in gameobjects) {
+			if (go != null) {
+				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
+				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+				if (gop.split == true) {
+					gop.shown = false;
+					GUI.Button(new Rect(targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
+					GUI.Box (new Rect (targetPos.x+20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+					GUI.Button (new Rect (targetPos.x+40, Screen.height - targetPos.y, 20, 20), "-");
+				}
+			}
+		}
+	}
+
+	void joinUnit(){
+		
+		
+	}
+
+	void splitUnit(){
+
 
 	}
 
@@ -244,14 +267,26 @@ public class GridManager: MonoBehaviour
 			}
 			if (unitSelected.Count == 1) {
 				LandType landHit = retrieveTileOfObject (unitSelected.First ());
-				Debug.Log ("Selected Tile: "+landHit);
+				Debug.Log ("Selected Tile: " + landHit);
 				updateSelectionMenu (landHit);
 			}
 			clicked = false;
+		} 
+		else if (Input.GetMouseButtonDown (1) & !unitSelected.Any () & moving == false) {
+			// Single hit 
+			RaycastHit hitInfo = new RaycastHit ();
+			GameObject selected = null;
+			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hitInfo)) {
+				selected = hitInfo.transform.gameObject;
+				if (selected != null & hitInfo.transform.gameObject.tag == "Unit") {
+					GOProperties gop = (GOProperties)selected.GetComponent (typeof(GOProperties));
+					gop.setSplit (true);
+				}
+			}
 		}
 		highlightAccessibleTiles ();
 	}
-
+		
 	public int getCurrentPlayerId(){
 		return turn >= players ? turn - 1 : turn;
 	}
@@ -578,6 +613,10 @@ public class GridManager: MonoBehaviour
 		}
 		Button btn = endTurnButton.GetComponent<Button> ();
 		btn.onClick.AddListener (endTurnTask);
+		Button joinbtn = join.GetComponent<Button> ();
+		joinbtn.onClick.AddListener (joinUnit);
+		Button splitbtn = split.GetComponent<Button> ();
+		splitbtn.onClick.AddListener (splitUnit);
 
 		rectangleTexture = new Texture2D (1, 1);
 		rectangleTexture.SetPixel (0, 0, Color.black);
