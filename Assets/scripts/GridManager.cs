@@ -1094,12 +1094,8 @@ public class GridManager: MonoBehaviour
 		case "Apo_Car_2015":
 			gop.setAV (2);
 			gop.setDV (2);
-<<<<<<< HEAD
 			gop.setMV (15);
-=======
-			gop.setMV (3);
 			go.transform.position += new Vector3 (0f,0.5f,0f);
->>>>>>> 1aa77eed39fe0f296ee8a476072e078fe670694f
 			break;
 		case "f_noladder":
 			gop.setAV (3);
