@@ -1,15 +1,27 @@
 fileFormatVersion: 2
-guid: 10fd7c4bfe02543b290cfa8d5f7e6c5c
-timeCreated: 1496610532
+guid: 1f2511331be6790499dad8a4c07601e3
+timeCreated: 1502378208
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
+    100002: polySurface171_MeshPart0
+    100004: polySurface171_MeshPart1
+    100006: polySurface171_MeshPart2
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Hex_JunkYard
+    400002: polySurface171_MeshPart0
+    400004: polySurface171_MeshPart1
+    400006: polySurface171_MeshPart2
+    2300000: polySurface171_MeshPart0
+    2300002: polySurface171_MeshPart1
+    2300004: polySurface171_MeshPart2
+    3300000: polySurface171_MeshPart0
+    3300002: polySurface171_MeshPart1
+    3300004: polySurface171_MeshPart2
+    4300000: polySurface171_MeshPart0
+    4300002: polySurface171_MeshPart1
+    4300004: polySurface171_MeshPart2
   materials:
     importMaterials: 1
     materialName: 0
@@ -20,6 +32,8 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 

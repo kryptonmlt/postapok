@@ -6,10 +6,10 @@ using UnityStandardAssets.Characters.ThirdPerson;
 public class CharacterMovement: MonoBehaviour
 {
 	//speed in meters per second
-	public float speed = 0.0025F;
-	public float rotationSpeed = 0.004F;
+	public float speed = 10F;
+	public float rotationSpeed = 1F;
 	//distance between character and tile position when we assume we reached it and start looking for the next. Explained in detail later on
-	public static float MinNextTileDist = 0.07f;
+	public static float MinNextTileDist = 2f;
 
 	private MovingObject m_character;
 	//position of the tile we are heading to
