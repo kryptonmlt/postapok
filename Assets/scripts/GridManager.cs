@@ -1093,7 +1093,7 @@ public class GridManager: MonoBehaviour
 		case "Apo_Car_2015":
 			gop.setAV (2);
 			gop.setDV (2);
-			gop.setMV (3);
+			gop.setMV (15);
 			break;
 		case "f_noladder":
 			gop.setAV (3);

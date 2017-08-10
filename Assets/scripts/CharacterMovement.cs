@@ -16,7 +16,7 @@ public class CharacterMovement: MonoBehaviour
 	Vector3 curTilePos;
 	Tile curTile;
 	List<Tile> path;
-
+	Tile previousTile;
 	public bool IsMoving { get; private set; }
 
 	public int unitInterval = 0;
@@ -92,6 +92,20 @@ public class CharacterMovement: MonoBehaviour
 			curTilePos = closeToDest.Value;
 			curTilePos.y = myTransform.position.y;
 		}
+
+		GOProperties gop1 = (GOProperties)this.GetComponent (typeof(GOProperties));
+		TileBehaviour curTB = GM.board [curTile.Location];
+		foreach (GameObject o in curTB.objsOnTile) {
+			GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
+
+			if (gop1.PlayerId!=gop2.PlayerId) {
+				path = new List<Tile>() ;
+				path.Add (previousTile);
+				path.Add (previousTile);
+				break;
+			}
+		}
+
 		//if the distance between the character and the center of the next tile is short enough
 		if ((curTilePos - myTransform.position).sqrMagnitude < MinNextTileDist * MinNextTileDist) {
 			unitInterval++;
@@ -102,19 +116,11 @@ public class CharacterMovement: MonoBehaviour
 				unitInterval = 0;
 				switchOriginAndDestinationTiles ();
 				closeToDest = null;
+				previousTile = null;
 				return;
 			}
-			GOProperties gop = (GOProperties)this.GetComponent (typeof(GOProperties));
-			TileBehaviour curTB = GM.board [curTile.Location];
-			foreach (GameObject o in curTB.objsOnTile) {
-				GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
-
-				if (gop.PlayerId!=gop2.PlayerId) {
-					path = new List<Tile>() ;
-					path.Add (curTile);
-				}
-			}
 			//curTile becomes the next one
+			previousTile=curTile;
 			curTile = path [path.IndexOf (curTile) - 1];
 			curTilePos = calcTilePos (curTile);
 		}
