@@ -18,6 +18,8 @@ public class GridManager: MonoBehaviour
 		return ID++;
 	}
 
+	public bool hideObjects = true;
+
 	public List<GameObject> gameobjects = new List<GameObject> ();
 	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
 	public Dictionary<int, Path<Tile>> ObjsPathsTiles = new Dictionary<int, Path<Tile>> ();
@@ -289,14 +291,22 @@ public class GridManager: MonoBehaviour
 			if (lines != null) {
 				Renderer[] renderers = lines.GetComponentsInChildren<Renderer> ();
 				foreach (Renderer renderer in renderers) {
-					renderer.enabled = playerId == i;
+					if (hideObjects) {
+						renderer.enabled = playerId == i;
+					} else {
+						renderer.enabled = true;
+					}
 				}
 			}
 		}
 
 		foreach (GameObject obj in gameobjects) {
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
-			show (obj, gop.PlayerId == playerId);
+			if (hideObjects) {
+				show (obj, gop.PlayerId == playerId);
+			} else {
+				show (obj, true);
+			}
 		}
 		//check if there is anyone in range
 		foreach (GameObject obj in gameobjects) {
@@ -313,7 +323,11 @@ public class GridManager: MonoBehaviour
 								show (objOnTile, true);
 							} else if (!gopOnTile.structureShown [playerId]) {
 								gopOnTile.structureShown [playerId] = true;	
-								show (objOnTile, gopOnTile.structureShown [playerId]);						
+								if (hideObjects) {
+									show (objOnTile, gopOnTile.structureShown [playerId]);	
+								} else {
+									show (objOnTile, true);
+								}
 							}
 						}
 					} else {
@@ -321,7 +335,11 @@ public class GridManager: MonoBehaviour
 						foreach (GameObject objOnTile in tb.objsOnTile) {
 							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 							if (gopOnTile.structureShown != null) {
-								show (objOnTile, gopOnTile.structureShown [playerId]);
+								if (hideObjects) {
+									show (objOnTile, gopOnTile.structureShown [playerId]);
+								} else {
+									show (objOnTile, true);
+								}
 							}
 						}
 					}
