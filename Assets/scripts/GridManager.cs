@@ -88,7 +88,7 @@ public class GridManager: MonoBehaviour
 	private Text turnResource;
 	private Text playerResource;
 
-	Dictionary<Point, TileBehaviour> board = new Dictionary<Point, TileBehaviour> ();
+	public Dictionary<Point, TileBehaviour> board = new Dictionary<Point, TileBehaviour> ();
 
 	private int[] initialResources = { 10, 10, 12 };
 	private int[] fanaticCost = { 1, 0, 1 };

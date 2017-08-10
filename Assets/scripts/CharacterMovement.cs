@@ -104,7 +104,16 @@ public class CharacterMovement: MonoBehaviour
 				closeToDest = null;
 				return;
 			}
+			GOProperties gop = (GOProperties)this.GetComponent (typeof(GOProperties));
+			TileBehaviour curTB = GM.board [curTile.Location];
+			foreach (GameObject o in curTB.objsOnTile) {
+				GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
 
+				if (gop.PlayerId!=gop2.PlayerId) {
+					path = new List<Tile>() ;
+					path.Add (curTile);
+				}
+			}
 			//curTile becomes the next one
 			curTile = path [path.IndexOf (curTile) - 1];
 			curTilePos = calcTilePos (curTile);
