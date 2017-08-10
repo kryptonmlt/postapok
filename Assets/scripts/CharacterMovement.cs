@@ -23,6 +23,7 @@ public class CharacterMovement: MonoBehaviour
 
 	Transform myTransform;
 	private Vector3? closeToDest = null;
+	bool waiting = false;
 
 	void Awake ()
 	{
@@ -72,12 +73,34 @@ public class CharacterMovement: MonoBehaviour
 		GM.destTileTB [gop.UniqueID] = null;
 	}
 
+	bool isEnemyOnTile(){
+		Debug.Log ("checking isEnemyOnTile??");
+		GridManager GM = GridManager.instance;
+		GOProperties gop1 = (GOProperties)this.GetComponent (typeof(GOProperties));
+		TileBehaviour tb = GM.board [new Point(previousTile.X + (previousTile.Y / 2),previousTile.Location.Y)];
+		Debug.Log (previousTile.X +", "+  previousTile.Y +" - "+tb.tile.Location.X+" , "+tb.tile.Location.X);
+		foreach (GameObject o in tb.objsOnTile) {
+			GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
+
+			if (gop1.PlayerId!=gop2.PlayerId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void Update ()
 	{
 		GridManager GM = GridManager.instance;
 		if (unitInterval >= GM.globalInterval) {
 			m_character.Move (Vector3.zero, false, false);
 			return;
+		} else if(waiting){
+			waiting = false;
+			if(isEnemyOnTile()){
+				path = new List<Tile>() ;
+				path.Add (previousTile);
+			}
 		}
 
 		if (!IsMoving) {
@@ -93,22 +116,10 @@ public class CharacterMovement: MonoBehaviour
 			curTilePos.y = myTransform.position.y;
 		}
 
-		GOProperties gop1 = (GOProperties)this.GetComponent (typeof(GOProperties));
-		TileBehaviour curTB = GM.board [curTile.Location];
-		foreach (GameObject o in curTB.objsOnTile) {
-			GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
-
-			if (gop1.PlayerId!=gop2.PlayerId) {
-				path = new List<Tile>() ;
-				path.Add (previousTile);
-				path.Add (previousTile);
-				break;
-			}
-		}
-
 		//if the distance between the character and the center of the next tile is short enough
 		if ((curTilePos - myTransform.position).sqrMagnitude < MinNextTileDist * MinNextTileDist) {
 			unitInterval++;
+			waiting = true;
 			//set custom destinitation
 			//if we reached the destination tile
 			if (path.IndexOf (curTile) == 0) {
@@ -116,7 +127,7 @@ public class CharacterMovement: MonoBehaviour
 				unitInterval = 0;
 				switchOriginAndDestinationTiles ();
 				closeToDest = null;
-				previousTile = null;
+				previousTile = curTile;
 				return;
 			}
 			//curTile becomes the next one
