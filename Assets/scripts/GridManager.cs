@@ -100,6 +100,7 @@ public class GridManager: MonoBehaviour
 	private int[] unitUpgradeCost = { 0, 0, 10 };
 
 	private int resourceLimitGain = 5;
+	private int upgradeBenefit = 1;
 	private int viewRange = 2;
 	public int globalInterval = 0;
 	private List<CharacterMovement> chMovements = new List<CharacterMovement> ();
@@ -152,7 +153,7 @@ public class GridManager: MonoBehaviour
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-				if(gop.shown){
+				if (gop.shown) {
 					GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
 				}
 			}
@@ -163,9 +164,9 @@ public class GridManager: MonoBehaviour
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 				if (gop.split == true) {
 					gop.shown = false;
-					GUI.Button(new Rect(targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
-					GUI.Box (new Rect (targetPos.x+20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
-					GUI.Button (new Rect (targetPos.x+40, Screen.height - targetPos.y, 20, 20), "-");
+					GUI.Button (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
+					GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+					GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-");
 				}
 			}
 		}
@@ -183,7 +184,7 @@ public class GridManager: MonoBehaviour
 
 	void Update ()
 	{
-		updateResourcesMenu (getCurrentPlayerId());
+		updateResourcesMenu (getCurrentPlayerId ());
 
 		bool moving = isAnyMoving ();
 		updateGlobalInterval (moving);
@@ -193,7 +194,7 @@ public class GridManager: MonoBehaviour
 			resolution ();
 			turn = 0;
 			round++;
-			hideEnemyObjects (getCurrentPlayerId());
+			hideEnemyObjects (getCurrentPlayerId ());
 		}
 			
 
@@ -254,13 +255,11 @@ public class GridManager: MonoBehaviour
 				}
 			}
 			if (unitSelected.Count == 1) {
-				LandType landHit = retrieveTileOfObject (unitSelected.First ());
-				Debug.Log ("Selected Tile: " + landHit);
+				TileBehaviour landHit = retrieveTileBehaviourOfObject (unitSelected.First ());
 				updateSelectionMenu (landHit);
 			}
 			clicked = false;
-		} 
-		else if (Input.GetMouseButtonDown (1) & !unitSelected.Any () & moving == false) {
+		} else if (Input.GetMouseButtonDown (1) & !unitSelected.Any () & moving == false) {
 			// Single hit 
 			RaycastHit hitInfo = new RaycastHit ();
 			GameObject selected = null;
@@ -274,18 +273,20 @@ public class GridManager: MonoBehaviour
 		}
 		highlightAccessibleTiles ();
 	}
-		
-	public int getCurrentPlayerId(){
+
+	public int getCurrentPlayerId ()
+	{
 		return turn >= players ? turn - 1 : turn;
 	}
 
 
-	public void hideEnemyObjects(int playerId){
+	public void hideEnemyObjects (int playerId)
+	{
 		//set all enemies to false
-		for(int i=0;i<players;i++){
-			string linesName = "Lines"+i;
+		for (int i = 0; i < players; i++) {
+			string linesName = "Lines" + i;
 			GameObject lines = GameObject.Find (linesName);
-			if (lines != null){
+			if (lines != null) {
 				Renderer[] renderers = lines.GetComponentsInChildren<Renderer> ();
 				foreach (Renderer renderer in renderers) {
 					renderer.enabled = playerId == i;
@@ -293,17 +294,17 @@ public class GridManager: MonoBehaviour
 			}
 		}
 
-		foreach(GameObject obj in gameobjects){
+		foreach (GameObject obj in gameobjects) {
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 			show (obj, gop.PlayerId == playerId);
 		}
 		//check if there is anyone in range
 		foreach (GameObject obj in gameobjects) {
 			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
-			if(gop.PlayerId == playerId){
+			if (gop.PlayerId == playerId) {
 				foreach (TileBehaviour tb in board.Values) {					
 					//find shortest path between enemy tile and friendly unit
-					var path = PathFinder.FindPath (getTileOfUnit(gop.UniqueID).tile, tb.tile);
+					var path = PathFinder.FindPath (getTileOfUnit (gop.UniqueID).tile, tb.tile);
 					//show objs on enemy tile if in range
 					if (path != null && path.TotalCost <= viewRange) {
 						foreach (GameObject objOnTile in tb.objsOnTile) {
@@ -329,11 +330,12 @@ public class GridManager: MonoBehaviour
 		}
 	}
 
-	public TileBehaviour getTileOfUnit(int uniqueId){
+	public TileBehaviour getTileOfUnit (int uniqueId)
+	{
 		foreach (TileBehaviour tb in board.Values) {
-			foreach(GameObject obj in tb.objsOnTile){
+			foreach (GameObject obj in tb.objsOnTile) {
 				GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
-				if(gop.UniqueID == uniqueId){
+				if (gop.UniqueID == uniqueId) {
 					return tb;
 				}
 			}
@@ -341,7 +343,8 @@ public class GridManager: MonoBehaviour
 		return null;
 	}
 
-	public void show(GameObject obj, bool show){
+	public void show (GameObject obj, bool show)
+	{
 		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 		gop.shown = show;
 		Renderer[] renderers = obj.GetComponentsInChildren<Renderer> ();
@@ -388,7 +391,7 @@ public class GridManager: MonoBehaviour
 	{	
 		GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
 		var path = PathFinder.FindPath (originTileTB [gop.UniqueID].tile, tb.tile);
-		if(path == null){
+		if (path == null) {
 			return false;
 		}
 		return path.TotalCost <= gop.MovementValue;
@@ -474,21 +477,21 @@ public class GridManager: MonoBehaviour
 			deSelect ();
 			if (turn == players - 1) {
 				globalInterval = 1;
-					GridManager.draw = false;
-					List<CharacterMovement> chMovementsTemp = new List<CharacterMovement> ();
-					foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
-						GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
-						if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
-							CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
-							characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
-							originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
-							chMovementsTemp.Add (characterAction);
-						}
+				GridManager.draw = false;
+				List<CharacterMovement> chMovementsTemp = new List<CharacterMovement> ();
+				foreach (GameObject unit in GameObject.FindGameObjectsWithTag("Unit")) {
+					GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
+						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
+						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
+						originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+						chMovementsTemp.Add (characterAction);
 					}
+				}
 				chMovements = chMovementsTemp;
 			}
 			turn++;
-			hideEnemyObjects (getCurrentPlayerId());
+			hideEnemyObjects (getCurrentPlayerId ());
 		}
 	}
 
@@ -583,6 +586,9 @@ public class GridManager: MonoBehaviour
 				if (f > resourceLimitGain) {
 					f = resourceLimitGain;
 				}
+				if (tb.upgraded) {
+					f += upgradeBenefit;
+				}
 				int playerOwner = tb.getPlayerOwner ();
 				switch (tb.getTile ().landType) {
 				case LandType.Oasis:
@@ -629,7 +635,7 @@ public class GridManager: MonoBehaviour
 		for (int i = 0; i < players; i++) {
 			playerData [i] = new PlayerData (initialResources [0], initialResources [1], initialResources [2]);
 		}
-		hideEnemyObjects (getCurrentPlayerId());
+		hideEnemyObjects (getCurrentPlayerId ());
 	}
 
 	void Awake ()
@@ -663,6 +669,7 @@ public class GridManager: MonoBehaviour
 		textures.Add (Resources.Load ("Textures/refinery") as Texture);
 		textures.Add (Resources.Load ("Textures/windmill") as Texture);
 		textures.Add (Resources.Load ("Textures/junkyard") as Texture);
+		textures.Add (Resources.Load ("Textures/UPGRADE") as Texture);
 
 		waterResource = GameObject.Find ("ActionMenu/PlayerResources/WaterText").GetComponent<Text> ();
 		petrolResource = GameObject.Find ("ActionMenu/PlayerResources/PetrolText").GetComponent<Text> ();
@@ -764,8 +771,8 @@ public class GridManager: MonoBehaviour
 			createObject (board [new Point (0, 1)], junkyard, 0);
 			addObjsToLists (board [new Point (1, 0)], fanatic, 0);
 			createObject (board [new Point (1, 0)], windmill, 0);
-			board [new Point (0, 1)].Builded ();
-			board [new Point (1, 0)].Builded ();
+			board [new Point (0, 1)].built = true;
+			board [new Point (1, 0)].built = true;
 		}
 		if (players > 1) {
 			int temp = players == 4 ? 3 : 1; 
@@ -774,8 +781,8 @@ public class GridManager: MonoBehaviour
 			createObject (board [new Point (8, 10)], windmill, temp);
 			addObjsToLists (board [new Point (8, 9)], fanatic, temp);
 			createObject (board [new Point (8, 9)], junkyard, temp);
-			board [new Point (8, 10)].Builded ();
-			board [new Point (8, 9)].Builded ();
+			board [new Point (8, 10)].built = true;
+			board [new Point (8, 9)].built = true;
 		}
 		if (players > 2) {
 			addObjsToLists (board [new Point (9, 0)], fanatic, 1);
@@ -783,8 +790,8 @@ public class GridManager: MonoBehaviour
 			createObject (board [new Point (8, 1)], junkyard, 1);
 			addObjsToLists (board [new Point (8, 0)], fanatic, 1);
 			createObject (board [new Point (8, 0)], windmill, 1);
-			board [new Point (8, 1)].Builded ();
-			board [new Point (8, 0)].Builded ();
+			board [new Point (8, 1)].built = true;
+			board [new Point (8, 0)].built = true;
 		}
 		if (players > 3) {
 			addObjsToLists (board [new Point (0, 10)], fanatic, 2);
@@ -792,8 +799,8 @@ public class GridManager: MonoBehaviour
 			createObject (board [new Point (0, 9)], windmill, 2);
 			addObjsToLists (board [new Point (1, 10)], fanatic, 2);
 			createObject (board [new Point (1, 10)], junkyard, 2);
-			board [new Point (0, 9)].Builded ();
-			board [new Point (1, 10)].Builded ();
+			board [new Point (0, 9)].built = true;
+			board [new Point (1, 10)].built = true;
 		}
 
 		//variable to indicate if all rows have the same number of hexes in them
@@ -879,8 +886,7 @@ public class GridManager: MonoBehaviour
 			}
 			int tId = unitSelected.First ().GetComponent<GOProperties> ().PlayerId;
 			TileBehaviour tb = (TileBehaviour)hexGrid.GetComponent ("TileBehaviour");
-			switch (tb.getTile ().getLandType ()) {
-			case LandType.Base:
+			if (tb.getTile ().getLandType () == LandType.Base) {
 				if (selection.name.Equals ("sel0")) {
 					if (hasEnoughAndDeduct (tId, fanaticCost)) {
 						addObjsToLists (tb, fanatic, tId);
@@ -898,45 +904,64 @@ public class GridManager: MonoBehaviour
 						addObjsToLists (tb, truck, tId);
 					}
 				}
-				break;	
-			case LandType.Oasis:
-				if (selection.name.Equals ("sel0") && tb.built == false) {
-					if (hasEnoughAndDeduct (tId, waterMillCost)) {
-						GameObject temp = createObject (tb, windmill, tId);
-						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
-						gop.initStructureShown (tId,players);
-						tb.Builded ();
+			} else if (!tb.built && !tb.upgraded) {
+				switch (tb.getTile ().getLandType ()) {
+				case LandType.Oasis:
+					if (selection.name.Equals ("sel0")) {
+						if (hasEnoughAndDeduct (tId, waterMillCost)) {
+							GameObject temp = createObject (tb, windmill, tId);
+							GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
+							gop.initStructureShown (tId, players);
+							tb.built = true;
+						}
 					}
-				}
-				break;
-			case LandType.OilField:
-				if (selection.name.Equals ("sel0") && tb.built == false) {
-					if (hasEnoughAndDeduct (tId, refineryCost)) {
-						GameObject temp = createObject (tb, refinery, tId);
-						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
-						gop.initStructureShown (tId,players);
-						tb.Builded ();
+					break;
+				case LandType.OilField:
+					if (selection.name.Equals ("sel0")) {
+						if (hasEnoughAndDeduct (tId, refineryCost)) {
+							GameObject temp = createObject (tb, refinery, tId);
+							GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
+							gop.initStructureShown (tId, players);
+							tb.built = true;
+						}
 					}
-				}
-				break;
-			case LandType.Junkyard:
-				if (selection.name.Equals ("sel0") && tb.built == false) {
-					if (hasEnoughAndDeduct (tId, junkYardCost)) {
-						GameObject temp = createObject (tb, junkyard, tId);
-						GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
-						gop.initStructureShown (tId,players);
-						tb.Builded ();
+					break;
+				case LandType.Junkyard:
+					if (selection.name.Equals ("sel0")) {
+						if (hasEnoughAndDeduct (tId, junkYardCost)) {
+							GameObject temp = createObject (tb, junkyard, tId);
+							GOProperties gop = (GOProperties)temp.GetComponent (typeof(GOProperties));
+							gop.initStructureShown (tId, players);
+							tb.built = true;
+						}
 					}
+					break;
+				default:
+					break;
 				}
-				break;
-			default:
-				break;
+				clearSelectionMenu ();
+			} else if (tb.built && !tb.upgraded) {
+				switch (tb.getTile ().getLandType ()) {
+				default:
+					if (selection.name.Equals ("sel0")) {
+						if (hasEnoughAndDeduct (tId, structureUpgradeCost)) {
+							tb.upgraded = true;
+						}
+					}
+					break;
+				}
+				clearSelectionMenu ();
 			}
 		}
 	}
 
-	private void updateSelectionMenu (LandType type)
+	private void updateSelectionMenu (TileBehaviour tb)
 	{
+		LandType type = LandType.Desert;
+		if (tb != null) {
+			type = tb.getTile ().landType;
+		}
+
 		clearSelectionMenu ();
 		bool build = false;
 		foreach (GameObject unit in unitSelected) {
@@ -945,8 +970,7 @@ public class GridManager: MonoBehaviour
 				build = true;
 		}
 		if (build == true) {
-			switch (type) {
-			case LandType.Base:
+			if (type == LandType.Base) {
 				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [0];
 				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
 				((RawImage)selectionMenu [1].GetComponent<RawImage> ()).texture = textures [1];
@@ -955,21 +979,40 @@ public class GridManager: MonoBehaviour
 				((RawImage)selectionMenu [2].GetComponent<RawImage> ()).color = Color.white;
 				((RawImage)selectionMenu [3].GetComponent<RawImage> ()).texture = textures [3];
 				((RawImage)selectionMenu [3].GetComponent<RawImage> ()).color = Color.white;
-				break;
-			case LandType.Oasis:
-				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [5];
-				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
-				break;
-			case LandType.OilField:
-				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [4];
-				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
-				break;
-			case LandType.Junkyard:
-				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [6];
-				((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
-				break;
-			default:
-				break;
+			} else if (!tb.built && !tb.upgraded) { 			// check if tile is built or needs an upgrade
+				switch (type) {
+				case LandType.Oasis:
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [5];
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+					break;
+				case LandType.OilField:
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [4];
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+					break;
+				case LandType.Junkyard:
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [6];
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+					break;
+				default:
+					break;
+				}
+			} else if (tb.built && !tb.upgraded) {
+				switch (type) {
+				case LandType.Oasis:
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [7];
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+					break;
+				case LandType.OilField:
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [7];
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+					break;
+				case LandType.Junkyard:
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).texture = textures [7];
+					((RawImage)selectionMenu [0].GetComponent<RawImage> ()).color = Color.white;
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}
@@ -987,15 +1030,24 @@ public class GridManager: MonoBehaviour
 		return null;
 	}
 
-	private LandType retrieveTileOfObject (GameObject obj)
+	private TileBehaviour retrieveTileBehaviourOfObject (GameObject obj)
 	{
 		GameObject hit = retrieveTile (obj);
 		if (hit != null) {
 			TileBehaviour tb = (TileBehaviour)hit.GetComponent ("TileBehaviour");
 			if (tb == null) {
-				Debug.Log ("TB=null: "+hit.name);
-				return LandType.Desert;
+				Debug.Log ("TB=null: " + hit.name);
+				return null;
 			}
+			return tb;
+		}
+		return null;
+	}
+
+	private LandType retrieveTileLandTypeOfObject (GameObject obj)
+	{
+		TileBehaviour tb = retrieveTileBehaviourOfObject (obj);
+		if (tb != null) {
 			return tb.getTile ().landType;
 		}
 		return LandType.Desert;
@@ -1060,7 +1112,7 @@ public class GridManager: MonoBehaviour
 		
 		//DestroyPath(id);
 		//Lines game object is used to hold all the "Line" game objects indicating the path
-		string linesName = "Lines"+getCurrentPlayerId();
+		string linesName = "Lines" + getCurrentPlayerId ();
 		GameObject lines = GameObject.Find (linesName);
 		if (lines == null)
 			lines = new GameObject (linesName);
