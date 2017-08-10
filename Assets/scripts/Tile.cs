@@ -7,6 +7,7 @@ public class Tile: GridObject, IHasNeighbours<Tile>
 {
 	public bool Passable;
 	public LandType landType;
+	public Point boardCoords { get; set;}
 
 	public Tile(int x, int y, LandType landType)
 		: base(x, y)

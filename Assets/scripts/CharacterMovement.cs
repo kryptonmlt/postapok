@@ -77,13 +77,21 @@ public class CharacterMovement: MonoBehaviour
 		Debug.Log ("checking isEnemyOnTile??");
 		GridManager GM = GridManager.instance;
 		GOProperties gop1 = (GOProperties)this.GetComponent (typeof(GOProperties));
-		TileBehaviour tb = GM.board [new Point(previousTile.X + (previousTile.Y / 2),previousTile.Location.Y)];
-		Debug.Log (previousTile.X +", "+  previousTile.Y +" - "+tb.tile.Location.X+" , "+tb.tile.Location.X);
+		/*TileBehaviour tb = GM.board [previousTile.boardCoords];
+		Debug.Log (previousTile.X +", "+  previousTile.Y +" - "+tb.tile.Location.X+" , "+tb.tile.Location.Y);
 		foreach (GameObject o in tb.objsOnTile) {
 			GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
-
 			if (gop1.PlayerId!=gop2.PlayerId) {
 				return true;
+			}
+		}*/
+		Collider[] collisions = Physics.OverlapSphere (transform.position,5f);
+		foreach (Collider col in collisions) {
+			if(col.gameObject.tag == "Unit"){
+				GOProperties gop2 = (GOProperties)col.gameObject.GetComponent (typeof(GOProperties));
+				if (gop1.PlayerId!=gop2.PlayerId) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -98,6 +106,7 @@ public class CharacterMovement: MonoBehaviour
 		} else if(waiting){
 			waiting = false;
 			if(isEnemyOnTile()){
+				Debug.Log ("ENEMY ON TILE!!");
 				path = new List<Tile>() ;
 				path.Add (previousTile);
 			}

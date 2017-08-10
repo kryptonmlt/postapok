@@ -719,9 +719,9 @@ public class GridManager: MonoBehaviour
 				int landTypeId = loadedMap [landPos];
 				tb.tile = new Tile ((int)x - (int)(y / 2), (int)y, TerrainType [landTypeId]);
 				tb.setTileMaterial (tb.tile.landType);
-
+				tb.tile.boardCoords = new Point((int)gridPos.x, (int)gridPos.y);
 				tempBoard.Add (tb.tile.Location, tb.tile);
-				board.Add (new Point ((int)x, (int)y), tb);
+				board.Add (new Point ((int)gridPos.x, (int)gridPos.y), tb);
 
 				List<GameObject> stuffOnTile = new List<GameObject> ();
 				bool rand = true;
