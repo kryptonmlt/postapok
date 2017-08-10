@@ -1089,21 +1089,25 @@ public class GridManager: MonoBehaviour
 			gop.setAV (1);
 			gop.setDV (1);
 			gop.setMV (1);
+			go.transform.position += new Vector3 (0f,0.2f,0f);
 			break;
 		case "Apo_Car_2015":
 			gop.setAV (2);
 			gop.setDV (2);
 			gop.setMV (3);
+			go.transform.position += new Vector3 (0f,0.5f,0f);
 			break;
 		case "f_noladder":
 			gop.setAV (3);
 			gop.setDV (3);
 			gop.setMV (2);
+			go.transform.position += new Vector3 (0f,0.2f,0f);
 			break;
 		case "bike":
 			gop.setAV (2);
 			gop.setDV (1);
 			gop.setMV (3);
+			go.transform.position += new Vector3 (0f,0.2f,0f);
 			break;
 		}
 		return go;
