@@ -109,6 +109,10 @@ public class CharacterMovement: MonoBehaviour
 				Debug.Log ("ENEMY ON TILE!!");
 				path = new List<Tile>() ;
 				path.Add (previousTile);
+				GOProperties gop = (GOProperties)this.GetComponent (typeof(GOProperties));
+				GM.destTileTB [gop.UniqueID] = GM.board [previousTile.boardCoords];
+				closeToDest = null;
+				curTile = previousTile;
 			}
 		}
 
