@@ -12,7 +12,6 @@ public class GOProperties: MonoBehaviour
 	public int quantity;
 	public String type;
 	public bool shown { get; set; }
-	public bool split=false;
 	public bool[] structureShown { get; set; }
 
 	public void initStructureShown(int playerId, int size){
@@ -37,9 +36,6 @@ public class GOProperties: MonoBehaviour
 	}
 	public void setMV(int m){
 		MovementValue=m;
-	}
-	public void setSplit(bool s){
-		split = s;
 	}
 
 }

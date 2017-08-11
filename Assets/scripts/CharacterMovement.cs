@@ -75,16 +75,7 @@ public class CharacterMovement: MonoBehaviour
 
 	bool isEnemyOnTile(){
 		Debug.Log ("checking isEnemyOnTile??");
-		GridManager GM = GridManager.instance;
 		GOProperties gop1 = (GOProperties)this.GetComponent (typeof(GOProperties));
-		/*TileBehaviour tb = GM.board [previousTile.boardCoords];
-		Debug.Log (previousTile.X +", "+  previousTile.Y +" - "+tb.tile.Location.X+" , "+tb.tile.Location.Y);
-		foreach (GameObject o in tb.objsOnTile) {
-			GOProperties gop2 = (GOProperties)o.GetComponent (typeof(GOProperties));
-			if (gop1.PlayerId!=gop2.PlayerId) {
-				return true;
-			}
-		}*/
 		Collider[] collisions = Physics.OverlapSphere (transform.position,5f);
 		foreach (Collider col in collisions) {
 			if(col.gameObject.tag == "Unit"){

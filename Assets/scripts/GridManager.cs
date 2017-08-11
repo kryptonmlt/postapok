@@ -54,6 +54,9 @@ public class GridManager: MonoBehaviour
 	static Vector3 downmouseposition;
 	static bool draw = false;
 	private bool clicked = false;
+	private bool showSplitMenu = false;
+	private GameObject splitSelection = null;
+	private Vector3 splitMenuPos;
 
 	private Texture2D rectangleTexture;
 	public float fAlpha = 0.25f;
@@ -160,17 +163,24 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-		foreach (GameObject go in gameobjects) {
-			if (go != null) {
-				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
-				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-				if (gop.split == true) {
-					gop.shown = false;
-					GUI.Button (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "+");
-					GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
-					GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-");
-				}
+		if(showSplitMenu){			
+			GOProperties gop = (GOProperties)splitSelection.GetComponent (typeof(GOProperties));
+			splitMenu (Camera.main.WorldToScreenPoint (splitMenuPos), gop);
+		}
+	}
+
+	void splitMenu(Vector3 targetPos, GOProperties gop){
+		if (GUI.Button (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "+")) {
+			gop.quantity++;
+		}
+		if (GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-")){
+			if(gop.quantity>1){
+				gop.quantity--;
 			}
+		}
+		GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+		if (GUI.Button (new Rect (targetPos.x + 60, Screen.height - targetPos.y, 20, 20), "✓")){
+			showSplitMenu = false;
 		}
 	}
 
@@ -261,17 +271,6 @@ public class GridManager: MonoBehaviour
 				updateSelectionMenu (landHit);
 			}
 			clicked = false;
-		} else if (Input.GetMouseButtonDown (1) & !unitSelected.Any () & moving == false) {
-			// Single hit 
-			RaycastHit hitInfo = new RaycastHit ();
-			GameObject selected = null;
-			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hitInfo)) {
-				selected = hitInfo.transform.gameObject;
-				if (selected != null & hitInfo.transform.gameObject.tag == "Unit") {
-					GOProperties gop = (GOProperties)selected.GetComponent (typeof(GOProperties));
-					gop.setSplit (true);
-				}
-			}
 		}
 		highlightAccessibleTiles ();
 	}
@@ -1180,6 +1179,11 @@ public class GridManager: MonoBehaviour
 					if (path.TotalCost <= gop.MovementValue) {
 						DrawPath (path, gop.UniqueID);
 						ObjsPathsTiles [gop.UniqueID] = path;
+					}
+					if (GridManager.unitSelected.Count == 1) {
+						showSplitMenu = true;
+						splitMenuPos = board[path.LastStep.boardCoords].transform.position;
+						splitSelection = GridManager.unitSelected.First();
 					}
 				}
 			}
