@@ -9,33 +9,53 @@ public class GOProperties: MonoBehaviour
 	public int PlayerId;
 	public int MovementValue;
 	public int UniqueID;
-	public int quantity;
-	public String type;
-	public bool shown { get; set; }
-	public bool[] structureShown { get; set; }
-
-	public void initStructureShown(int playerId, int size){
-		structureShown = new bool[size];
-		for(int i=0;i<size;i++){
-			structureShown[i] = playerId == i;
+	private int quantity;
+	public int Quantity {
+		get{ return this.quantity; }
+		set {
+			this.quantity = this.tempQuantity = value;
 		}
 	}
 
-	public void setUId(int id){
-		UniqueID=id;
+	public int tempQuantity { get; set; }
+
+	public String type;
+
+	public bool shown { get; set; }
+
+	public bool[] structureShown { get; set; }
+
+	public void initStructureShown (int playerId, int size)
+	{
+		structureShown = new bool[size];
+		for (int i = 0; i < size; i++) {
+			structureShown [i] = playerId == i;
+		}
 	}
-		
-	public void setPId(int id){
-		PlayerId=id;
+
+	public void setUId (int id)
+	{
+		UniqueID = id;
 	}
-	public void setAV(int a){
-		AttackValue=a;
+
+	public void setPId (int id)
+	{
+		PlayerId = id;
 	}
-	public void setDV(int d){
-		DefenseValue=d;
+
+	public void setAV (int a)
+	{
+		AttackValue = a;
 	}
-	public void setMV(int m){
-		MovementValue=m;
+
+	public void setDV (int d)
+	{
+		DefenseValue = d;
+	}
+
+	public void setMV (int m)
+	{
+		MovementValue = m;
 	}
 
 }

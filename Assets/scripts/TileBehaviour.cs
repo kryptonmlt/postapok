@@ -47,7 +47,7 @@ public class TileBehaviour: MonoBehaviour
 		foreach (GameObject o in objsOnTile) {
 			GOProperties gop = (GOProperties)o.GetComponent (typeof(GOProperties));
 			if (gop.type.Equals ("ThirdPersonController")) {
-				f += gop.quantity;
+				f += gop.Quantity;
 			}
 		}
 		return f;

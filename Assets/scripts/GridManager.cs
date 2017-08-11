@@ -159,7 +159,7 @@ public class GridManager: MonoBehaviour
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 				if (gop.shown) {
-					GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+					GUI.Box (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), gop.Quantity.ToString ());
 				}
 			}
 		}
@@ -171,14 +171,16 @@ public class GridManager: MonoBehaviour
 
 	void splitMenu(Vector3 targetPos, GOProperties gop){
 		if (GUI.Button (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "+")) {
-			gop.quantity++;
-		}
-		if (GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-")){
-			if(gop.quantity>1){
-				gop.quantity--;
+			if(gop.tempQuantity < gop.Quantity){
+				gop.tempQuantity++;
 			}
 		}
-		GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.quantity.ToString ());
+		if (GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-")){
+			if(gop.tempQuantity>1){
+				gop.tempQuantity--;
+			}
+		}
+		GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.tempQuantity.ToString ());
 		if (GUI.Button (new Rect (targetPos.x + 60, Screen.height - targetPos.y, 20, 20), "✓")){
 			showSplitMenu = false;
 		}
@@ -527,7 +529,7 @@ public class GridManager: MonoBehaviour
 					GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
 					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId == gop2.PlayerId && gop2.type == gop1.type) {
 						if (!objectsForDeletion.Contains (j)) {
-							gop1.quantity += gop2.quantity;
+							gop1.Quantity += gop2.Quantity;
 							objectsForDeletion.Add (j);
 							if (!originTileTB [gop1.UniqueID].objsOnTile.Contains (gameobjects [i])) {
 								originTileTB [gop1.UniqueID].objsOnTile.Add (gameobjects [i]);
@@ -569,11 +571,11 @@ public class GridManager: MonoBehaviour
 		int defendersvalue = 0;
 		foreach (GameObject attacker in attackers) {
 			GOProperties gop = (GOProperties)attacker.GetComponent (typeof(GOProperties));
-			attackersvalue += gop.AttackValue * gop.quantity;
+			attackersvalue += gop.AttackValue * gop.Quantity;
 		}
 		foreach (GameObject defender in defenders) {
 			GOProperties gop = (GOProperties)defender.GetComponent (typeof(GOProperties));
-			defendersvalue += gop.AttackValue * gop.quantity;
+			defendersvalue += gop.AttackValue * gop.Quantity;
 		}
 
 		if (attackersvalue >= defendersvalue) {
@@ -842,7 +844,7 @@ public class GridManager: MonoBehaviour
 		foreach (GameObject go in tb.objsOnTile) {
 			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 			if (gop.type == type) {
-				gop.quantity++;
+				gop.Quantity++;
 				return true;
 			}
 		}
@@ -1078,7 +1080,7 @@ public class GridManager: MonoBehaviour
 		gop.setUId (this.getId ());
 		gop.setPId (teamId); 
 		gop.type = obj.name.ToString ();
-		gop.quantity = 1;
+		gop.Quantity = 1;
 		originTileTB.Add (gop.UniqueID, tb);
 		destTileTB.Add (gop.UniqueID, tb);
 		ObjsPaths.Add (gop.UniqueID, new List<GameObject> ());
