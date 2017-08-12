@@ -516,6 +516,9 @@ public class GridManager: MonoBehaviour
 	{
 		bool moving = isAnyMoving ();
 		if (!moving) {
+			//remove split menu
+			showSplitMenu=false;
+
 			deSelect ();
 			if (turn == players - 1) {
 				globalInterval = 1;
