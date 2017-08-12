@@ -204,6 +204,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		void CheckGroundStatus()
 		{
+			m_Animator = GetComponent<Animator>();
+			m_Rigidbody = GetComponent<Rigidbody>();
+			m_Capsule = GetComponent<CapsuleCollider>();
 			RaycastHit hitInfo;
 #if UNITY_EDITOR
 			// helper to visualise the ground check ray in the scene view

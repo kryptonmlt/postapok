@@ -164,12 +164,12 @@ public class GridManager: MonoBehaviour
 			}
 		}
 		if(showSplitMenu){			
-			GOProperties gop = (GOProperties)splitSelection.GetComponent (typeof(GOProperties));
-			splitMenu (Camera.main.WorldToScreenPoint (splitMenuPos), gop);
+			splitMenu (Camera.main.WorldToScreenPoint (splitMenuPos), splitSelection);
 		}
 	}
 
-	void splitMenu(Vector3 targetPos, GOProperties gop){
+	void splitMenu(Vector3 targetPos, GameObject selection){
+		GOProperties gop = (GOProperties)selection.GetComponent (typeof(GOProperties));
 		if (GUI.Button (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "+")) {
 			if(gop.tempQuantity < gop.Quantity){
 				gop.tempQuantity++;
@@ -183,7 +183,30 @@ public class GridManager: MonoBehaviour
 		GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.tempQuantity.ToString ());
 		if (GUI.Button (new Rect (targetPos.x + 60, Screen.height - targetPos.y, 20, 20), "✓")){
 			showSplitMenu = false;
+			if (gop.Quantity != gop.tempQuantity) {
+				
+				GameObject splitObject = createObject(originTileTB[gop.UniqueID], getPrefab(selection), gop.PlayerId);
+				GOProperties gop2 = (GOProperties)splitObject.GetComponent (typeof(GOProperties));
+				gop2.Quantity = gop.Quantity-gop.tempQuantity;
+				gameobjects.Add (splitObject);
+				gop.Quantity = gop.tempQuantity;
+			}
 		}
+	}
+
+	GameObject getPrefab(GameObject obj){
+		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+		switch (gop.type) {
+		case "ThirdPersonController":
+			return fanatic;
+		case "Apo_Car_2015":
+			return car;
+		case "f_noladder":
+			return truck;
+		case "bike":
+			return bike;
+		}
+		return null;
 	}
 
 	void updateResourcesMenu (int playerId)
@@ -856,7 +879,6 @@ public class GridManager: MonoBehaviour
 		if (!onTile (tb, go.name.ToString ())) {
 			GameObject ngo = createObject (tb, go, tID);
 			gameobjects.Add (ngo);
-			//tb.objsOnTile.Add (ngo);
 		}
 	}
 
