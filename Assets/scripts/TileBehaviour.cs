@@ -12,21 +12,13 @@ public class TileBehaviour: MonoBehaviour
 	//Slightly transparent orange
 	Color orange = new Color (255f / 255f, 127f / 255f, 0, 127f / 255f);
 
-	public int itemsOnTile = 0;
 	public List<Vector3> separatePositions = new List<Vector3> ();
+	private static float radius = 2.5f;
+	private int maxSpaces = 6;
+	private int incrementAmount = 1;
 
-	private static float outerRadius = 2.5f;
-	private static float innerRadius = 1.5f;
-	private static Vector3[] corners = {
-		new Vector3 (0f, 0f, outerRadius),
-		new Vector3 (innerRadius, 0f, 0.5f * outerRadius),
-		new Vector3 (innerRadius, 0f, -0.5f * outerRadius),
-		new Vector3 (0f, 0f, -outerRadius),
-		new Vector3 (-innerRadius, 0f, -0.5f * outerRadius),
-		new Vector3 (-innerRadius, 0f, 0.5f * outerRadius)
-	};
 	public List<GameObject> objsOnTile = new List<GameObject> ();
-	public List<int> objPosition = new List<int> ();
+	public Dictionary<int,int> objPos = new Dictionary<int,int> ();
 
 	public bool built{ get; set; }
 
@@ -44,8 +36,8 @@ public class TileBehaviour: MonoBehaviour
 	public int getFanaticsOnTile ()
 	{
 		int f = 0;
-		foreach (GameObject o in objsOnTile) {
-			GOProperties gop = (GOProperties)o.GetComponent (typeof(GOProperties));
+		foreach (GameObject objOnTile in objsOnTile) {
+			GOProperties gop = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 			if (gop.type.Equals ("ThirdPersonController")) {
 				f += gop.Quantity;
 			}
@@ -55,53 +47,95 @@ public class TileBehaviour: MonoBehaviour
 
 	public void updatePositionOfTile (Vector3 position)
 	{
-		separatePositions.Clear ();
 		transform.position = position;
-		foreach (Vector3 v in corners) {
-			Vector3 updated = v + position;
-			separatePositions.Add (updated);
-		}
+		createSeparatePositions ();
 	}
 
 	public Vector3 getNextPosition (GameObject obj)
 	{
+		return getNextPosition (obj, true);
+	}
+
+	public Vector3 getNextPosition (GameObject obj, bool join)
+	{
 		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 		int index = objectTypeExists (gop.type);
-		if (index != -1) {
-			return separatePositions [objPosition [index]];
+		if (index != -1 && join) {
+			return objsOnTile [objPos [index]].transform.position;
 		} else {
+			objPos.Add (gop.UniqueID, getFirstAvailablePos ());
 			objsOnTile.Add (obj);
-			objPosition.Add (itemsOnTile);
-			Vector3 result = separatePositions [itemsOnTile];
-			itemsOnTile++;
+			if (objsOnTile.Count == maxSpaces - 1) {
+				//increase number of spaces on tile
+				maxSpaces += incrementAmount;
+				createSeparatePositions ();
+				foreach (GameObject o in objsOnTile) {
+					GOProperties gopTemp = (GOProperties)o.GetComponent (typeof(GOProperties));
+					o.transform.position = separatePositions [objPos [gopTemp.UniqueID]] + new Vector3 (0f, 0.3f, 0f); 
+				}
+			}
+			Vector3 result = separatePositions [objPos [gop.UniqueID]];
 			return result;
 		}
 	}
 
-	public void removeObjectFromTile (int gId)
+	private bool isPosUsed (int pos)
+	{
+		foreach (int guid in objPos.Keys) {
+			if (pos == objPos [guid]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private int getFirstAvailablePos ()
+	{
+		for (int i = 0; i < maxSpaces; i++) {
+			if (!isPosUsed (i)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void createSeparatePositions ()
+	{
+		float ang = 360 / maxSpaces;
+		separatePositions.Clear ();
+		for (float inc = 0; inc < 360; inc += ang) {
+			Vector3 pos;
+			pos.x = this.transform.position.x + radius * Mathf.Sin (inc * Mathf.Deg2Rad);
+			pos.y = this.transform.position.y;
+			pos.z = this.transform.position.z + radius * Mathf.Cos (inc * Mathf.Deg2Rad);
+			separatePositions.Add (pos);
+		}
+	}
+
+	public void removeObjectFromTile (int uniqueId)
 	{
 		int pos = -1;
 		for (int i = 0; i < objsOnTile.Count; i++) {
 			GOProperties gop = (GOProperties)objsOnTile [i].GetComponent (typeof(GOProperties));
 
-			if (gop.UniqueID == gId) {
+			if (gop.UniqueID == uniqueId) {
 				pos = i;
 				break;
 			}
 		}
 		if (pos != -1) {
-			itemsOnTile--;
 			objsOnTile.RemoveAt (pos);
-			objPosition.RemoveAt (pos);
+			objPos.Remove (uniqueId);
 		}
 	}
 
 	public int objectTypeExists (string type)
 	{
-		for (int i = 0; i < objsOnTile.Count; i++) {
-			GOProperties gop = (GOProperties)objsOnTile [i].GetComponent (typeof(GOProperties));
+		
+		foreach (GameObject objOnTile in objsOnTile) {
+			GOProperties gop = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 			if (gop.type == type) {
-				return i;
+				return gop.UniqueID;
 			}
 		}
 		return -1;

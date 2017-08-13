@@ -185,7 +185,7 @@ public class GridManager: MonoBehaviour
 			showSplitMenu = false;
 			if (gop.Quantity != gop.tempQuantity) {
 				
-				GameObject splitObject = createObject(originTileTB[gop.UniqueID], getPrefab(selection), gop.PlayerId);
+				GameObject splitObject = createObject(originTileTB[gop.UniqueID], getPrefab(selection), gop.PlayerId,false);
 				GOProperties gop2 = (GOProperties)splitObject.GetComponent (typeof(GOProperties));
 				gop2.Quantity = gop.Quantity-gop.tempQuantity;
 				gameobjects.Add (splitObject);
@@ -375,8 +375,8 @@ public class GridManager: MonoBehaviour
 	public TileBehaviour getTileOfUnit (int uniqueId)
 	{
 		foreach (TileBehaviour tb in board.Values) {
-			foreach (GameObject obj in tb.objsOnTile) {
-				GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+			foreach (GameObject objOnTile in tb.objsOnTile) {
+				GOProperties gop = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 				if (gop.UniqueID == uniqueId) {
 					return tb;
 				}
@@ -557,9 +557,10 @@ public class GridManager: MonoBehaviour
 						if (!objectsForDeletion.Contains (j)) {
 							gop1.Quantity += gop2.Quantity;
 							objectsForDeletion.Add (j);
-							if (!originTileTB [gop1.UniqueID].objsOnTile.Contains (gameobjects [i])) {
-								originTileTB [gop1.UniqueID].objsOnTile.Add (gameobjects [i]);
-								originTileTB [gop1.UniqueID].objPosition.Add (originTileTB [gop1.UniqueID].objectTypeExists (gop1.type));
+							if (!originTileTB [gop1.UniqueID].objsOnTile.Contains (gameobjects[i])) {
+								//originTileTB [gop1.UniqueID].objPos.Add (gop1.UniqueID,originTileTB [gop1.UniqueID].objsOnTile.Count);
+								//originTileTB [gop1.UniqueID].objsOnTile.Add (gameobjects [i]);
+								originTileTB [gop1.UniqueID].getNextPosition (gameobjects [i],false);
 							}
 						}
 					}
@@ -867,8 +868,8 @@ public class GridManager: MonoBehaviour
 
 	private bool onTile (TileBehaviour tb, String type)
 	{
-		foreach (GameObject go in tb.objsOnTile) {
-			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+		foreach (GameObject objOnTile in tb.objsOnTile) {
+			GOProperties gop = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 			if (gop.type == type) {
 				gop.Quantity++;
 				return true;
@@ -1096,11 +1097,15 @@ public class GridManager: MonoBehaviour
 		}
 		return LandType.Desert;
 	}
-
+		
 	private GameObject createObject (TileBehaviour tb, GameObject obj, int teamId)
 	{
+		return createObject (tb, obj, teamId, true);
+	}
+
+	private GameObject createObject (TileBehaviour tb, GameObject obj, int teamId, bool join)
+	{
 		GameObject go = Instantiate (obj);
-		go.transform.position = tb.getNextPosition (go);
 		GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 		gop.setUId (this.getId ());
 		gop.setPId (teamId); 
@@ -1109,6 +1114,7 @@ public class GridManager: MonoBehaviour
 		originTileTB.Add (gop.UniqueID, tb);
 		destTileTB.Add (gop.UniqueID, tb);
 		ObjsPaths.Add (gop.UniqueID, new List<GameObject> ());
+		go.transform.position = tb.getNextPosition (go,join);
 		//Debug.Log ("Created Object: "+gop.type);
 		switch (gop.type) {
 		case "ThirdPersonController":
