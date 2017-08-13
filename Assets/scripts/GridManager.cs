@@ -20,7 +20,7 @@ public class GridManager: MonoBehaviour
 
 	public bool hideObjects = true;
 
-	public List<GameObject> gameobjects = new List<GameObject> ();
+	public Dictionary<int, GameObject> gameobjects = new Dictionary<int, GameObject> ();
 	public Dictionary<int, List<GameObject>> ObjsPaths = new Dictionary<int, List<GameObject>> ();
 	public Dictionary<int, Path<Tile>> ObjsPathsTiles = new Dictionary<int, Path<Tile>> ();
 
@@ -154,7 +154,8 @@ public class GridManager: MonoBehaviour
 			GUI.color = colPreviousGUIColor;
 		}
 		Vector2 targetPos;
-		foreach (GameObject go in gameobjects) {
+		foreach (int key in gameobjects.Keys) {
+			GameObject go = gameobjects [key];
 			if (go != null) {
 				targetPos = Camera.main.WorldToScreenPoint (go.transform.position);
 				GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
@@ -186,9 +187,9 @@ public class GridManager: MonoBehaviour
 			if (gop.Quantity != gop.tempQuantity) {
 				
 				GameObject splitObject = createObject(originTileTB[gop.UniqueID], getPrefab(selection), gop.PlayerId,false);
-				GOProperties gop2 = (GOProperties)splitObject.GetComponent (typeof(GOProperties));
-				gop2.Quantity = gop.Quantity-gop.tempQuantity;
-				gameobjects.Add (splitObject);
+				GOProperties gopSplit = (GOProperties)splitObject.GetComponent (typeof(GOProperties));
+				gopSplit.Quantity = gop.Quantity-gop.tempQuantity;
+				gameobjects.Add (gopSplit.UniqueID,splitObject);
 				gop.Quantity = gop.tempQuantity;
 			}
 		}
@@ -324,17 +325,19 @@ public class GridManager: MonoBehaviour
 			}
 		}
 
-		foreach (GameObject obj in gameobjects) {
-			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+		foreach (int key in gameobjects.Keys) {
+			GameObject go = gameobjects [key];
+			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 			if (hideObjects) {
-				show (obj, gop.PlayerId == playerId);
+				show (go, gop.PlayerId == playerId);
 			} else {
-				show (obj, true);
+				show (go, true);
 			}
 		}
 		//check if there is anyone in range
-		foreach (GameObject obj in gameobjects) {
-			GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
+		foreach (int key in gameobjects.Keys) {
+			GameObject go = gameobjects [key];
+			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
 			if (gop.PlayerId == playerId) {
 				foreach (TileBehaviour tb in board.Values) {					
 					//find shortest path between enemy tile and friendly unit
@@ -376,9 +379,13 @@ public class GridManager: MonoBehaviour
 	{
 		foreach (TileBehaviour tb in board.Values) {
 			foreach (GameObject objOnTile in tb.objsOnTile) {
+				try{
 				GOProperties gop = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 				if (gop.UniqueID == uniqueId) {
 					return tb;
+				}
+				}catch(Exception e){
+					print (e);
 				}
 			}
 		}
@@ -518,7 +525,6 @@ public class GridManager: MonoBehaviour
 		if (!moving) {
 			//remove split menu
 			showSplitMenu=false;
-
 			deSelect ();
 			if (turn == players - 1) {
 				globalInterval = 1;
@@ -529,7 +535,7 @@ public class GridManager: MonoBehaviour
 					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
 						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
-						originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+						//originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
 						chMovementsTemp.Add (characterAction);
 					}
 				}
@@ -542,52 +548,49 @@ public class GridManager: MonoBehaviour
 
 	void resolution ()
 	{
-		List<GameObject> attackers = new List<GameObject> ();
-		List<GameObject> defenders = new List<GameObject> ();
-
 		List<int> objectsForDeletion = new List<int> ();
-
+		List<int> keys = new List<int> (gameobjects.Keys);
+		keys.Sort ();
 		//join quantities
-		for (int i = 0; i < gameobjects.Count; i++) {
-			GOProperties gop1 = (GOProperties)gameobjects [i].GetComponent (typeof(GOProperties));
-			for (int j = 0; j < gameobjects.Count; j++) {
-				if (i < j) {
-					GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
+		foreach (int key1 in keys) {
+			GOProperties gop1 = (GOProperties)gameobjects [key1].GetComponent (typeof(GOProperties));
+			foreach (int key2 in keys) {
+				if (key1 < key2) {
+					GOProperties gop2 = (GOProperties)gameobjects [key2].GetComponent (typeof(GOProperties));
 					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId == gop2.PlayerId && gop2.type == gop1.type) {
-						if (!objectsForDeletion.Contains (j)) {
+						if (!objectsForDeletion.Contains (key2)) {
 							gop1.Quantity += gop2.Quantity;
-							objectsForDeletion.Add (j);
-							if (!originTileTB [gop1.UniqueID].objsOnTile.Contains (gameobjects[i])) {
-								//originTileTB [gop1.UniqueID].objPos.Add (gop1.UniqueID,originTileTB [gop1.UniqueID].objsOnTile.Count);
-								//originTileTB [gop1.UniqueID].objsOnTile.Add (gameobjects [i]);
-								originTileTB [gop1.UniqueID].getNextPosition (gameobjects [i],false);
-							}
+							objectsForDeletion.Add (gop2.UniqueID);
 						}
 					}
 				}
 			}
 		}
+
 		//delete duplicate objects that were joined
-		for (int i = 0; i < objectsForDeletion.Count; i++) {
-			GOProperties gop = (GOProperties)gameobjects [objectsForDeletion [i] - i].GetComponent (typeof(GOProperties));
-			originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
-			Destroy (gameobjects [objectsForDeletion [i] - i]);
-			gameobjects.Remove (gameobjects [objectsForDeletion [i] - i]);
+		foreach (int guid in objectsForDeletion) {
+			originTileTB [guid].removeObjectFromTile (guid);
+			Destroy (gameobjects [guid]);
+			gameobjects.Remove (guid);
 		}
 
+		keys = new List<int> (gameobjects.Keys);
+		keys.Sort ();
+		List<GameObject> attackers = new List<GameObject> ();
+		List<GameObject> defenders = new List<GameObject> ();
 		//find who is attacking/defending
-		for (int i = 0; i < gameobjects.Count; i++) {
-			GOProperties gop1 = (GOProperties)gameobjects [i].GetComponent (typeof(GOProperties));
-			for (int j = 0; j < gameobjects.Count; j++) {
-				if (i <= j) {
-					GOProperties gop2 = (GOProperties)gameobjects [j].GetComponent (typeof(GOProperties));
+		foreach (int key1 in keys) {
+			GOProperties gop1 = (GOProperties)gameobjects [key1].GetComponent (typeof(GOProperties));
+			foreach (int key2 in keys) {
+				if (key1 <= key2) {
+					GOProperties gop2 = (GOProperties)gameobjects [key2].GetComponent (typeof(GOProperties));
 
 					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId != gop2.PlayerId) {
-						if (!attackers.Contains (gameobjects [i]) & !defenders.Contains (gameobjects [i])) {
-							attackers.Add (gameobjects [i]);
+						if (!attackers.Contains (gameobjects [key1]) & !defenders.Contains (gameobjects [key1])) {
+							attackers.Add (gameobjects [key1]);
 						}
-						if (!attackers.Contains (gameobjects [j]) && !defenders.Contains (gameobjects [j])) {
-							defenders.Add (gameobjects [j]);
+						if (!attackers.Contains (gameobjects [key2]) && !defenders.Contains (gameobjects [key2])) {
+							defenders.Add (gameobjects [key2]);
 						}
 					}
 				}
@@ -607,15 +610,17 @@ public class GridManager: MonoBehaviour
 
 		if (attackersvalue >= defendersvalue) {
 			foreach (GameObject defender in defenders) {
+				GOProperties gop = (GOProperties)defender.GetComponent (typeof(GOProperties));
 				Destroy (defender);
-				gameobjects.Remove (defender);
+				gameobjects.Remove (gop.UniqueID);
 			}
 		} else {
 			foreach (GameObject attacker in attackers) {
+				GOProperties gop = (GOProperties)attacker.GetComponent (typeof(GOProperties));
 				Debug.Log (attackersvalue);
 				Debug.Log (defendersvalue);
 				Destroy (attacker);
-				gameobjects.Remove (attacker);
+				gameobjects.Remove (gop.UniqueID);
 			}
 		}
 		calculateResourcesForEveryone ();
@@ -882,7 +887,8 @@ public class GridManager: MonoBehaviour
 	{
 		if (!onTile (tb, go.name.ToString ())) {
 			GameObject ngo = createObject (tb, go, tID);
-			gameobjects.Add (ngo);
+			GOProperties gop = (GOProperties)ngo.GetComponent (typeof(GOProperties));
+			gameobjects.Add (gop.UniqueID, ngo);
 		}
 	}
 

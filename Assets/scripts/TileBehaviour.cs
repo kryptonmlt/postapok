@@ -129,7 +129,7 @@ public class TileBehaviour: MonoBehaviour
 		}
 	}
 
-	public int objectTypeExists (string type)
+	private int objectTypeExists (string type)
 	{
 		
 		foreach (GameObject objOnTile in objsOnTile) {
