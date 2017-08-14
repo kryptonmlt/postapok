@@ -341,7 +341,8 @@ public class GridManager: MonoBehaviour
 			if (gop.PlayerId == playerId) {
 				foreach (TileBehaviour tb in board.Values) {					
 					//find shortest path between enemy tile and friendly unit
-					var path = PathFinder.FindPath (getTileOfUnit (gop.UniqueID).tile, tb.tile);
+					TileBehaviour test = getTileOfUnit (gop.UniqueID);
+					var path = PathFinder.FindPath (test.tile, tb.tile);
 					//show objs on enemy tile if in range
 					if (path != null && path.TotalCost <= viewRange) {
 						foreach (GameObject objOnTile in tb.objsOnTile) {
@@ -379,16 +380,14 @@ public class GridManager: MonoBehaviour
 	{
 		foreach (TileBehaviour tb in board.Values) {
 			foreach (GameObject objOnTile in tb.objsOnTile) {
-				try{
 				GOProperties gop = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 				if (gop.UniqueID == uniqueId) {
 					return tb;
 				}
-				}catch(Exception e){
-					print (e);
-				}
 			}
 		}
+		Debug.Log (uniqueId + " NOT FOUND");
+		// id not found
 		return null;
 	}
 
@@ -535,7 +534,8 @@ public class GridManager: MonoBehaviour
 					if (unit != null & ObjsPathsTiles.ContainsKey (gop.UniqueID)) {
 						CharacterMovement characterAction = (CharacterMovement)unit.GetComponent (typeof(CharacterMovement));
 						characterAction.StartMoving (ObjsPathsTiles [gop.UniqueID].ToList ());
-						//originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+						originTileTB [gop.UniqueID].removeObjectFromTile (gop.UniqueID);
+						//destTileTB [gop.UniqueID].getNextPosition (unit);
 						chMovementsTemp.Add (characterAction);
 					}
 				}
@@ -558,9 +558,20 @@ public class GridManager: MonoBehaviour
 				if (key1 < key2) {
 					GOProperties gop2 = (GOProperties)gameobjects [key2].GetComponent (typeof(GOProperties));
 					if (originTileTB [gop1.UniqueID].tile == originTileTB [gop2.UniqueID].tile && gop1.PlayerId == gop2.PlayerId && gop2.type == gop1.type) {
-						if (!objectsForDeletion.Contains (key2)) {
-							gop1.Quantity += gop2.Quantity;
-							objectsForDeletion.Add (gop2.UniqueID);
+						int idToKeep = originTileTB [gop1.UniqueID].objectTypeExists (gop1.type);
+						int idToDelete = gop1.UniqueID;
+						if (idToKeep == gop1.UniqueID) {
+							idToDelete = gop2.UniqueID;
+						} else if (idToKeep != gop2.UniqueID){
+							Debug.Log ("THIS SHOULD NOT HAPPEN - one of the ids should have been correct");
+						}
+						if (!objectsForDeletion.Contains (idToDelete)) {
+							GOProperties gopKeep = (GOProperties)gameobjects [idToKeep].GetComponent (typeof(GOProperties));
+							GOProperties gopDelete = (GOProperties)gameobjects [idToDelete].GetComponent (typeof(GOProperties));
+							gopKeep.Quantity += gopDelete.Quantity;
+							objectsForDeletion.Add (idToDelete);
+						} else {
+							Debug.Log ("THIS SHOULD NOT HAPPEN - we shouldnt try to delete twice");
 						}
 					}
 				}
@@ -569,7 +580,6 @@ public class GridManager: MonoBehaviour
 
 		//delete duplicate objects that were joined
 		foreach (int guid in objectsForDeletion) {
-			originTileTB [guid].removeObjectFromTile (guid);
 			Destroy (gameobjects [guid]);
 			gameobjects.Remove (guid);
 		}

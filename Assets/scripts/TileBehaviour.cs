@@ -61,7 +61,7 @@ public class TileBehaviour: MonoBehaviour
 		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 		int index = objectTypeExists (gop.type);
 		if (index != -1 && join) {
-			return objsOnTile [objPos [index]].transform.position;
+			return separatePositions[objPos [index]];
 		} else {
 			objPos.Add (gop.UniqueID, getFirstAvailablePos ());
 			objsOnTile.Add (obj);
@@ -114,22 +114,15 @@ public class TileBehaviour: MonoBehaviour
 
 	public void removeObjectFromTile (int uniqueId)
 	{
-		int pos = -1;
-		for (int i = 0; i < objsOnTile.Count; i++) {
-			GOProperties gop = (GOProperties)objsOnTile [i].GetComponent (typeof(GOProperties));
-
-			if (gop.UniqueID == uniqueId) {
-				pos = i;
-				break;
-			}
-		}
-		if (pos != -1) {
-			objsOnTile.RemoveAt (pos);
+		if (objPos.ContainsKey (uniqueId)) {
+			objsOnTile.RemoveAt (objPos [uniqueId]);
 			objPos.Remove (uniqueId);
+		} else {
+			Debug.Log ("Tried to delete id "+uniqueId+" and not found");
 		}
 	}
 
-	private int objectTypeExists (string type)
+	public int objectTypeExists (string type)
 	{
 		
 		foreach (GameObject objOnTile in objsOnTile) {
