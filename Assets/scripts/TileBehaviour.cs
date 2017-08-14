@@ -60,11 +60,14 @@ public class TileBehaviour: MonoBehaviour
 	{
 		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 		int index = objectTypeExists (gop.type);
+		Debug.Log ("Adding id " + gop.UniqueID + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
 		if (index != -1 && join) {
-			return separatePositions[objPos [index]];
+			Debug.Log ("Already represented id " + gop.UniqueID + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
+			return separatePositions [objPos [index]];
 		} else {
 			objPos.Add (gop.UniqueID, getFirstAvailablePos ());
 			objsOnTile.Add (obj);
+			Debug.Log ("New position " + objPos [gop.UniqueID] + " for id " + gop.UniqueID + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
 			if (objsOnTile.Count == maxSpaces - 1) {
 				//increase number of spaces on tile
 				maxSpaces += incrementAmount;
@@ -114,11 +117,20 @@ public class TileBehaviour: MonoBehaviour
 
 	public void removeObjectFromTile (int uniqueId)
 	{
+		Debug.Log ("Deleting id " + uniqueId + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
 		if (objPos.ContainsKey (uniqueId)) {
-			objsOnTile.RemoveAt (objPos [uniqueId]);
+			int posToDelete = objPos [uniqueId];
+			objsOnTile.RemoveAt (posToDelete);
 			objPos.Remove (uniqueId);
+			//sync position of other objects after deletion
+			List<int> keys = new List<int> (objPos.Keys);
+			foreach(int key in keys){
+				if(posToDelete <objPos[key]){
+					objPos [key] -= 1;
+				}
+			}
 		} else {
-			Debug.Log ("Tried to delete id "+uniqueId+" and not found");
+			Debug.Log ("Tried to delete id " + uniqueId + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
 		}
 	}
 
