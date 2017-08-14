@@ -164,38 +164,41 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-		if(showSplitMenu){			
+		if (showSplitMenu) {			
 			splitMenu (Camera.main.WorldToScreenPoint (splitMenuPos), splitSelection);
 		}
 	}
 
-	void splitMenu(Vector3 targetPos, GameObject selection){
+	void splitMenu (Vector3 targetPos, GameObject selection)
+	{
 		GOProperties gop = (GOProperties)selection.GetComponent (typeof(GOProperties));
 		if (GUI.Button (new Rect (targetPos.x, Screen.height - targetPos.y, 20, 20), "+")) {
-			if(gop.tempQuantity < gop.Quantity){
+			if (gop.tempQuantity < gop.Quantity) {
 				gop.tempQuantity++;
 			}
 		}
-		if (GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-")){
-			if(gop.tempQuantity>1){
+		if (GUI.Button (new Rect (targetPos.x + 40, Screen.height - targetPos.y, 20, 20), "-")) {
+			if (gop.tempQuantity > 1) {
 				gop.tempQuantity--;
 			}
 		}
 		GUI.Box (new Rect (targetPos.x + 20, Screen.height - targetPos.y, 20, 20), gop.tempQuantity.ToString ());
-		if (GUI.Button (new Rect (targetPos.x + 60, Screen.height - targetPos.y, 20, 20), "✓")){
+		if (GUI.Button (new Rect (targetPos.x + 60, Screen.height - targetPos.y, 20, 20), "✓")) {
 			showSplitMenu = false;
 			if (gop.Quantity != gop.tempQuantity) {
 				
-				GameObject splitObject = createObject(originTileTB[gop.UniqueID], getPrefab(selection), gop.PlayerId,false);
+				GameObject splitObject = createObject (originTileTB [gop.UniqueID], getPrefab (selection), gop.PlayerId, false);
 				GOProperties gopSplit = (GOProperties)splitObject.GetComponent (typeof(GOProperties));
-				gopSplit.Quantity = gop.Quantity-gop.tempQuantity;
-				gameobjects.Add (gopSplit.UniqueID,splitObject);
+				gopSplit.Quantity = gop.Quantity - gop.tempQuantity;
+				gameobjects.Add (gopSplit.UniqueID, splitObject);
 				gop.Quantity = gop.tempQuantity;
+				show (splitObject, true);
 			}
 		}
 	}
 
-	GameObject getPrefab(GameObject obj){
+	GameObject getPrefab (GameObject obj)
+	{
 		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 		switch (gop.type) {
 		case "ThirdPersonController":
@@ -523,7 +526,7 @@ public class GridManager: MonoBehaviour
 		bool moving = isAnyMoving ();
 		if (!moving) {
 			//remove split menu
-			showSplitMenu=false;
+			showSplitMenu = false;
 			deSelect ();
 			if (turn == players - 1) {
 				globalInterval = 1;
@@ -562,7 +565,7 @@ public class GridManager: MonoBehaviour
 						int idToDelete = gop1.UniqueID;
 						if (idToKeep == gop1.UniqueID) {
 							idToDelete = gop2.UniqueID;
-						} else if (idToKeep != gop2.UniqueID){
+						} else if (idToKeep != gop2.UniqueID) {
 							Debug.Log ("THIS SHOULD NOT HAPPEN - one of the ids should have been correct");
 						}
 						if (!objectsForDeletion.Contains (idToDelete)) {
@@ -762,7 +765,7 @@ public class GridManager: MonoBehaviour
 				int landTypeId = loadedMap [landPos];
 				tb.tile = new Tile ((int)x - (int)(y / 2), (int)y, TerrainType [landTypeId]);
 				tb.setTileMaterial (tb.tile.landType);
-				tb.tile.boardCoords = new Point((int)gridPos.x, (int)gridPos.y);
+				tb.tile.boardCoords = new Point ((int)gridPos.x, (int)gridPos.y);
 				tempBoard.Add (tb.tile.Location, tb.tile);
 				board.Add (new Point ((int)gridPos.x, (int)gridPos.y), tb);
 
@@ -893,13 +896,15 @@ public class GridManager: MonoBehaviour
 		return false;
 	}
 
-	private void addObjsToLists (TileBehaviour tb, GameObject go, int tID)
+	private int addObjsToLists (TileBehaviour tb, GameObject go, int tID)
 	{
 		if (!onTile (tb, go.name.ToString ())) {
 			GameObject ngo = createObject (tb, go, tID);
 			GOProperties gop = (GOProperties)ngo.GetComponent (typeof(GOProperties));
 			gameobjects.Add (gop.UniqueID, ngo);
+			return gop.UniqueID;
 		}
+		return tb.objectTypeExists (go.name.ToString ());
 	}
 
 	private bool hasEnough (int playerId, int[] cost)
@@ -950,19 +955,23 @@ public class GridManager: MonoBehaviour
 			if (tb.getTile ().getLandType () == LandType.Base) {
 				if (selection.name.Equals ("sel0")) {
 					if (hasEnoughAndDeduct (tId, fanaticCost)) {
-						addObjsToLists (tb, fanatic, tId);
+						int guid = addObjsToLists (tb, fanatic, tId);
+						show (gameobjects[guid], true);
 					}
 				} else if (selection.name.Equals ("sel1")) {
 					if (hasEnoughAndDeduct (tId, bikeCost)) {
-						addObjsToLists (tb, bike, tId);
+						int guid = addObjsToLists (tb, bike, tId);
+						show (gameobjects[guid], true);
 					}
 				} else if (selection.name.Equals ("sel2")) {
 					if (hasEnoughAndDeduct (tId, carCost)) {
-						addObjsToLists (tb, car, tId);
+						int guid = addObjsToLists (tb, car, tId);
+						show (gameobjects[guid], true);
 					}
 				} else if (selection.name.Equals ("sel3")) {
 					if (hasEnoughAndDeduct (tId, truckCost)) {
-						addObjsToLists (tb, truck, tId);
+						int guid = addObjsToLists (tb, truck, tId);
+						show (gameobjects[guid], true);
 					}
 				}
 			} else if (!tb.built && !tb.upgraded) {
@@ -1113,7 +1122,7 @@ public class GridManager: MonoBehaviour
 		}
 		return LandType.Desert;
 	}
-		
+
 	private GameObject createObject (TileBehaviour tb, GameObject obj, int teamId)
 	{
 		return createObject (tb, obj, teamId, true);
@@ -1130,32 +1139,32 @@ public class GridManager: MonoBehaviour
 		originTileTB.Add (gop.UniqueID, tb);
 		destTileTB.Add (gop.UniqueID, tb);
 		ObjsPaths.Add (gop.UniqueID, new List<GameObject> ());
-		go.transform.position = tb.getNextPosition (go,join);
+		go.transform.position = tb.getNextPosition (go, join);
 		//Debug.Log ("Created Object: "+gop.type);
 		switch (gop.type) {
 		case "ThirdPersonController":
 			gop.setAV (1);
 			gop.setDV (1);
 			gop.setMV (1);
-			go.transform.position += new Vector3 (0f,0.2f,0f);
+			go.transform.position += new Vector3 (0f, 0.2f, 0f);
 			break;
 		case "Apo_Car_2015":
 			gop.setAV (2);
 			gop.setDV (2);
 			gop.setMV (15);
-			go.transform.position += new Vector3 (0f,0.5f,0f);
+			go.transform.position += new Vector3 (0f, 0.5f, 0f);
 			break;
 		case "f_noladder":
 			gop.setAV (3);
 			gop.setDV (3);
 			gop.setMV (2);
-			go.transform.position += new Vector3 (0f,0.2f,0f);
+			go.transform.position += new Vector3 (0f, 0.2f, 0f);
 			break;
 		case "bike":
 			gop.setAV (2);
 			gop.setDV (1);
 			gop.setMV (3);
-			go.transform.position += new Vector3 (0f,0.2f,0f);
+			go.transform.position += new Vector3 (0f, 0.2f, 0f);
 			break;
 		}
 		return go;
@@ -1231,8 +1240,8 @@ public class GridManager: MonoBehaviour
 					}
 					if (GridManager.unitSelected.Count == 1) {
 						showSplitMenu = true;
-						splitMenuPos = board[path.LastStep.boardCoords].transform.position;
-						splitSelection = GridManager.unitSelected.First();
+						splitMenuPos = board [path.LastStep.boardCoords].transform.position;
+						splitSelection = GridManager.unitSelected.First ();
 					}
 				}
 			}
