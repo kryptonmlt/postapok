@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MouseLook : MonoBehaviour
 {
-	float ScrollSpeed = 15f;
+	float ScrollSpeed = 25f;
 	float ScrollEdge = 0.01f;
 
-	float PanSpeed = 10f;
+	float PanSpeed = 25f;
 
 	Vector2 ZoomRange = new Vector2 (-10, 10);
 	float CurrentZoom = 0f;

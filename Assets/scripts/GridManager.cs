@@ -85,6 +85,7 @@ public class GridManager: MonoBehaviour
 	private int players = 0;
 	private int round = 0;
 	private bool forceHide = false;
+	private bool waitingMovement = false;
 	private float timeleftToShowObjects = 0;
 	GUIStyle guiStyle = new GUIStyle();
 	public int globalInterval = 0;
@@ -121,7 +122,7 @@ public class GridManager: MonoBehaviour
 		{ 4,LandType.Desert },
 		{ 5,LandType.Mountain }
 	};
-
+	private string MAP_NAME = "testingMap2";
 	public void deSelect ()
 	{
 		//remove highlight
@@ -151,7 +152,11 @@ public class GridManager: MonoBehaviour
 	void OnGUI ()
 	{
 		if(forceHide && timeleftToShowObjects>=0){
-			GUI.Label (new Rect((Screen.width/2)-250,Screen.height/4,400,400),"Changing Player .. "+(int)timeleftToShowObjects,guiStyle);
+			string text = "Changing Player .. " + (int)timeleftToShowObjects;
+			if (waitingMovement) {
+				text = "Moving Units!";
+			}
+			GUI.Label (new Rect((Screen.width/2)-250,Screen.height/4,400,400),text,guiStyle);
 		}
 		if (GridManager.draw == true) {
 			Color colPreviousGUIColor = GUI.color;
@@ -244,11 +249,18 @@ public class GridManager: MonoBehaviour
 		updateGlobalInterval (moving);
 
 		if (turn == players && !moving) {
+			waitingMovement = false;
+			forceHide = false;
+			timeleftToShowObjects = 0;
 			chMovements.Clear ();
 			resolution ();
 			turn = 0;
 			round++;
 			hideEnemyObjects (getCurrentPlayerId ());
+		}else if(turn == players && moving){
+			forceHide = true;
+			timeleftToShowObjects = SECONDS_BETWEEN_TURNS;
+			waitingMovement = true;
 		}
 			
 
@@ -361,35 +373,40 @@ public class GridManager: MonoBehaviour
 				foreach (TileBehaviour tb in board.Values) {					
 					//find shortest path between enemy tile and friendly unit
 					TileBehaviour test = getTileOfUnit (gop.UniqueID);
-					var path = PathFinder.FindPath (test.tile, tb.tile);
-					//show objs on enemy tile if in range
-					if (path != null && path.TotalCost <= VIEW_RANGE) {
-						foreach (GameObject objOnTile in tb.objsOnTile) {
-							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
-							if (forceHide) {
-								show(objOnTile, false);
-							}else if (gopOnTile.structureShown == null) {
-								show (objOnTile, true);
-							} else if (!gopOnTile.structureShown [playerId]) {
-								gopOnTile.structureShown [playerId] = true;	
-								if (hideObjects) {
-									show (objOnTile, gopOnTile.structureShown [playerId]);	
-								} else {
+					if (test == null) {
+						TileBehaviour test2 = getTileOfUnit (12);
+						Debug.Log ("is it ok that Object ID " + gop.UniqueID + " has no tile?!");
+					} else {
+						var path = PathFinder.FindPath (test.tile, tb.tile);
+						//show objs on enemy tile if in range
+						if (path != null && path.TotalCost <= VIEW_RANGE) {
+							foreach (GameObject objOnTile in tb.objsOnTile) {
+								GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
+								if (forceHide) {
+									show (objOnTile, false);
+								} else if (gopOnTile.structureShown == null) {
 									show (objOnTile, true);
+								} else if (!gopOnTile.structureShown [playerId]) {
+									gopOnTile.structureShown [playerId] = true;	
+									if (hideObjects) {
+										show (objOnTile, gopOnTile.structureShown [playerId]);	
+									} else {
+										show (objOnTile, true);
+									}
 								}
 							}
-						}
-					} else {
-						//if out of view range check structures
-						foreach (GameObject objOnTile in tb.objsOnTile) {
-							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
-							if (gopOnTile.structureShown != null) {
-								if (forceHide) {
-									show(go, false);
-								}else if (hideObjects) {
-									show (objOnTile, gopOnTile.structureShown [playerId]);
-								} else {
-									show (objOnTile, true);
+						} else {
+							//if out of view range check structures
+							foreach (GameObject objOnTile in tb.objsOnTile) {
+								GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
+								if (gopOnTile.structureShown != null) {
+									if (forceHide) {
+										show (go, false);
+									} else if (hideObjects) {
+										show (objOnTile, gopOnTile.structureShown [playerId]);
+									} else {
+										show (objOnTile, true);
+									}
 								}
 							}
 						}
@@ -409,7 +426,7 @@ public class GridManager: MonoBehaviour
 				}
 			}
 		}
-		Debug.Log (uniqueId + " NOT FOUND");
+		Debug.Log ("Object id "+uniqueId + " not found on any tile");
 		// id not found
 		return null;
 	}
@@ -1320,7 +1337,7 @@ public class GridManager: MonoBehaviour
 	private List<int> LoadGameFile ()
 	{
 		List<int> map = new List<int> ();
-		string fileName = "Assets/Resources/testingMap";
+		string fileName = "Assets/Resources/"+MAP_NAME;
 		string line;
 		StreamReader theReader = new StreamReader (fileName, Encoding.Default);
 		using (theReader) {
