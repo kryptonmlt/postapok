@@ -78,6 +78,7 @@ public class GridManager: MonoBehaviour
 	private List<GameObject> selectionMenu = new List<GameObject> ();
 	//0=fanatic,1=bike,2=car,3=truck,4=refinery,5=windmill,6=junkyard
 	private List<Texture> textures = new List<Texture> ();
+	private Color[] playerColors = { Color.blue, Color.red, Color.green, Color.magenta };
 
 	public static LinkedList<GameObject> unitSelected = new LinkedList<GameObject> ();
 
@@ -631,7 +632,7 @@ public class GridManager: MonoBehaviour
 		//delete units that died during battle
 		foreach (int guid in objectsForDeletion) {
 			TileBehaviour tb = getTileOfUnit (guid);
-			if(tb!=null){//object is not on any tile as he arrived after the opponent
+			if (tb != null) {//object is not on any tile as he arrived after the opponent
 				tb.removeObjectFromTile (guid);
 			}
 			Destroy (gameobjects [guid]);
@@ -662,7 +663,7 @@ public class GridManager: MonoBehaviour
 		List<int> objectsForDeletion = new List<int> ();
 		foreach (GameObject unit in unitsDefending) {
 			GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
-			while(gop.Quantity > 0){
+			while (gop.Quantity > 0) {
 				if (gop.DefenseValue > oppositionAttack) {
 					break;
 				} else {
@@ -670,7 +671,7 @@ public class GridManager: MonoBehaviour
 					oppositionAttack -= gop.DefenseValue;
 				}
 			}
-			if (gop.Quantity==0) {
+			if (gop.Quantity == 0) {
 				objectsForDeletion.Add (gop.UniqueID);
 			}
 		}
@@ -718,6 +719,9 @@ public class GridManager: MonoBehaviour
 
 	void Start ()
 	{
+		for (int i = 0; i < playerColors.Length; i++) {
+			playerColors [i].a = 1.0f;
+		}
 		LoadResources ();
 		for (int i = 0; i < 4; i++) {
 			selectionMenu.Add (GameObject.Find ("sel" + i));
@@ -1179,6 +1183,7 @@ public class GridManager: MonoBehaviour
 		ObjsPaths.Add (gop.UniqueID, new List<GameObject> ());
 		go.transform.position = tb.getNextPosition (go, join);
 		//Debug.Log ("Created Object: "+gop.type);
+		bool unit = true;
 		switch (gop.type) {
 		case "ThirdPersonController":
 			gop.setAV (1);
@@ -1204,23 +1209,27 @@ public class GridManager: MonoBehaviour
 			gop.setMV (3);
 			go.transform.position += new Vector3 (0f, 0.2f, 0f);
 			break;
+		default:
+			unit = false;
+			break;
+		}
+		if (unit) {
+			changeColorOfUnit (go);
 		}
 		return go;
 	}
 
-	//Distance between destination tile and some other tile in the grid
-	//	double calcDistance(Tile tile)
-	//	{
-	//		Tile destTile = destTileTB.tile;
-	//		//Formula used here can be found in Chris Schetter's article
-	//		float deltaX = Mathf.Abs(destTile.X - tile.X);
-	//		float deltaY = Mathf.Abs(destTile.Y - tile.Y);
-	//		int z1 = -(tile.X + tile.Y);
-	//		int z2 = -(destTile.X + destTile.Y);
-	//		float deltaZ = Mathf.Abs(z2 - z1);
-	//
-	//		return Mathf.Max(deltaX, deltaY, deltaZ);
-	//	}
+	private void changeColorOfUnit (GameObject go)
+	{
+		GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+		Renderer[] renderers = go.GetComponentsInChildren<Renderer> ();
+		foreach (Renderer renderer in renderers) {
+			foreach (Material material in renderer.materials) {
+				material.color = playerColors [gop.PlayerId];
+			}
+		}
+
+	}
 
 	private void DrawPath (IEnumerable<Tile> path, int id)
 	{
