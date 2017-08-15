@@ -86,7 +86,7 @@ public class GridManager: MonoBehaviour
 	private int round = 0;
 	private bool forceHide = false;
 	private float timeleftToShowObjects = 0;
-	private long turnFinished = 0;
+	GUIStyle guiStyle = new GUIStyle();
 	public int globalInterval = 0;
 	private List<CharacterMovement> chMovements = new List<CharacterMovement> ();
 	private PlayerData[] playerData;
@@ -108,7 +108,7 @@ public class GridManager: MonoBehaviour
 	private int[] refineryCost = { 0, 0, 4 };
 	private int[] structureUpgradeCost = { 0, 0, 4 };
 	private int[] unitUpgradeCost = { 0, 0, 10 };
-	private int SECONDS_BETWEEN_TURNS=3;
+	private float SECONDS_BETWEEN_TURNS=3.5f;
 	private int RESOURCES_LIMIT_GAIN = 5;
 	private int UPGRADE_BENEFIT = 1;
 	private int VIEW_RANGE = 2;
@@ -150,6 +150,9 @@ public class GridManager: MonoBehaviour
 
 	void OnGUI ()
 	{
+		if(forceHide && timeleftToShowObjects>=0){
+			GUI.Label (new Rect((Screen.width/2)-250,Screen.height/4,400,400),"Changing Player .. "+(int)timeleftToShowObjects,guiStyle);
+		}
 		if (GridManager.draw == true) {
 			Color colPreviousGUIColor = GUI.color;
 			GUI.color = new Color (colPreviousGUIColor.r, colPreviousGUIColor.g, colPreviousGUIColor.b, fAlpha);
@@ -740,6 +743,7 @@ public class GridManager: MonoBehaviour
 		for (int i = 0; i < PLAYER_COLORS.Length; i++) {
 			PLAYER_COLORS [i].a = 1.0f;
 		}
+		guiStyle.fontSize = 52;
 		LoadResources ();
 		for (int i = 0; i < 4; i++) {
 			selectionMenu.Add (GameObject.Find ("sel" + i));
