@@ -612,6 +612,9 @@ public class GridManager: MonoBehaviour
 
 		int attackersvalue = 0;
 		int defendersvalue = 0;
+		//low health characters first
+		attackers.OrderBy (o => ((GOProperties)o.GetComponent<GOProperties> ()).DefenseValue);
+		defenders.OrderBy (o => ((GOProperties)o.GetComponent<GOProperties> ()).DefenseValue);
 		foreach (GameObject attacker in attackers) {
 			GOProperties gop = (GOProperties)attacker.GetComponent (typeof(GOProperties));
 			attackersvalue += gop.AttackValue * gop.Quantity;
@@ -621,22 +624,57 @@ public class GridManager: MonoBehaviour
 			defendersvalue += gop.AttackValue * gop.Quantity;
 		}
 
-		if (attackersvalue >= defendersvalue) {
-			foreach (GameObject defender in defenders) {
-				GOProperties gop = (GOProperties)defender.GetComponent (typeof(GOProperties));
-				Destroy (defender);
-				gameobjects.Remove (gop.UniqueID);
+		objectsForDeletion = new List<int> ();
+		objectsForDeletion.AddRange (getDeadUnitsInFight (attackers, defendersvalue));
+		objectsForDeletion.AddRange (getDeadUnitsInFight (defenders, attackersvalue));
+
+		//delete units that died during battle
+		foreach (int guid in objectsForDeletion) {
+			TileBehaviour tb = getTileOfUnit (guid);
+			if(tb!=null){//object is not on any tile as he arrived after the opponent
+				tb.removeObjectFromTile (guid);
 			}
-		} else {
-			foreach (GameObject attacker in attackers) {
-				GOProperties gop = (GOProperties)attacker.GetComponent (typeof(GOProperties));
-				Debug.Log (attackersvalue);
-				Debug.Log (defendersvalue);
-				Destroy (attacker);
-				gameobjects.Remove (gop.UniqueID);
+			Destroy (gameobjects [guid]);
+			gameobjects.Remove (guid);
+		}
+
+		// make sure survivers are added to tile
+		foreach (GameObject go in attackers) {
+			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+			if (!objectsForDeletion.Contains (gop.UniqueID)) {
+				TileBehaviour tb = getTileOfUnit (gop.UniqueID);
+				tb.getNextPosition (go);
 			}
 		}
+		foreach (GameObject go in defenders) {
+			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
+			if (!objectsForDeletion.Contains (gop.UniqueID)) {
+				TileBehaviour tb = getTileOfUnit (gop.UniqueID);
+				tb.getNextPosition (go);
+			}
+		}
+
 		calculateResourcesForEveryone ();
+	}
+
+	private List<int> getDeadUnitsInFight (List<GameObject> unitsDefending, int oppositionAttack)
+	{
+		List<int> objectsForDeletion = new List<int> ();
+		foreach (GameObject unit in unitsDefending) {
+			GOProperties gop = (GOProperties)unit.GetComponent (typeof(GOProperties));
+			while(gop.Quantity > 0){
+				if (gop.DefenseValue > oppositionAttack) {
+					break;
+				} else {
+					gop.Quantity--;
+					oppositionAttack -= gop.DefenseValue;
+				}
+			}
+			if (gop.Quantity==0) {
+				objectsForDeletion.Add (gop.UniqueID);
+			}
+		}
+		return objectsForDeletion;
 	}
 
 	void calculateResourcesForEveryone ()
@@ -956,22 +994,22 @@ public class GridManager: MonoBehaviour
 				if (selection.name.Equals ("sel0")) {
 					if (hasEnoughAndDeduct (tId, fanaticCost)) {
 						int guid = addObjsToLists (tb, fanatic, tId);
-						show (gameobjects[guid], true);
+						show (gameobjects [guid], true);
 					}
 				} else if (selection.name.Equals ("sel1")) {
 					if (hasEnoughAndDeduct (tId, bikeCost)) {
 						int guid = addObjsToLists (tb, bike, tId);
-						show (gameobjects[guid], true);
+						show (gameobjects [guid], true);
 					}
 				} else if (selection.name.Equals ("sel2")) {
 					if (hasEnoughAndDeduct (tId, carCost)) {
 						int guid = addObjsToLists (tb, car, tId);
-						show (gameobjects[guid], true);
+						show (gameobjects [guid], true);
 					}
 				} else if (selection.name.Equals ("sel3")) {
 					if (hasEnoughAndDeduct (tId, truckCost)) {
 						int guid = addObjsToLists (tb, truck, tId);
-						show (gameobjects[guid], true);
+						show (gameobjects [guid], true);
 					}
 				}
 			} else if (!tb.built && !tb.upgraded) {

@@ -60,14 +60,14 @@ public class TileBehaviour: MonoBehaviour
 	{
 		GOProperties gop = (GOProperties)obj.GetComponent (typeof(GOProperties));
 		int index = objectTypeExists (gop.type);
-		Debug.Log ("Adding id " + gop.UniqueID + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
+		printTileText ("Adding", gop);
 		if (index != -1 && join) {
-			Debug.Log ("Already represented id " + gop.UniqueID + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
+			printTileText ("Already represented", gop);
 			return separatePositions [objPos [index]];
 		} else {
 			objPos.Add (gop.UniqueID, getFirstAvailablePos ());
 			objsOnTile.Add (obj);
-			Debug.Log ("New position " + objPos [gop.UniqueID] + " for id " + gop.UniqueID + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
+			printTileText ("New position " + objPos [gop.UniqueID], gop);
 			if (objsOnTile.Count == maxSpaces - 1) {
 				//increase number of spaces on tile
 				maxSpaces += incrementAmount;
@@ -117,7 +117,8 @@ public class TileBehaviour: MonoBehaviour
 
 	public void removeObjectFromTile (int uniqueId)
 	{
-		Debug.Log ("Deleting id " + uniqueId + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
+		GOProperties gop = (GOProperties)GridManager.instance.gameobjects [uniqueId].GetComponent (typeof(GOProperties));
+		printTileText ("Deleting", gop);
 		if (objPos.ContainsKey (uniqueId)) {
 			int posToDelete = objPos [uniqueId];
 			objsOnTile.RemoveAt (posToDelete);
@@ -130,8 +131,12 @@ public class TileBehaviour: MonoBehaviour
 				}
 			}
 		} else {
-			Debug.Log ("Tried to delete id " + uniqueId + " on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
+			printTileText ("Failed to delete properly", gop);
 		}
+	}
+
+	private void printTileText(string text, GOProperties gop){
+		Debug.Log (text+" id " + gop.UniqueID + "("+gop.type+", team "+gop.PlayerId+") on tile (" + this.tile.boardCoords.X + "," + this.tile.boardCoords.Y+ ")");
 	}
 
 	public int objectTypeExists (string type)
