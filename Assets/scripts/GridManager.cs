@@ -52,7 +52,7 @@ public class GridManager: MonoBehaviour
 	private Shader standardShader;
 
 	static Vector3 downmouseposition;
-	static bool draw = false;
+	private static bool draw = false;
 	private bool clicked = false;
 	private bool showSplitMenu = false;
 	private GameObject splitSelection = null;
@@ -78,13 +78,17 @@ public class GridManager: MonoBehaviour
 	private List<GameObject> selectionMenu = new List<GameObject> ();
 	//0=fanatic,1=bike,2=car,3=truck,4=refinery,5=windmill,6=junkyard
 	private List<Texture> textures = new List<Texture> ();
-	private Color[] playerColors = { Color.blue, Color.red, Color.green, Color.magenta };
 
 	public static LinkedList<GameObject> unitSelected = new LinkedList<GameObject> ();
 
 	private int turn = 0;
 	private int players = 0;
 	private int round = 0;
+	private bool forceHide = false;
+	private float timeleftToShowObjects = 0;
+	private long turnFinished = 0;
+	public int globalInterval = 0;
+	private List<CharacterMovement> chMovements = new List<CharacterMovement> ();
 	private PlayerData[] playerData;
 	private Text waterResource;
 	private Text petrolResource;
@@ -104,14 +108,12 @@ public class GridManager: MonoBehaviour
 	private int[] refineryCost = { 0, 0, 4 };
 	private int[] structureUpgradeCost = { 0, 0, 4 };
 	private int[] unitUpgradeCost = { 0, 0, 10 };
-
-	private int resourceLimitGain = 5;
-	private int upgradeBenefit = 1;
-	private int viewRange = 2;
-	public int globalInterval = 0;
-	private List<CharacterMovement> chMovements = new List<CharacterMovement> ();
-
-	Dictionary<int, LandType> TerrainType = new Dictionary<int, LandType> () {
+	private int SECONDS_BETWEEN_TURNS=3;
+	private int RESOURCES_LIMIT_GAIN = 5;
+	private int UPGRADE_BENEFIT = 1;
+	private int VIEW_RANGE = 2;
+	private Color[] PLAYER_COLORS = { Color.blue, Color.red, Color.green, Color.magenta };
+	Dictionary<int, LandType> TERRAIN_TYPE = new Dictionary<int, LandType> () {
 		{ 0,LandType.Base },
 		{ 1,LandType.Oasis },
 		{ 2,LandType.Junkyard },
@@ -226,6 +228,13 @@ public class GridManager: MonoBehaviour
 
 	void Update ()
 	{
+		if(forceHide){
+			timeleftToShowObjects -= Time.deltaTime;
+		}
+		if(timeleftToShowObjects <= 0 && forceHide){
+			forceHide = false;
+			hideEnemyObjects (getCurrentPlayerId ());
+		}
 		updateResourcesMenu (getCurrentPlayerId ());
 
 		bool moving = isAnyMoving ();
@@ -309,8 +318,7 @@ public class GridManager: MonoBehaviour
 	{
 		return turn >= players ? turn - 1 : turn;
 	}
-
-
+		
 	public void hideEnemyObjects (int playerId)
 	{
 		//set all enemies to false
@@ -320,7 +328,9 @@ public class GridManager: MonoBehaviour
 			if (lines != null) {
 				Renderer[] renderers = lines.GetComponentsInChildren<Renderer> ();
 				foreach (Renderer renderer in renderers) {
-					if (hideObjects) {
+					if (forceHide) {
+						renderer.enabled = false;
+					}else if (hideObjects) {
 						renderer.enabled = playerId == i;
 					} else {
 						renderer.enabled = true;
@@ -332,7 +342,9 @@ public class GridManager: MonoBehaviour
 		foreach (int key in gameobjects.Keys) {
 			GameObject go = gameobjects [key];
 			GOProperties gop = (GOProperties)go.GetComponent (typeof(GOProperties));
-			if (hideObjects) {
+			if (forceHide) {
+				show(go, false);
+			}else if (hideObjects) {
 				show (go, gop.PlayerId == playerId);
 			} else {
 				show (go, true);
@@ -348,10 +360,12 @@ public class GridManager: MonoBehaviour
 					TileBehaviour test = getTileOfUnit (gop.UniqueID);
 					var path = PathFinder.FindPath (test.tile, tb.tile);
 					//show objs on enemy tile if in range
-					if (path != null && path.TotalCost <= viewRange) {
+					if (path != null && path.TotalCost <= VIEW_RANGE) {
 						foreach (GameObject objOnTile in tb.objsOnTile) {
 							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
-							if (gopOnTile.structureShown == null) {
+							if (forceHide) {
+								show(objOnTile, false);
+							}else if (gopOnTile.structureShown == null) {
 								show (objOnTile, true);
 							} else if (!gopOnTile.structureShown [playerId]) {
 								gopOnTile.structureShown [playerId] = true;	
@@ -367,7 +381,9 @@ public class GridManager: MonoBehaviour
 						foreach (GameObject objOnTile in tb.objsOnTile) {
 							GOProperties gopOnTile = (GOProperties)objOnTile.GetComponent (typeof(GOProperties));
 							if (gopOnTile.structureShown != null) {
-								if (hideObjects) {
+								if (forceHide) {
+									show(go, false);
+								}else if (hideObjects) {
 									show (objOnTile, gopOnTile.structureShown [playerId]);
 								} else {
 									show (objOnTile, true);
@@ -525,7 +541,7 @@ public class GridManager: MonoBehaviour
 	void endTurnTask ()
 	{
 		bool moving = isAnyMoving ();
-		if (!moving) {
+		if (!moving && timeleftToShowObjects<=0) {
 			//remove split menu
 			showSplitMenu = false;
 			deSelect ();
@@ -546,6 +562,8 @@ public class GridManager: MonoBehaviour
 				chMovements = chMovementsTemp;
 			}
 			turn++;
+			forceHide = true;
+			timeleftToShowObjects = SECONDS_BETWEEN_TURNS;
 			hideEnemyObjects (getCurrentPlayerId ());
 		}
 	}
@@ -686,11 +704,11 @@ public class GridManager: MonoBehaviour
 		foreach (TileBehaviour tb in board.Values) {
 			if (tb.built) {
 				int f = tb.getFanaticsOnTile ();
-				if (f > resourceLimitGain) {
-					f = resourceLimitGain;
+				if (f > RESOURCES_LIMIT_GAIN) {
+					f = RESOURCES_LIMIT_GAIN;
 				}
 				if (tb.upgraded) {
-					f += upgradeBenefit;
+					f += UPGRADE_BENEFIT;
 				}
 				int playerOwner = tb.getPlayerOwner ();
 				switch (tb.getTile ().landType) {
@@ -719,8 +737,8 @@ public class GridManager: MonoBehaviour
 
 	void Start ()
 	{
-		for (int i = 0; i < playerColors.Length; i++) {
-			playerColors [i].a = 1.0f;
+		for (int i = 0; i < PLAYER_COLORS.Length; i++) {
+			PLAYER_COLORS [i].a = 1.0f;
 		}
 		LoadResources ();
 		for (int i = 0; i < 4; i++) {
@@ -805,7 +823,7 @@ public class GridManager: MonoBehaviour
 				hex.transform.parent = hexGridGO.transform;
 
 				int landTypeId = loadedMap [landPos];
-				tb.tile = new Tile ((int)x - (int)(y / 2), (int)y, TerrainType [landTypeId]);
+				tb.tile = new Tile ((int)x - (int)(y / 2), (int)y, TERRAIN_TYPE [landTypeId]);
 				tb.setTileMaterial (tb.tile.landType);
 				tb.tile.boardCoords = new Point ((int)gridPos.x, (int)gridPos.y);
 				tempBoard.Add (tb.tile.Location, tb.tile);
@@ -1225,10 +1243,9 @@ public class GridManager: MonoBehaviour
 		Renderer[] renderers = go.GetComponentsInChildren<Renderer> ();
 		foreach (Renderer renderer in renderers) {
 			foreach (Material material in renderer.materials) {
-				material.color = playerColors [gop.PlayerId];
+				material.color = PLAYER_COLORS [gop.PlayerId];
 			}
 		}
-
 	}
 
 	private void DrawPath (IEnumerable<Tile> path, int id)
