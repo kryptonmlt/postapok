@@ -99,7 +99,7 @@ public class GridManager: MonoBehaviour
 
 	public Dictionary<Point, TileBehaviour> board = new Dictionary<Point, TileBehaviour> ();
 
-	private int[] initialResources = { 10, 10, 12 };
+	private int[] initialResources = { 2, 0, 2 };//water, petrol, scrap
 	private int[] fanaticCost = { 1, 0, 1 };
 	private int[] bikeCost = { 1, 1, 2 };
 	private int[] carCost = { 2, 2, 3 };
@@ -109,7 +109,7 @@ public class GridManager: MonoBehaviour
 	private int[] refineryCost = { 0, 0, 4 };
 	private int[] structureUpgradeCost = { 0, 0, 4 };
 	private int[] unitUpgradeCost = { 0, 0, 10 };
-	private float SECONDS_BETWEEN_TURNS=3.5f;
+	private float SECONDS_BETWEEN_TURNS=5f;
 	private int RESOURCES_LIMIT_GAIN = 5;
 	private int UPGRADE_BENEFIT = 1;
 	private int VIEW_RANGE = 2;
@@ -1233,7 +1233,7 @@ public class GridManager: MonoBehaviour
 		case "Apo_Car_2015":
 			gop.setAV (2);
 			gop.setDV (2);
-			gop.setMV (15);
+			gop.setMV (2);
 			go.transform.position += new Vector3 (0f, 0.5f, 0f);
 			break;
 		case "f_noladder":
