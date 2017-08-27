@@ -2,18 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Game
 {
 	
-	public long id { get; set; }
+	public long id;
 
-	public string secret{ get; set; }
+	public string secret;
 
-	public string maxPlayers{ get; set; }
+	public string maxPlayers;
 
-	public string dateStarted{ get; set; }
+	public string dateStarted;
 
-	public string[] players{ get; set; }
+	public string[] players;
 
 	public Game ()
 	{

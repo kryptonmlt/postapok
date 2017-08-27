@@ -13,17 +13,20 @@ public class LobbyPopulator : MonoBehaviour
 	public InputField usernameField;
 	public GameObject maxPlayersInputField;
 	public GameObject maxPlayersLabel;
+	public GameObject GamesList;
 	public Text usernameText;
 	public Text currentPlayersText;
 	public Text maxPlayersText;
 	public Text allPlayersText;
 	public Button refreshButton;
-	private static string serverUrl = "localhost:9091/";
+	public Text gameName;
+	public GameObject joinGameButton;
+	private static string serverUrl = "localhost:9901/";
 	private static string gameUrl = serverUrl + "game/";
 	bool joinGame = false;
 	private string username;
 	private bool currentGameMenu = false;
-	private string gameId="";
+	private string gameId = "";
 
 	private LobbyPopulator ()
 	{
@@ -31,18 +34,36 @@ public class LobbyPopulator : MonoBehaviour
 
 	void Start ()
 	{
-		
+		refreshGamesList ();
 	}
 
 	void Update ()
 	{
-		if(currentGameMenu){
+		if (currentGameMenu) {
+			
 		}
 	}
 
-	public void getGamesList ()
+	public void getGamesListRequest ()
 	{
 		WWW www = new WWW (gameUrl + "/open");
+		StartCoroutine (WaitForRequest (www, RequestType.GET_GAMES));
+	}
+
+	public void getGameRequest (string id)
+	{
+		WWW www = new WWW (gameUrl + "/" + id);
+		StartCoroutine (WaitForRequest (www, RequestType.GET_GAME));
+	}
+
+	public void unJoinGameRequest ()
+	{
+		WWWForm form = new WWWForm ();
+		form.AddField ("secret", secretInputField.text);
+		form.AddField ("username", username);
+		form.AddField ("join", "false");
+		WWW www = new WWW (gameUrl + gameId, form);
+		StartCoroutine (WaitForRequest (www, RequestType.REMOVE_PLAYER));
 	}
 
 	public void joinGameRequest ()
@@ -50,7 +71,8 @@ public class LobbyPopulator : MonoBehaviour
 		WWWForm form = new WWWForm ();
 		form.AddField ("secret", secretInputField.text);
 		form.AddField ("username", username);
-		WWW www = new WWW (gameUrl+gameId, form);
+		form.AddField ("join", "true");
+		WWW www = new WWW (gameUrl + gameId, form);
 		StartCoroutine (WaitForRequest (www, RequestType.JOIN_GAME));
 	}
 
@@ -58,7 +80,7 @@ public class LobbyPopulator : MonoBehaviour
 	{
 		WWWForm form = new WWWForm ();
 		form.AddField ("secret", secretInputField.text);
-		form.AddField ("maxPlayers", maxPlayersInputField.GetComponent<InputField>().text);
+		form.AddField ("maxPlayers", maxPlayersInputField.GetComponent<InputField> ().text);
 		WWW www = new WWW (gameUrl, form);
 		StartCoroutine (WaitForRequest (www, RequestType.CREATE_GAME));
 	}
@@ -69,23 +91,48 @@ public class LobbyPopulator : MonoBehaviour
 
 		// check for errors
 		if (www.error == null) {
-			switch(type){
+			switch (type) {
 			case RequestType.CREATE_GAME:
 				gameId = www.text;
 				joinGameRequest ();
 				break;
 			case RequestType.GET_GAME:
 				Game game = JsonUtility.FromJson<Game> (www.text);
-				usernameText.text = username;
 				maxPlayersText.text = game.maxPlayers;
-				currentPlayersText.text = ""+game.players.Length;
-				foreach(string u in game.players){
-					allPlayersText.text += u + "\n";
+				gameName.text = "Game " + game.id;
+				usernameText.text = "None";
+				if (game.players != null) {
+					usernameText.text = game.players [0];
+					currentPlayersText.text = "" + game.players.Length;
+					allPlayersText.text = "";
+					foreach (string u in game.players) {
+						allPlayersText.text += u + "\n";
+					}
 				}
 				break;
+			case RequestType.REMOVE_PLAYER:
+				break;
 			case RequestType.GET_GAMES:
+				destroyChildButtons (GamesList);
+				GameCollection games = JsonUtility.FromJson<GameCollection> (www.text);
+				foreach (Game g in games.games) {
+					Debug.Log ("open: " + g.id);
+					GameObject joinButton = Instantiate (joinGameButton);
+					joinButton.transform.SetParent (GamesList.transform);
+					Text buttonText = joinButton.GetComponentInChildren<Text> ();
+					if (g.players != null && g.players.Length != 0) {
+						buttonText.text = "Game " + g.id + " - " + g.players [0] + " (" + g.players.Length + "/" + g.maxPlayers + ")";
+					} else {
+						buttonText.text = "Game " + g.id + " - None (0/" + g.maxPlayers + ")";
+					}
+					Button button = joinButton.GetComponentInChildren<Button> ();
+					button.onClick.AddListener (() => {
+						setSecretMenuJoin ("" + g.id);
+					});
+				}
 				break;
 			case RequestType.JOIN_GAME:
+				getGameRequest (gameId);
 				setGameMenu ();
 				break;
 			default:
@@ -97,8 +144,23 @@ public class LobbyPopulator : MonoBehaviour
 		}    
 	}
 
+	public void destroyChildButtons (GameObject list)
+	{
+		Button[] buttons = list.GetComponentsInChildren<Button> ();
+		foreach (Button b in buttons) {
+			Destroy (b.gameObject);
+		}
+	}
+
 	public void refreshGamesList ()
 	{
+		getGamesListRequest ();
+	}
+
+	public void unJoinGameAndGoToLobby ()
+	{
+		unJoinGameRequest ();	
+		setLobbyMenu ();
 	}
 
 	public void setLobbyMenu ()
@@ -119,8 +181,9 @@ public class LobbyPopulator : MonoBehaviour
 		lobbyPanel.SetActive (false);
 	}
 
-	public void setSecretMenuJoin ()
+	public void setSecretMenuJoin (string gId)
 	{
+		gameId = gId;
 		currentGameMenu = false;
 		joinGame = true;
 		setUsername ();
@@ -139,15 +202,17 @@ public class LobbyPopulator : MonoBehaviour
 		lobbyPanel.SetActive (false);
 	}
 
-	public void setUsername(){
+	public void setUsername ()
+	{
 		username = usernameField.text;
 	}
 
-	public void goToGameMenuButton(){
-		if(joinGame){
+	public void goToGameMenuButton ()
+	{
+		if (joinGame) {
 			joinGameRequest ();
-		}else{//creating game
-			createGame();
+		} else {//creating game
+			createGame ();
 		}
 	}
 }

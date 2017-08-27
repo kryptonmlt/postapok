@@ -6,6 +6,6 @@ public enum RequestType
 	GET_GAME,
 	JOIN_GAME,
 	GET_GAMES,
-	GET_PLAYER
+	REMOVE_PLAYER
 }
 
